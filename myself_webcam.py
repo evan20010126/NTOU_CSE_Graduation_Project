@@ -5,29 +5,50 @@ import argparse
 from sys import platform
 import os
 import sys
+from turtle import width
 import cv2
 import threading
 
+from cv2 import CAP_PROP_FRAME_WIDTH
+from cv2 import CAP_PROP_FRAME_HEIGHT
+
 # my_answer = list()
 my_answer = dict()
+height = 0
+width = 0
 
 
 def process_image(img, frame_num, opWrapper):
+    global width
+    global height
+
     x, y = (185.692673 - 170, 303.112244 - 100)
     dx = 157.587555 + 250
     dy = 157.587555 + 250
+
+    zoom_out = 25
+    l1, l2, l3, l4 = (width/2)-175, (height/2)-80, 350, 350
+    r1, r2, r3, r4 = (width/2)-175, (height/2)-80, 350, 350
+    f1, f2, f3, f4 = (width/2)-65, (height/2)-160, 200, 200
+
     handRectangles = [
         [
-            op.Rectangle(x, y, dx, dy),
-            op.Rectangle(88.984360, 268.866547,
-                         117.818230, 117.818230),
+            op.Rectangle(l1, l2, l3, l4),
+            op.Rectangle(r1, r2, r3, r4),
+            # op.Rectangle(x, y, dx, dy),
+            # op.Rectangle(88.984360, 268.866547,
+            #              117.818230, 117.818230),
         ]
+    ]
+    faceRectangles = [
+        op.Rectangle(f1, f2, f3, f4)
     ]
 
     # Create new datum
     datum = op.Datum()
     datum.cvInputData = img
     datum.handRectangles = handRectangles
+    # datum.faceRectangles = faceRectangles
 
     # Process and display image
     opWrapper.emplaceAndPop(op.VectorDatum([datum]))
@@ -37,13 +58,26 @@ def process_image(img, frame_num, opWrapper):
     # print(type(datum.cvOutputData))
     # img = np.zeros((512, 512, 3), np.uint8)
     # print(type(img))
-    img = cv2.rectangle(datum.cvOutputData, (int(x), int(y)),
-                        (int(x + dx), int(y + dy)), (0, 255, 0), 1)
+
+    # mine
+    # img = cv2.rectangle(datum.cvOutputData, (int(x), int(y)),
+    # (int(x + dx), int(y + dy)), (0, 255, 0), 1)
+
+    img = datum.cvOutputData
+    cv2.rectangle(img, (int(l1), int(l2)),
+                  (int(l1+l3), int(l2+l3)), (0, 255, 0), 2)
+    cv2.rectangle(img, (int(r1), int(r2)),
+                  (int(r1+r3), int(r2+r3)), (255, 0, 0), 2)
+    # cv2.rectangle(img, (int(f1), int(f2)),
+    #               (int(f1+f3), int(f2+f3)), (0, 255, 255), 2)
     my_answer[frame_num] = img
     cv2.imshow("hello", img)
 
 
 def work():
+    global width
+    global height
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--video", default="C:\\Users\\User\\Desktop\\openpose1\\examples\\media\\004.mp4")
@@ -53,10 +87,13 @@ def work():
     params = dict()
     params["model_folder"] = "../../../models/"
     params["net_resolution"] = "320x176"
-    params["hand_net_resolution"] = "256x256"
+    params["hand_net_resolution"] = "288x288"
+    params["face_net_resolution"] = "256x256"
     params["hand"] = True
     params["hand_detector"] = 2
-    params["body"] = 1
+    params["face"] = True
+    params["face_detector"] = 1
+    params["body"] = 0
 
     for i in range(0, len(args[1])):
         curr_item = args[1][i]
@@ -81,8 +118,13 @@ def work():
     # Process video
     # cap = cv2.VideoCapture(args[0].video)
     cap = cv2.VideoCapture(0)
+
     frame_num = -1
     threads = []
+    width = cap.get(CAP_PROP_FRAME_WIDTH)
+    height = cap.get(CAP_PROP_FRAME_HEIGHT)
+    writer = cv2.VideoWriter(
+        '.\samplevideo.avi', cv2.VideoWriter_fourcc(*'XVID'), 10.0, (int(width), int(height)))
 
     while True:
         try:
@@ -110,9 +152,12 @@ def work():
     # threads[i].join()
 
     for key in my_answer:
-        cv2.imshow("OpenPose 1.7.0 - Tutorial Python API", my_answer[key])
+        # cv2.imshow("OpenPose 1.7.0 - Tutorial Python API", my_answer[key])
+        writer.write(my_answer[key])
         # time.sleep(1)
-        cv2.waitKey(100)
+        # cv2.waitKey(100)
+
+    writer.release()
 
 
 # <Main>
