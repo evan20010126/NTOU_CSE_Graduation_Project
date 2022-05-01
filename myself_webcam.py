@@ -8,6 +8,7 @@ import sys
 from turtle import width
 import cv2
 import threading
+import numpy as np
 
 from cv2 import CAP_PROP_FRAME_WIDTH
 from cv2 import CAP_PROP_FRAME_HEIGHT
@@ -16,20 +17,26 @@ from cv2 import CAP_PROP_FRAME_HEIGHT
 my_answer = dict()
 height = 0
 width = 0
+l_wrist = [200, 200, 200]
+l_wrist = np.array(l_wrist)
+r_wrist = [200, 200, 200]
+r_wrist = np.array(r_wrist)
 
 
 def process_image(img, frame_num, opWrapper):
     global width
     global height
-
+    global l_wrist, r_wrist
     x, y = (185.692673 - 170, 303.112244 - 100)
     dx = 157.587555 + 250
     dy = 157.587555 + 250
 
-    zoom_out = 25
-    l1, l2, l3, l4 = (width/2)-175, (height/2)-80, 350, 350
-    r1, r2, r3, r4 = (width/2)-175, (height/2)-80, 350, 350
-    f1, f2, f3, f4 = (width/2)-65, (height/2)-160, 200, 200
+    # zoom_out = 25
+    # l1, l2, l3, l4 = (width/2)-175, (height/2)-80, 350, 350
+    # r1, r2, r3, r4 = (width/2)-175, (height/2)-80, 350, 350
+
+    l1, l2, l3, l4 = l_wrist[0]-150, l_wrist[1]-150, 300, 300
+    r1, r2, r3, r4 = r_wrist[0]-150, r_wrist[1]-150, 300, 300
 
     handRectangles = [
         [
@@ -39,9 +46,6 @@ def process_image(img, frame_num, opWrapper):
             # op.Rectangle(88.984360, 268.866547,
             #              117.818230, 117.818230),
         ]
-    ]
-    faceRectangles = [
-        op.Rectangle(f1, f2, f3, f4)
     ]
 
     # Create new datum
@@ -62,6 +66,17 @@ def process_image(img, frame_num, opWrapper):
     # mine
     # img = cv2.rectangle(datum.cvOutputData, (int(x), int(y)),
     # (int(x + dx), int(y + dy)), (0, 255, 0), 1)
+    global count
+    # if count == 0:
+
+    try:
+        l_wrist = datum.poseKeypoints.squeeze()[4]
+        r_wrist = datum.poseKeypoints.squeeze()[7]
+        print(l_wrist)
+        print(r_wrist)
+    except:
+        print("123456---")
+    # count += 1
 
     img = datum.cvOutputData
     cv2.rectangle(img, (int(l1), int(l2)),
@@ -86,14 +101,14 @@ def work():
 
     params = dict()
     params["model_folder"] = "../../../models/"
-    params["net_resolution"] = "320x176"
-    params["hand_net_resolution"] = "288x288"
-    params["face_net_resolution"] = "256x256"
+    params["net_resolution"] = "160x96"
+    params["hand_net_resolution"] = "352x352"
+    # params["face_net_resolution"] = "256x256"
     params["hand"] = True
     params["hand_detector"] = 2
-    params["face"] = True
-    params["face_detector"] = 1
-    params["body"] = 0
+    # params["face"] = True
+    # params["face_detector"] = 1
+    params["body"] = 1
 
     for i in range(0, len(args[1])):
         curr_item = args[1][i]
@@ -132,6 +147,7 @@ def work():
             ret, imageToProcess = cap.read()
 
             process_image(imageToProcess, frame_num, opWrapper)
+
             # threads.append(threading.Thread(target=process_image,
             #    args=(imageToProcess, frame_num, opWrapper)))
             # threads[frame_num].start()
