@@ -27,9 +27,6 @@ def process_image(img, frame_num, opWrapper):
     global width
     global height
     global l_wrist, r_wrist
-    x, y = (185.692673 - 170, 303.112244 - 100)
-    dx = 157.587555 + 250
-    dy = 157.587555 + 250
 
     # zoom_out = 25
     # l1, l2, l3, l4 = (width/2)-175, (height/2)-80, 350, 350
@@ -63,12 +60,6 @@ def process_image(img, frame_num, opWrapper):
     # img = np.zeros((512, 512, 3), np.uint8)
     # print(type(img))
 
-    # mine
-    # img = cv2.rectangle(datum.cvOutputData, (int(x), int(y)),
-    # (int(x + dx), int(y + dy)), (0, 255, 0), 1)
-    global count
-    # if count == 0:
-
     try:
         l_wrist = datum.poseKeypoints.squeeze()[4]
         r_wrist = datum.poseKeypoints.squeeze()[7]
@@ -76,7 +67,6 @@ def process_image(img, frame_num, opWrapper):
         print(r_wrist)
     except:
         print("123456---")
-    # count += 1
 
     img = datum.cvOutputData
     cv2.rectangle(img, (int(l1), int(l2)),
@@ -86,7 +76,7 @@ def process_image(img, frame_num, opWrapper):
     # cv2.rectangle(img, (int(f1), int(f2)),
     #               (int(f1+f3), int(f2+f3)), (0, 255, 255), 2)
     my_answer[frame_num] = img
-    cv2.imshow("hello", img)
+    cv2.imshow("preview", img)
 
 
 def work():
@@ -168,8 +158,8 @@ def work():
     # threads[i].join()
 
     for key in my_answer:
-        # cv2.imshow("OpenPose 1.7.0 - Tutorial Python API", my_answer[key])
         writer.write(my_answer[key])
+        # cv2.imshow("OpenPose 1.7.0 - Tutorial Python API", my_answer[key])
         # time.sleep(1)
         # cv2.waitKey(100)
 
