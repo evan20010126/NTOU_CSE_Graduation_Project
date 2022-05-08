@@ -1,13 +1,15 @@
 # 2022/03/22
 # myself_webcam
 
+# import threading
+from nbformat import write
+import openpyxl
 import argparse
 from sys import platform
 import os
 import sys
 from turtle import width
 import cv2
-import threading
 import numpy as np
 
 from cv2 import CAP_PROP_FRAME_WIDTH
@@ -21,6 +23,31 @@ l_wrist = [200, 200, 200]
 l_wrist = np.array(l_wrist)
 r_wrist = [200, 200, 200]
 r_wrist = np.array(r_wrist)
+
+# catch keypoints:
+my_keypoints_vectors = list()
+
+
+def write_xlsx(file_name, all_data):
+    wkbook = openpyxl.load_workbook(file_name)
+    wksheet = wkbook["Sheet1"]
+    wksheet.cell(row=1, column=1).value = "title"
+    begining = wksheet.max_row + 1
+    i = 1
+    for data in all_data:
+        wksheet.cell(row=begining, column=i).value = data[0]
+        wksheet.cell(row=begining, column=i+1).value = data[1]
+        i = i + 2
+
+    # wksheet.append(data.tolist())
+    # for data in all_data:
+    #     wksheet.append(data[0])
+    #     wksheet.append(data[1])
+    wkbook.save(file_name)
+
+
+def compute_vector(point1, point2):
+    return [point2[0] - point1[0], point2[1] - point1[1]]
 
 
 def process_image(img, frame_num, opWrapper):
@@ -53,19 +80,60 @@ def process_image(img, frame_num, opWrapper):
 
     # Process and display image
     opWrapper.emplaceAndPop(op.VectorDatum([datum]))
-    # print("Left hand keypoints: \n" + str(datum.handKeypoints[0]))
-    # print("Right hand keypoints: \n" + str(datum.handKeypoints[1]))
 
     # print(type(datum.cvOutputData))
     # img = np.zeros((512, 512, 3), np.uint8)
     # print(type(img))
 
     try:
-        l_wrist = datum.poseKeypoints.squeeze()[4]
-        r_wrist = datum.poseKeypoints.squeeze()[7]
-        print(l_wrist)
-        print(r_wrist)
-    except:
+        catch_poseKeypoints = datum.poseKeypoints.squeeze()
+        catch_lefthandKeypoints = datum.handKeypoints[0].squeeze()
+        catch_righthandKeypoints = datum.handKeypoints[1].squeeze()
+
+        # vector:
+        #! 0->1 (pose)
+        #! 1->2 2->3 3->4 (pose)
+        # hand:
+        # ? 0->1 1->2 2->3 3->4 | 0->5 5->6 6->7 7->8 | 0->9 9->10 10->11 11->12 | 0->13 13->14 14->15 15->16 |  0->17 17->18 18->19 19->20
+        #! 1->5 5->6 6->7 (pose)
+        # hand:
+        # ? 0->1 1->2 2->3 3->4 | 0->5 5->6 6->7 7->8 | 0->9 9->10 10->11 11->12 | 0->13 13->14 14->15 15->16 |  0->17 17->18 18->19 19->20
+
+        # * hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
+        # *                  (0, 5), (5, 6), (6, 7), (7, 8),
+        # *                  (0, 9), (9, 10), (10, 11), (11, 12),
+        # *                  (0, 13), (13, 14), (14, 15), (15, 16),
+        # *                 (0, 17), (17, 18), (18, 19), (19, 20)]
+        # * pose_sequence = [(0, 1),
+        # *                 (1, 2), (2, 3), (3, 4),
+        # *                 (1, 5), (5, 6), (6, 7)]
+
+        # my_keypoints_vector = list()
+
+        # * for p1, p2 in pose_sequence:
+        # *     my_keypoints_vectors.append(compute_vector(
+        # *         catch_poseKeypoints[p1], catch_poseKeypoints[p2]))
+
+        # * for p1, p2 in hand_sequence:
+        # *     my_keypoints_vectors.append(compute_vector(
+        # *         catch_lefthandKeypoints[p1], catch_lefthandKeypoints[p2]))
+        # *     my_keypoints_vectors.append(compute_vector(
+        # *         catch_righthandKeypoints[p1], catch_righthandKeypoints[p2]))
+        # * my_keypoints_vectors.append(my_keypoints_vector)
+        for point in catch_poseKeypoints:
+            my_keypoints_vectors.append(point)
+        for point in catch_poseKeypoints:
+            my_keypoints_vectors.append(point)
+        for point in catch_poseKeypoints:
+            my_keypoints_vectors.append(point)
+
+        # 為了動態更新手部辨識範圍
+        l_wrist = catch_poseKeypoints[4]
+        r_wrist = catch_poseKeypoints[7]
+        # print(l_wrist)
+        # print(r_wrist)
+    except Exception as e:
+        # print(e)
         print("123456---")
 
     img = datum.cvOutputData
@@ -158,11 +226,15 @@ def work():
     # threads[i].join()
 
     for key in my_answer:
+        if key == 0:
+            # 動態調整手部偵測範圍的第一張不算
+            continue
         writer.write(my_answer[key])
         # cv2.imshow("OpenPose 1.7.0 - Tutorial Python API", my_answer[key])
         # time.sleep(1)
         # cv2.waitKey(100)
 
+    write_xlsx("output.xlsx", my_keypoints_vectors)
     writer.release()
 
 
