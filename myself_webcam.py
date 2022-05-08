@@ -2,18 +2,15 @@
 # myself_webcam
 
 # import threading
-from nbformat import write
+from logging import exception
 import openpyxl
 import argparse
 from sys import platform
 import os
 import sys
-from turtle import width
+# from turtle import width
 import cv2
 import numpy as np
-
-from cv2 import CAP_PROP_FRAME_WIDTH
-from cv2 import CAP_PROP_FRAME_HEIGHT
 
 # my_answer = list()
 my_answer = dict()
@@ -23,6 +20,7 @@ l_wrist = [200, 200, 200]
 l_wrist = np.array(l_wrist)
 r_wrist = [200, 200, 200]
 r_wrist = np.array(r_wrist)
+Recording = False
 
 # catch keypoints:
 my_keypoints_vectors = list()
@@ -34,11 +32,14 @@ def write_xlsx(file_name, all_data):
     wksheet.cell(row=1, column=1).value = "title"
     begining = wksheet.max_row + 1
     i = 1
-    for data in all_data:
-        wksheet.cell(row=begining, column=i).value = data[0]
-        wksheet.cell(row=begining, column=i+1).value = data[1]
-        i = i + 2
 
+    for data in all_data:
+        try:
+            wksheet.cell(row=begining, column=i).value = data[0]
+            wksheet.cell(row=begining, column=i + 1).value = data[1]
+            i = i + 2
+        except exception as e:
+            print(e)
     # wksheet.append(data.tolist())
     # for data in all_data:
     #     wksheet.append(data[0])
@@ -59,8 +60,8 @@ def process_image(img, frame_num, opWrapper):
     # l1, l2, l3, l4 = (width/2)-175, (height/2)-80, 350, 350
     # r1, r2, r3, r4 = (width/2)-175, (height/2)-80, 350, 350
 
-    l1, l2, l3, l4 = l_wrist[0]-150, l_wrist[1]-150, 300, 300
-    r1, r2, r3, r4 = r_wrist[0]-150, r_wrist[1]-150, 300, 300
+    l1, l2, l3, l4 = l_wrist[0]-125, l_wrist[1]-200, 250, 250
+    r1, r2, r3, r4 = r_wrist[0]-125, r_wrist[1]-200, 250, 250
 
     handRectangles = [
         [
@@ -86,9 +87,15 @@ def process_image(img, frame_num, opWrapper):
     # print(type(img))
 
     try:
+        global Recording
         catch_poseKeypoints = datum.poseKeypoints.squeeze()
         catch_lefthandKeypoints = datum.handKeypoints[0].squeeze()
         catch_righthandKeypoints = datum.handKeypoints[1].squeeze()
+
+        if int(catch_poseKeypoints[7][1]-catch_poseKeypoints[1][1]) > 0 or catch_poseKeypoints[7][1] == 0:
+            Recording = False
+        else:
+            Recording = True
 
         # vector:
         #! 0->1 (pose)
@@ -120,12 +127,13 @@ def process_image(img, frame_num, opWrapper):
         # *     my_keypoints_vectors.append(compute_vector(
         # *         catch_righthandKeypoints[p1], catch_righthandKeypoints[p2]))
         # * my_keypoints_vectors.append(my_keypoints_vector)
-        for point in catch_poseKeypoints:
-            my_keypoints_vectors.append(point)
-        for point in catch_poseKeypoints:
-            my_keypoints_vectors.append(point)
-        for point in catch_poseKeypoints:
-            my_keypoints_vectors.append(point)
+        if(Recording == True):
+            for point in catch_poseKeypoints:
+                my_keypoints_vectors.append(point)
+            for point in catch_lefthandKeypoints:
+                my_keypoints_vectors.append(point)
+            for point in catch_righthandKeypoints:
+                my_keypoints_vectors.append(point)
 
         # 為了動態更新手部辨識範圍
         l_wrist = catch_poseKeypoints[4]
@@ -143,7 +151,11 @@ def process_image(img, frame_num, opWrapper):
                   (int(r1+r3), int(r2+r3)), (255, 0, 0), 2)
     # cv2.rectangle(img, (int(f1), int(f2)),
     #               (int(f1+f3), int(f2+f3)), (0, 255, 255), 2)
-    my_answer[frame_num] = img
+    if(Recording == True):
+        my_answer[frame_num] = img
+        cv2.putText(img, "REC", (10, 40), cv2.FONT_HERSHEY_SIMPLEX,
+                    1, (0, 0, 255), 3, cv2.LINE_AA)
+
     cv2.imshow("preview", img)
 
 
@@ -190,12 +202,12 @@ def work():
 
     # Process video
     # cap = cv2.VideoCapture(args[0].video)
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture("673721259.586615.mp4")
 
     frame_num = -1
     threads = []
-    width = cap.get(CAP_PROP_FRAME_WIDTH)
-    height = cap.get(CAP_PROP_FRAME_HEIGHT)
+    width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+    height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     writer = cv2.VideoWriter(
         '.\samplevideo.avi', cv2.VideoWriter_fourcc(*'XVID'), 10.0, (int(width), int(height)))
 
