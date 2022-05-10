@@ -92,10 +92,16 @@ def process_image(img, frame_num, opWrapper):
         catch_lefthandKeypoints = datum.handKeypoints[0].squeeze()
         catch_righthandKeypoints = datum.handKeypoints[1].squeeze()
 
-        if int(catch_poseKeypoints[7][1]-catch_poseKeypoints[1][1]) > 0 or catch_poseKeypoints[7][1] == 0:
-            Recording = False
-        else:
+        # if (int(catch_poseKeypoints[7][1]-catch_poseKeypoints[1][1]) > 0 and int(catch_poseKeypoints[4][1]-catch_poseKeypoints[1][1]) > 0) or (catch_poseKeypoints[7][1] == 0 and catch_poseKeypoints[4][1] == 0):
+        #     Recording = False
+        # else:
+        #     Recording = True
+
+        if ((int(catch_poseKeypoints[7][1]-catch_poseKeypoints[1][1]) < 0) and
+                catch_poseKeypoints[7][1] != 0) or ((int(catch_poseKeypoints[4][1]-catch_poseKeypoints[1][1]) < 0) and catch_poseKeypoints[4][1] != 0):
             Recording = True
+        else:
+            Recording = False
 
         # vector:
         #! 0->1 (pose)
