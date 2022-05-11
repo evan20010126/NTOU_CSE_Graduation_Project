@@ -10,6 +10,7 @@ import sys
 import cv2
 import numpy as np
 
+signLanguageLabel = "salty"  # 鹹:salty 小吃:snack
 # my_answer = list()
 my_answer = dict()
 height = 0
@@ -34,6 +35,7 @@ def computeDistance(p1, p2):
 
 
 def write_xlsx(file_name, all_data):
+    global signLanguageLabel
     # wksheet = wkbook["工作表1"]
     try:
         wkbook = openpyxl.load_workbook(file_name)
@@ -54,10 +56,12 @@ def write_xlsx(file_name, all_data):
         wksheet = wkbook.create_sheet("Sheet1", 0)
         wkbook.save(fn)
 
-    wksheet.cell(row=1, column=1).value = "title"
+    wksheet.cell(row=1, column=1).value = "condition"
     begining = wksheet.max_row + 1
     i = 1
 
+    wksheet.cell(row=begining, column=i).value = signLanguageLabel
+    i += 1
     for data in all_data:
         try:
             wksheet.cell(row=begining, column=i).value = data[0]
@@ -65,6 +69,7 @@ def write_xlsx(file_name, all_data):
             i = i + 2
         except Exception as e:
             print("資料格式錯誤")
+
     # wksheet.append(data.tolist())
     # for data in all_data:
     #     wksheet.append(data[0])
