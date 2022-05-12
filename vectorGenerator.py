@@ -10,7 +10,17 @@ import sys
 import cv2
 import numpy as np
 
-signLanguageLabel = "salty"  # 鹹:salty 小吃:snack
+#-------------------------------------------------------------#
+# Switch
+SAVE_REC = True  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
+SAVE_EXCEL = False  # 是否儲存特徵點到output.xlsx
+PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = False  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
+#-------------------------------------------------------------#
+# Input argument
+signLanguageLabel = "snack"  # 鹹:salty 小吃:snack
+dirPath = r'C:\Users\User\Desktop\snack'  # Input video的資料夾路徑
+#-------------------------------------------------------------#
+
 # my_answer = list()
 my_answer = dict()
 height = 0
@@ -24,10 +34,9 @@ Recording = False
 # catch keypoints:
 my_keypoints_vectors = list()
 
-# 指定要查詢的路徑
-dirPath = r'C:\Users\EdmundROG\Desktop\openpose\build\examples\tutorial_api_python\media1\salt'
+
 # 列出指定路徑底下所有檔案(包含資料夾)
-allFileList = os.listdir(dirPath)
+allFileList = os.listdir(dirPath)  # allFileList: 為所有input影片檔案名稱
 
 
 def computeDistance(p1, p2):
@@ -81,8 +90,8 @@ def write_xlsx(file_name, all_data):
     wb.close()
 
 
-def compute_vector(point1, point2):
-    return [point2[0] - point1[0], point2[1] - point1[1]]
+# def compute_vector(point1, point2):
+#     return [point2[0] - point1[0], point2[1] - point1[1]]
 
 
 def rescale_frame(frame, percent):
@@ -230,8 +239,8 @@ def process_image(img, frame_num, opWrapper):
         my_answer[frame_num] = img
         cv2.putText(img, "REC", (10, 40), cv2.FONT_HERSHEY_SIMPLEX,
                     1, (0, 0, 255), 3, cv2.LINE_AA)
-
-    cv2.imshow("preview", img)
+    if PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT:
+        cv2.imshow("preview", img)
 
 
 def work():
@@ -278,8 +287,18 @@ def work():
     opWrapper.start()
 
     # Process video
+    # 新增放output影片的資料夾
+    if SAVE_REC:
+        try:
+            os.mkdir("output_sample_videos")
+        except:
+            print("已經有output_sample_videos資料夾了")
+
     # cap = cv2.VideoCapture(args[0].video)
+    file_counter = 1
     for my_file in allFileList:
+        print(f"video: {file_counter} / {len(allFileList)}")
+        file_counter += 1
         my_answer = dict()
         my_keypoints_vectors = list()
         cap = cv2.VideoCapture(dirPath + '\\' + my_file)
@@ -287,8 +306,10 @@ def work():
         frame_num = -1
         width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-        writer = cv2.VideoWriter(
-            '.\samplevideo.avi', cv2.VideoWriter_fourcc(*'XVID'), 10.0, (int(width), int(height)))
+
+        if SAVE_REC:
+            writer = cv2.VideoWriter(
+                f'.\output_sample_videos\output_{my_file[:-4]}.avi', cv2.VideoWriter_fourcc(*'XVID'), 10.0, (int(width), int(height)))
 
         input_video_frame_num = 1
         input_video_total_frame_num = cap.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -323,17 +344,19 @@ def work():
         # for i in range(len(threads)):
         # threads[i].join()
 
-        for key in my_answer:
-            if key == 0:
-                # 動態調整手部偵測範圍的第一張不算
-                continue
-            writer.write(my_answer[key])
-            # cv2.imshow("OpenPose 1.7.0 - Tutorial Python API", my_answer[key])
-            # time.sleep(1)
-            # cv2.waitKey(100)
-
-        write_xlsx("output.xlsx", my_keypoints_vectors)
-        writer.release()
+        if SAVE_REC:
+            for key in my_answer:
+                if key == 0:
+                    # 動態調整手部偵測範圍的第一張不算
+                    continue
+                writer.write(my_answer[key])
+                # cv2.imshow("OpenPose 1.7.0 - Tutorial Python API", my_answer[key])
+                # time.sleep(1)
+                # cv2.waitKey(100)
+        if SAVE_EXCEL:
+            write_xlsx("output.xlsx", my_keypoints_vectors)
+        if SAVE_REC:
+            writer.release()
 
 
 # <Main>
