@@ -13,16 +13,16 @@ import numpy as np
 #-------------------------------------------------------------#
 # Switch
 SAVE_REC = True  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
-SAVE_EXCEL = False  # 是否儲存特徵點到output.xlsx
+SAVE_EXCEL = True  # 是否儲存特徵點到output.xlsx
 PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = False  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
 #-------------------------------------------------------------#
 # Input argument
 signLanguageLabel = "snack"  # 鹹:salty 小吃:snack
-dirPath = r'C:\Users\User\Desktop\snack'  # Input video的資料夾路徑
+# Input video的資料夾路徑
+dirPath = r'C:\Users\yumi\Desktop\openpose\build\examples\tutorial_api_python\test_video'
 #-------------------------------------------------------------#
 
-# my_answer = list()
-my_answer = dict()
+my_answer = list()
 height = 0
 width = 0
 l_wrist = [200, 200, 200]
@@ -207,13 +207,32 @@ def process_image(img, frame_num, opWrapper):
         # *     my_keypoints_vectors.append(compute_vector(
         # *         catch_righthandKeypoints[p1], catch_righthandKeypoints[p2]))
         # * my_keypoints_vectors.append(my_keypoints_vector)
-        if(Recording == True):
-            for point in catch_poseKeypoints:
-                my_keypoints_vectors.append(point)
-            for point in catch_lefthandKeypoints:
-                my_keypoints_vectors.append(point)
-            for point in catch_righthandKeypoints:
-                my_keypoints_vectors.append(point)
+
+        # if(Recording == True):
+        #     for point in catch_poseKeypoints:
+        #         my_keypoints_vectors.append(point)
+        #     for point in catch_lefthandKeypoints:
+        #         my_keypoints_vectors.append(point)
+        #     for point in catch_righthandKeypoints:
+        #         my_keypoints_vectors.append(point)
+
+        if(Recording == True):  # normalize points :)
+            normalize_distance = computeDistance(
+                catch_poseKeypoints[2], catch_poseKeypoints[5])
+            if(normalize_distance != 0):
+                normalize_original_point = catch_poseKeypoints[1]
+                for point in catch_poseKeypoints:
+                    normalize_point = (
+                        point - normalize_original_point)/normalize_distance
+                    my_keypoints_vectors.append(normalize_point)
+                for point in catch_lefthandKeypoints:
+                    normalize_point = (
+                        point - normalize_original_point)/normalize_distance
+                    my_keypoints_vectors.append(normalize_point)
+                for point in catch_righthandKeypoints:
+                    normalize_point = (
+                        point - normalize_original_point)/normalize_distance
+                    my_keypoints_vectors.append(normalize_point)
 
         # 為了動態更新手部辨識範圍
         l_wrist = catch_poseKeypoints[4]
@@ -236,7 +255,7 @@ def process_image(img, frame_num, opWrapper):
         cv2.line(img, (0, int(catch_poseKeypoints[1][1]+rec_hori)),
                  (int(width), int(catch_poseKeypoints[1][1]+rec_hori)), (255, 0, 0), 2)
     if(Recording == True):
-        my_answer[frame_num] = img
+        my_answer.append(img)
         cv2.putText(img, "REC", (10, 40), cv2.FONT_HERSHEY_SIMPLEX,
                     1, (0, 0, 255), 3, cv2.LINE_AA)
     if PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT:
@@ -299,7 +318,7 @@ def work():
     for my_file in allFileList:
         print(f"video: {file_counter} / {len(allFileList)}")
         file_counter += 1
-        my_answer = dict()
+        my_answer = list()
         my_keypoints_vectors = list()
         cap = cv2.VideoCapture(dirPath + '\\' + my_file)
 
@@ -345,11 +364,8 @@ def work():
         # threads[i].join()
 
         if SAVE_REC:
-            for key in my_answer:
-                if key == 0:
-                    # 動態調整手部偵測範圍的第一張不算
-                    continue
-                writer.write(my_answer[key])
+            for index in range(len(my_answer)):
+                writer.write(my_answer[index])
                 # cv2.imshow("OpenPose 1.7.0 - Tutorial Python API", my_answer[key])
                 # time.sleep(1)
                 # cv2.waitKey(100)
