@@ -1,4 +1,4 @@
-# 2022/03/22
+# 2022/05/22
 # myself_webcam
 
 # import threading
@@ -12,14 +12,14 @@ import numpy as np
 
 #-------------------------------------------------------------#
 # Switch
-SAVE_REC = True  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
+SAVE_REC = False  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
 SAVE_EXCEL = True  # 是否儲存特徵點到output.xlsx
-PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = False  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
+PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
 #-------------------------------------------------------------#
 # Input argument
 signLanguageLabel = "snack"  # 鹹:salty 小吃:snack
 # Input video的資料夾路徑
-dirPath = r'C:\Users\yumi\Desktop\openpose\build\examples\tutorial_api_python\test_video'
+dirPath = r'C:\Users\EdmundROG\Desktop\openpose\build\examples\tutorial_api_python\media1\snack'
 #-------------------------------------------------------------#
 
 my_answer = list()
@@ -148,9 +148,26 @@ def process_image(img, frame_num, opWrapper):
         catch_poseKeypoints = datum.poseKeypoints.squeeze()
         catch_lefthandKeypoints = datum.handKeypoints[0].squeeze()
         catch_righthandKeypoints = datum.handKeypoints[1].squeeze()
-
+        # print(datum.poseKeypoints)
         if(catch_poseKeypoints.shape != (25, 3)):
             return
+        # print(catch_lefthandKeypoints)
+        # print(catch_righthandKeypoints)
+
+        for p in catch_lefthandKeypoints:
+            if p[2] < 0.4:
+                p[0] = 0.0
+                p[1] = 0.0
+                p[2] = 0.0
+                # print("low score")
+        for p in catch_righthandKeypoints:
+            if p[2] < 0.4:
+                p[0] = 0.0
+                p[1] = 0.0
+                p[2] = 0.0
+                # print("low score")
+        print(catch_lefthandKeypoints)
+        print(catch_righthandKeypoints)
         # print(catch_poseKeypoints.shape)
         # if (int(catch_poseKeypoints[7][1]-catch_poseKeypoints[1][1]) > 0 and int(catch_poseKeypoints[4][1]-catch_poseKeypoints[1][1]) > 0) or (catch_poseKeypoints[7][1] == 0 and catch_poseKeypoints[4][1] == 0):
         #     Recording = False
@@ -215,8 +232,12 @@ def process_image(img, frame_num, opWrapper):
         #         my_keypoints_vectors.append(point)
         #     for point in catch_righthandKeypoints:
         #         my_keypoints_vectors.append(point)
-
-        if(Recording == True):  # normalize points :)
+        catch_error = False
+        if(catch_lefthandKeypoints == 0).all() and (catch_righthandKeypoints == 0).all():
+            print("return success")
+            catch_error = True
+        if(Recording == True and (not catch_error)):  # normalize points :)
+            print("normalizing")
             normalize_distance = computeDistance(
                 catch_poseKeypoints[2], catch_poseKeypoints[5])
             if(normalize_distance != 0):
@@ -348,7 +369,7 @@ def work():
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
                 # cv2.waitKey(50)
-                input_video_frame_num += 10
+                input_video_frame_num += 1
             except Exception as e:
                 print(e)
                 break
