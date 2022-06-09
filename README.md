@@ -19,11 +19,40 @@
 
 ## Code files
 - edit_excel.py
+  > input: 沒有在尾部填充0的xlsx檔案
+  > output: 在尾部填充0的xlsx檔案
+  > > 備註: input跟output的檔案名稱要自己設定
+
 - getMin_VideoFrame.py
+  > input: 影片資料夾
+  > output: 該資料夾的所有影片中最少的禎數
+  > > 備註: 原本是openpose要算"幾張取一張"，但後面沒有用
+
 - GUI.py
+  > 系統UI介面
+
 - is_correct_data_row.py
+  > input: 沒有在尾部填充0的xlsx檔案
+  > output: print出「特徵無法被134整除的是哪幾個row」
+
 - myself_video.py
+  > 很久以前的檔案，應該沒用
+
 - myself_webcame.py
+  > 很久以前的檔案，應該沒用
+
 - test.py
+  > 測試用
+
+- timeseries_classification_from_lstm.py
+  > LSTM 神經網路架構 + grad-cam
+
 - timeseries_classification_from_scratch.py
+  > Convolution 神經網路架構 + grad-cam
+
+- timeseries_transformer_classification.py
+  > Transformer 神經網路架構 + grad-cam
+
 - vectorGenerator.py
+  > openpose 擷取標準化 keypoints
+
