@@ -19,7 +19,7 @@ PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨�
 # Input argument
 signLanguageLabel = "salty"  # 鹹:salty 小吃:snack
 # Input video的資料夾路徑
-dirPath = r'C:\Users\User\Desktop\openpose1\build\examples\salty'
+dirPath = r'..\media\salty'
 #-------------------------------------------------------------#
 
 my_answer = list()
