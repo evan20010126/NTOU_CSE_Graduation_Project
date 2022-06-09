@@ -29,6 +29,7 @@
   > > 備註: 原本是openpose要算"幾張取一張"，但後面沒有用
 
 - GUI.py
+  > 系統UI介面
 
 - is_correct_data_row.py
   > input: 沒有在尾部填充0的xlsx檔案
