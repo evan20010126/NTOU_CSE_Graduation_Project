@@ -20,8 +20,12 @@ signLanguageLabel = "salty"  # 鹹:salty 小吃:snack
 dirPath = r'..\media\test'
 #-------------------------------------------------------------#
 
+all_keypoints = list()
+previous_hand = ""
 
 # 將特徵點存入excel
+
+
 def write_xlsx(file_name, all_data):
     global signLanguageLabel
     # wksheet = wkbook["工作表1"]
@@ -94,14 +98,12 @@ def write_xlsx(file_name, all_data):
 #             # multiply y by image height (原本有*image_shape[0])
 #             all_keypoints.append(Landmark.landmark[i].y)
 #     return
-all_keypoints = []
-exist_leftHand = False
-exist_rightHand = False
+first = True
+miss_point = False
 
 
 def get_label_and_points(index, hand, results):
-    global exist_leftHand
-    global exist_rightHand
+    global previous_hand, first
     global all_keypoints
     for idx, classification in enumerate(results.multi_handedness):
         if classification.classification[0].index == index:
@@ -117,31 +119,34 @@ def get_label_and_points(index, hand, results):
             #              hand.landmark[mp_hands.HandLandmark.WRIST].y)),
             #     [640, 480]).astype(int))
             # print("label: ", label)
+            if first:
+                first = False
+                previous_hand = label
+                if label == "Left":
+                    for i in range(21):
+                        all_keypoints.append(hand.landmark[i].x)
+                        all_keypoints.append(hand.landmark[i].y)
+                elif label == "Right":
+                    for i in range(21):
+                        all_keypoints.append(0)
+                    for i in range(21):
+                        all_keypoints.append(hand.landmark[i].x)
+                        all_keypoints.append(hand.landmark[i].y)
+            else:
+                if previous_hand == label:
+                    for i in range(21):
+                        all_keypoints.append(0)
+                    for i in range(21):
+                        all_keypoints.append(hand.landmark[i].x)
+                        all_keypoints.append(hand.landmark[i].y)
+                else:
+                    for i in range(21):
+                        all_keypoints.append(hand.landmark[i].x)
+                        all_keypoints.append(hand.landmark[i].y)
 
-            if label == "Left":
-                exist_leftHand = True
-            if label == "Right":
-                exist_rightHand = True
-            if(exist_leftHand):
-                for i in range(21):
-                    all_keypoints.append(hand.landmark[i].x)
-                    all_keypoints.append(hand.landmark[i].y)
-            elif (not exist_leftHand) and exist_rightHand:
-                for i in range(21):
-                    all_keypoints.append(0)
-                for i in range(21):
-                    all_keypoints.append(hand.landmark[i].x)
-                    all_keypoints.append(hand.landmark[i].y)
-                exist_leftHand = False
-                exist_rightHand = False
-            elif exist_leftHand and exist_rightHand:
-                for i in range(21):
-                    all_keypoints.append(hand.landmark[i].x)
-                    all_keypoints.append(hand.landmark[i].y)
-                exist_leftHand = False
-                exist_rightHand = False
-
-            # print("hand.landmark.size: ", len(hand.landmark)) # = 21
+                previous_hand = label
+        # print(all_keypoints)
+        # print("hand.landmark.size: ", len(hand.landmark)) # = 21
 
     return
 
@@ -187,11 +192,11 @@ for my_file in allFileList:
                 results_pose.pose_landmarks,
                 mp_pose.POSE_CONNECTIONS,
                 landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
-            print("pose:")
-            # for i in range(23):  # 上半身的點(0~22)
-            #     all_keypoints.append(results_pose.pose_landmarks[i].x)
-            #     all_keypoints.append(results_pose.pose_landmarks[i].y)
-            print(results_pose.pose_landmarks)
+            # print("pose:")
+            for i in range(23):  # 上半身的點(0~22)
+                all_keypoints.append(results_pose.pose_landmarks.landmark[i].x)
+                all_keypoints.append(results_pose.pose_landmarks.landmark[i].y)
+            # print(results_pose.pose_landmarks.landmark[0].x)
 
             if results.multi_hand_landmarks:
                 # num代表有抓到幾隻手
@@ -202,8 +207,8 @@ for my_file in allFileList:
                         mp_hands.HAND_CONNECTIONS,
                         mp_drawing_styles.get_default_hand_landmarks_style(),
                         mp_drawing_styles.get_default_hand_connections_style())
-                    if get_label_and_points(num, hand_landmarks, results):
-                        get_label_and_points(num, hand_landmarks, results)
+                    get_label_and_points(num, hand_landmarks, results)
+                    # print(all_keypoints)
             # print("hands:")
             # print(results.multi_handedness)
             # if (results.multi_handedness != None):
@@ -215,5 +220,6 @@ for my_file in allFileList:
             if cv2.waitKey(5) & 0xFF == 27:
                 break_processing = True
                 break
-    print(all_keypoints)
     cap.release()
+
+print(all_keypoints)
