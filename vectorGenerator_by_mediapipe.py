@@ -1,3 +1,4 @@
+from glob import glob
 import cv2
 import mediapipe as mp
 import os
@@ -16,7 +17,7 @@ PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨�
 # Input argument
 signLanguageLabel = "salty"  # 鹹:salty 小吃:snack
 # Input video的資料夾路徑
-dirPath = r'..\media\salty'
+dirPath = r'..\media\test'
 #-------------------------------------------------------------#
 
 
@@ -70,9 +71,6 @@ def write_xlsx(file_name, all_data):
 # get landmarks
 
 
-all_keypoints = []
-
-
 # def get_coordinates(Landmark, mode):
 #     """
 #     Get bounding box coordinates for a hand landmark.
@@ -96,29 +94,56 @@ all_keypoints = []
 #             # multiply y by image height (原本有*image_shape[0])
 #             all_keypoints.append(Landmark.landmark[i].y)
 #     return
+all_keypoints = []
 exist_leftHand = False
 exist_rightHand = False
 
 
-def get_label(index, hand, results):
-    output = None
+def get_label_and_points(index, hand, results):
+    global exist_leftHand
+    global exist_rightHand
+    global all_keypoints
     for idx, classification in enumerate(results.multi_handedness):
         if classification.classification[0].index == index:
 
             # Process results
             label = classification.classification[0].label
             score = classification.classification[0].score
-            text = '{} {}'.format(label, round(score, 2))
+            # text = '{} {}'.format(label, round(score, 2))
 
             # Extract Coordinates
-            coords = tuple(np.multiply(
-                np.array((hand.landmark[mp_hands.HandLandmark.WRIST].x,
-                         hand.landmark[mp_hands.HandLandmark.WRIST].y)),
-                [640, 480]).astype(int))
+            # coords = tuple(np.multiply(
+            #     np.array((hand.landmark[mp_hands.HandLandmark.WRIST].x,
+            #              hand.landmark[mp_hands.HandLandmark.WRIST].y)),
+            #     [640, 480]).astype(int))
+            # print("label: ", label)
 
-            output = text, coords
+            if label == "Left":
+                exist_leftHand = True
+            if label == "Right":
+                exist_rightHand = True
+            if(exist_leftHand):
+                for i in range(21):
+                    all_keypoints.append(hand.landmark[i].x)
+                    all_keypoints.append(hand.landmark[i].y)
+            elif (not exist_leftHand) and exist_rightHand:
+                for i in range(21):
+                    all_keypoints.append(0)
+                for i in range(21):
+                    all_keypoints.append(hand.landmark[i].x)
+                    all_keypoints.append(hand.landmark[i].y)
+                exist_leftHand = False
+                exist_rightHand = False
+            elif exist_leftHand and exist_rightHand:
+                for i in range(21):
+                    all_keypoints.append(hand.landmark[i].x)
+                    all_keypoints.append(hand.landmark[i].y)
+                exist_leftHand = False
+                exist_rightHand = False
 
-    return output
+            # print("hand.landmark.size: ", len(hand.landmark)) # = 21
+
+    return
 
 
 # <Main>
@@ -156,20 +181,6 @@ for my_file in allFileList:
             # Draw the hand annotations on the image.
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            if results.multi_hand_landmarks:
-                for hand_landmarks in results.multi_hand_landmarks:
-                    mp_drawing.draw_landmarks(
-                        image,
-                        hand_landmarks,
-                        mp_hands.HAND_CONNECTIONS,
-                        mp_drawing_styles.get_default_hand_landmarks_style(),
-                        mp_drawing_styles.get_default_hand_connections_style())
-                    # get_coordinates(hand_landmarks)
-            print("hands:")
-            print(results.multi_handedness)
-            if (results.multi_handedness != None):
-                break_processing = True
-                break
 
             mp_drawing.draw_landmarks(
                 image,
@@ -177,7 +188,28 @@ for my_file in allFileList:
                 mp_pose.POSE_CONNECTIONS,
                 landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
             print("pose:")
+            # for i in range(23):  # 上半身的點(0~22)
+            #     all_keypoints.append(results_pose.pose_landmarks[i].x)
+            #     all_keypoints.append(results_pose.pose_landmarks[i].y)
             print(results_pose.pose_landmarks)
+
+            if results.multi_hand_landmarks:
+                # num代表有抓到幾隻手
+                for num, hand_landmarks in enumerate(results.multi_hand_landmarks):
+                    mp_drawing.draw_landmarks(
+                        image,
+                        hand_landmarks,
+                        mp_hands.HAND_CONNECTIONS,
+                        mp_drawing_styles.get_default_hand_landmarks_style(),
+                        mp_drawing_styles.get_default_hand_connections_style())
+                    if get_label_and_points(num, hand_landmarks, results):
+                        get_label_and_points(num, hand_landmarks, results)
+            # print("hands:")
+            # print(results.multi_handedness)
+            # if (results.multi_handedness != None):
+            #     break_processing = True
+            #     break
+
             # Flip the image horizontally for a selfie-view display.
             cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
             if cv2.waitKey(5) & 0xFF == 27:
