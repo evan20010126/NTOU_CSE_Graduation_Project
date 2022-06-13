@@ -1,13 +1,9 @@
-from glob import glob
 import cv2
 import mediapipe as mp
 import os
 import openpyxl
 import numpy as np
-mp_drawing = mp.solutions.drawing_utils
-mp_drawing_styles = mp.solutions.drawing_styles
-mp_hands = mp.solutions.hands
-mp_pose = mp.solutions.pose
+
 #-------------------------------------------------------------#
 # Switch
 SAVE_REC = False  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
@@ -17,9 +13,13 @@ PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨�
 # Input argument
 signLanguageLabel = "salty"  # 鹹:salty 小吃:snack
 # Input video的資料夾路徑
-dirPath = r'..\media\test'
+dirPath = r'..\media\salty'
 #-------------------------------------------------------------#
 
+mp_drawing = mp.solutions.drawing_utils
+mp_drawing_styles = mp.solutions.drawing_styles
+mp_hands = mp.solutions.hands
+mp_pose = mp.solutions.pose
 all_keypoints = list()
 previous_hand = ""
 
@@ -160,7 +160,7 @@ break_processing = False
 for my_file in allFileList:
     if break_processing:
         break
-    cap = cv2.VideoCapture(dirPath + '\\' + my_file)
+    cap = cv2.VideoCapture(f"{dirPath}\\{my_file}")
     print(f"video: {file_counter} / {len(allFileList)}")
     file_counter += 1
     with mp_hands.Hands(
@@ -193,10 +193,21 @@ for my_file in allFileList:
                 mp_pose.POSE_CONNECTIONS,
                 landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
             # print("pose:")
-            for i in range(23):  # 上半身的點(0~22)
-                all_keypoints.append(results_pose.pose_landmarks.landmark[i].x)
-                all_keypoints.append(results_pose.pose_landmarks.landmark[i].y)
-            # print(results_pose.pose_landmarks.landmark[0].x)
+            if results_pose.pose_landmarks:  # 當有偵測到pose
+                for i in range(23):  # 上半身的點(0~22)
+                    print(f"pose{i}")
+                    print(results_pose.pose_landmarks.landmark[i])
+                    if (results_pose.pose_landmarks.visibility[i] >= 0.5):
+                        # ! 先隨便設，信心度超過0.5才填
+                        all_keypoints.append(
+                            results_pose.pose_landmarks.landmark[i].x)
+                        all_keypoints.append(
+                            results_pose.pose_landmarks.landmark[i].y)
+                    else:
+                        #! 信心度太低就填0
+                        all_keypoints.append(0)
+                        all_keypoints.append(0)
+                # print(results_pose.pose_landmarks.landmark[0].x)
 
             if results.multi_hand_landmarks:
                 # num代表有抓到幾隻手
