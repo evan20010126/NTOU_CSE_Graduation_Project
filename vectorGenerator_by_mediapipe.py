@@ -13,7 +13,7 @@ PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨�
 # Input argument
 signLanguageLabel = "salty"  # 鹹:salty 小吃:snack
 # Input video的資料夾路徑
-dirPath = r'..\media\test'
+dirPath = r'..\media\salty'
 #-------------------------------------------------------------#
 
 mp_drawing = mp.solutions.drawing_utils
@@ -209,6 +209,9 @@ for my_file in allFileList:
                         all_keypoints.append(0)
                         all_keypoints.append(0)
                 # print(results_pose.pose_landmarks.landmark[0].x)
+            else:
+                for i in range(46):  # (23*2) = 46
+                    all_keypoints.append(0)
 
             if results.multi_hand_landmarks:
                 # num代表有抓到幾隻手
@@ -221,6 +224,9 @@ for my_file in allFileList:
                         mp_drawing_styles.get_default_hand_connections_style())
                     get_label_and_points(num, hand_landmarks, results)
                     # print(all_keypoints)
+            else:
+                for i in range(84):
+                    all_keypoints.append(0)
             # print("hands:")
             # print(results.multi_handedness)
             # if (results.multi_handedness != None):
@@ -235,3 +241,7 @@ for my_file in allFileList:
     cap.release()
 
 print(all_keypoints)
+
+f = open("te", mode="w")
+f.write(all_keypoints.__str__())
+f.close()
