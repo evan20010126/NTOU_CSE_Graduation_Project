@@ -13,7 +13,7 @@ PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨�
 # Input argument
 signLanguageLabel = "salty"  # 鹹:salty 小吃:snack
 # Input video的資料夾路徑
-dirPath = r'..\media\salty'
+dirPath = r'..\media\test'
 #-------------------------------------------------------------#
 
 mp_drawing = mp.solutions.drawing_utils
@@ -127,14 +127,15 @@ def get_label_and_points(index, hand, results):
                         all_keypoints.append(hand.landmark[i].x)
                         all_keypoints.append(hand.landmark[i].y)
                 elif label == "Right":
-                    for i in range(21):
+                    for i in range(42):
                         all_keypoints.append(0)
                     for i in range(21):
                         all_keypoints.append(hand.landmark[i].x)
                         all_keypoints.append(hand.landmark[i].y)
             else:
                 if previous_hand == label:
-                    for i in range(21):
+                    for i in range(42):
+                        print("add 0")
                         all_keypoints.append(0)
                     for i in range(21):
                         all_keypoints.append(hand.landmark[i].x)
@@ -197,7 +198,7 @@ for my_file in allFileList:
                 for i in range(23):  # 上半身的點(0~22)
                     print(f"pose{i}")
                     print(results_pose.pose_landmarks.landmark[i])
-                    if (results_pose.pose_landmarks.visibility[i] >= 0.5):
+                    if (results_pose.pose_landmarks.landmark[i].visibility >= 0.5):
                         # ! 先隨便設，信心度超過0.5才填
                         all_keypoints.append(
                             results_pose.pose_landmarks.landmark[i].x)
