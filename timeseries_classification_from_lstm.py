@@ -36,8 +36,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
-sign_language_df = pd.read_excel(
-    "Summary_stuff_zero_3st.xlsx")
+sign_language_df = pd.read_csv(
+    "Summary_stuff_zero_5st.csv")
 sign_language_df
 
 # myself
@@ -47,17 +47,17 @@ hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
                  (0, 13), (13, 14), (14, 15), (15, 16),
                  (0, 17), (17, 18), (18, 19), (19, 20)]  # 20個向量
 
-pose_sequence = [(0, 1),
-                 (1, 2), (2, 3), (3, 4),
-                 (1, 5), (5, 6), (6, 7)]  # 7個向量
+pose_sequence = [(0, 12), (0, 11),
+                 (12, 14), (14, 16),
+                 (11, 13), (13, 15), ]  # 7個向量->6個向量
 
-point_number = hand_sequence.__len__()*2 + pose_sequence.__len__()
+point_number = len(hand_sequence*2) + len(pose_sequence)
 
 
 def split_target(df):
     data = df.to_numpy()
     new_data = np.array(list())
-    data_row_length = 0
+    row_length = 0
 
     for row in data:
         temp_row = np.array(list())
@@ -67,13 +67,13 @@ def split_target(df):
         elif row[0] == "snack":
             temp_row = np.append(temp_row, [1.0, ])
 
-        # 25 21 21
+        # pose: 23個點 left/right:各21個點 23+21*2=65
         vector = row[1:]
-        vector = vector.reshape((vector.shape[0])//134, 67, 2)  # (幾偵, 點, xy)
+        vector = vector.reshape((vector.shape[0])//130, 65, 2)  # (幾偵, 點, xy)
         for img in vector:  # 迭代每一偵
-            pose_points = img[0:25]
-            left_hand_points = img[25:25+21]
-            right_hand_points = img[25+21:25+21+21]
+            pose_points = img[0:23]
+            left_hand_points = img[23:23+21]
+            right_hand_points = img[23+21:23+21+21]
 
             for p1, p2 in pose_sequence:
                 temp_row = np.append(
@@ -87,12 +87,9 @@ def split_target(df):
                 temp_row = np.append(
                     temp_row, right_hand_points[p2] - right_hand_points[p1])
         # print(temp_row.shape) # 1787
-        # if (temp_row.shape[0] == 1786):
-        #   print(temp_row)
+        row_length = temp_row.shape[0]
         new_data = np.append(new_data, temp_row)
-        data_row_length = temp_row.shape[0]
-
-    new_data = new_data.reshape(data.shape[0], data_row_length)
+    new_data = new_data.reshape(data.shape[0], row_length)
     y = new_data[:, 0]
     x = new_data[:, 1:]
     # y = data[:, 0]
