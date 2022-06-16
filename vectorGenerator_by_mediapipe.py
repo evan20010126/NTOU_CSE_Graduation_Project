@@ -4,11 +4,12 @@ import os
 import openpyxl
 import numpy as np
 from sklearn.feature_extraction import img_to_graph
-
+import csv
 #-------------------------------------------------------------#
 # Switch
 SAVE_REC = False  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
-SAVE_EXCEL = True  # 是否儲存特徵點到output.xlsx
+SAVE_EXCEL = False  # 是否儲存特徵點到output.xlsx
+SAVE_CSV = False
 PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
 #-------------------------------------------------------------#
 # Input argument
@@ -25,6 +26,18 @@ all_keypoints = None
 previous_hand = ""
 
 # 將特徵點存入excel
+
+
+def write_csv(file_name, all_data):
+    print("Writing csv...")
+    global signLanguageLabel
+
+    all_data.insert(0, signLanguageLabel)
+    with open(file_name, 'w') as file:
+        writer = csv.writer(file)
+        writer.writerow(all_data)
+
+    print("\Finish writing csv/")
 
 
 def write_xlsx(file_name, all_data):
@@ -328,9 +341,9 @@ for my_file in allFileList:
     cap.release()
     if SAVE_EXCEL:
         write_xlsx("output.xlsx", all_keypoints)
-
-print(all_keypoints)
-
+    if SAVE_CSV:
+        write_csv("output.csv", all_keypoints)
+# print(all_keypoints)
 # f = open("te", mode="w")
 # f.write(all_keypoints.__str__())
 # f.close()
