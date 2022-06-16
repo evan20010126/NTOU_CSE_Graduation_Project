@@ -66,10 +66,13 @@ from tensorflow import keras
 import numpy as np
 import pandas as pd
 
-sign_language_df = pd.read_excel(
-    "C:\\Users\\EdmundROG\\Desktop\\openpose\\build\\examples\\tutorial_api_python\\Summary_stuff_zero_3st.xlsx")
+# sign_language_df = pd.read_excel(
+#     "C:\\Users\\EdmundROG\\Desktop\\openpose\\build\\examples\\tutorial_api_python\\Summary_stuff_zero_3st.xlsx")
 # print(sign_language_df)
 
+from numpy import genfromtxt
+
+data = genfromtxt('Summary_stuff_zero_5st.csv', delimiter=',')
 # myself
 hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
                  (0, 5), (5, 6), (6, 7), (7, 8),
@@ -77,31 +80,33 @@ hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
                  (0, 13), (13, 14), (14, 15), (15, 16),
                  (0, 17), (17, 18), (18, 19), (19, 20)]  # 20個向量
 
-pose_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
-                 (1, 5), (5, 6), (6, 7)]  # 7個向量
-points_number = len(hand_sequence*2) + len(pose_sequence)
+pose_sequence = [(0, 12), (0, 11),
+                 (12, 14), (14, 16),
+                 (11, 13), (13, 15), ]  # 7個向量->6個向量
+
+point_number = len(hand_sequence*2) + len(pose_sequence)
 
 
 def split_target(df):
-    data = df.to_numpy()
-    # print(data[0][3] - data[0][1])
+    # data = df.to_numpy()
     new_data = np.array(list())
+    row_length = 0
 
     for row in data:
         temp_row = np.array(list())
 
         if row[0] == "salty":
-            temp_row = np.append(temp_row, [0.0, ])
+            temp_row = np.append(temp_row, [-1.0, ])
         elif row[0] == "snack":
             temp_row = np.append(temp_row, [1.0, ])
 
-        # 25 21 21
+        # pose: 23個點 left/right:各21個點 23+21*2=65
         vector = row[1:]
-        vector = vector.reshape((vector.shape[0])//134, 67, 2)  # (幾偵, 點, xy)
+        vector = vector.reshape((vector.shape[0])//130, 65, 2)  # (幾偵, 點, xy)
         for img in vector:  # 迭代每一偵
-            pose_points = img[0:25]
-            left_hand_points = img[25:25+21]
-            right_hand_points = img[25+21:25+21+21]
+            pose_points = img[0:23]
+            left_hand_points = img[23:23+21]
+            right_hand_points = img[23+21:23+21+21]
 
             for p1, p2 in pose_sequence:
                 temp_row = np.append(
@@ -118,7 +123,6 @@ def split_target(df):
         row_length = temp_row.shape[0]
         new_data = np.append(new_data, temp_row)
     new_data = new_data.reshape(data.shape[0], row_length)
-    # print(new_data)
     y = new_data[:, 0]
     x = new_data[:, 1:]
     # y = data[:, 0]
@@ -142,7 +146,7 @@ def split_target(df):
 #   new_df = data_df.iloc[:,:501]
 #   return new_df
 #re_sign_language_df = reduce_data(sign_language_df)
-train, test = train_test_split(sign_language_df, test_size=0.2)
+train, test = train_test_split(data, test_size=0.2)
 x_train, y_train = split_target(train)
 x_test, y_test = split_target(test)
 
@@ -150,9 +154,9 @@ x_test, y_test = split_target(test)
 # print("x_train.shape[1]: ",x_train.shape[1])
 
 x_train = x_train.flatten().reshape(
-    x_train.shape[0], (x_train.shape[1]//(points_number*2)), points_number*2)
+    x_train.shape[0], (x_train.shape[1]//(point_number*2)), point_number*2)
 x_test = x_test.flatten().reshape(
-    x_test.shape[0], (x_test.shape[1]//(points_number*2)), points_number*2)
+    x_test.shape[0], (x_test.shape[1]//(point_number*2)), point_number*2)
 
 
 print("x_train[0]:\n", x_train[0])
