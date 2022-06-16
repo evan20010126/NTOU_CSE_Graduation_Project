@@ -2,7 +2,7 @@ from asyncio.windows_events import NULL
 import openpyxl
 from openpyxl import Workbook
 
-file_name = "Summary_modify_edmund.xlsx"
+file_name = "Summary_5st.xlsx"
 wkbook = openpyxl.load_workbook(file_name)
 wksheet = wkbook["Sheet1"]
 
@@ -13,4 +13,4 @@ for i in range(2, wksheet.max_row+1):
             wksheet.cell(row=i, column=j).value = 0
             print(i, " ", j)
 
-wkbook.save("Summary_stuff_zero_4st.xlsx")
+wkbook.save("Summary_stuff_zero_5st.xlsx")
