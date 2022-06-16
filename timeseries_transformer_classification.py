@@ -89,7 +89,7 @@ point_number = len(hand_sequence*2) + len(pose_sequence)
 
 
 def split_target(df):
-    data = df.to_numpy()
+    # data = df.to_numpy()
     new_data = np.array(list())
     row_length = 0
 
@@ -155,9 +155,9 @@ x_test, y_test = split_target(test)
 # print("x_train.shape[1]: ",x_train.shape[1])
 
 x_train = x_train.flatten().reshape(
-    x_train.shape[0], (x_train.shape[1]//(points_number*2)), points_number*2)
+    x_train.shape[0], (x_train.shape[1]//(point_number*2)), point_number*2)
 x_test = x_test.flatten().reshape(
-    x_test.shape[0], (x_test.shape[1]//(points_number*2)), points_number*2)
+    x_test.shape[0], (x_test.shape[1]//(point_number*2)), point_number*2)
 
 
 print("x_train[0]:\n", x_train[0])
