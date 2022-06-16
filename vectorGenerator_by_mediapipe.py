@@ -33,7 +33,7 @@ def write_csv(file_name, all_data):
     global signLanguageLabel
 
     all_data.insert(0, signLanguageLabel)
-    with open(file_name, 'w') as file:
+    with open(file_name, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(all_data)
 
