@@ -66,13 +66,13 @@ from tensorflow import keras
 import numpy as np
 import pandas as pd
 
-# sign_language_df = pd.read_excel(
-#     "C:\\Users\\EdmundROG\\Desktop\\openpose\\build\\examples\\tutorial_api_python\\Summary_stuff_zero_3st.xlsx")
-# print(sign_language_df)
+sign_language_df = pd.read_csv(
+    "Summary_stuff_zero_5st.csv")
+print(sign_language_df)
 
-from numpy import genfromtxt
+# from numpy import genfromtxt
 
-data = genfromtxt('Summary_stuff_zero_5st.csv', delimiter=',')
+# data = genfromtxt('Summary_stuff_zero_5st.csv', delimiter=',')
 
 # myself
 hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
@@ -89,7 +89,7 @@ point_number = len(hand_sequence*2) + len(pose_sequence)
 
 
 def split_target(df):
-    # data = df.to_numpy()
+    data = df.to_numpy()
     new_data = np.array(list())
     row_length = 0
 
@@ -147,7 +147,7 @@ def split_target(df):
 #   new_df = data_df.iloc[:,:501]
 #   return new_df
 #re_sign_language_df = reduce_data(sign_language_df)
-train, test = train_test_split(data, test_size=0.2)
+train, test = train_test_split(sign_language_df, test_size=0.2)
 x_train, y_train = split_target(train)
 x_test, y_test = split_target(test)
 
@@ -286,7 +286,7 @@ model.fit(
     y_train,
     validation_split=0.2,
     epochs=200,
-    batch_size=64,  # 64
+    batch_size=32,  # 64
     callbacks=callbacks,
 )
 
@@ -355,9 +355,16 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None
 
 print(model.layers[-5].name)
 last_conv_layer_name = model.layers[-5].name
-input_array = x_test.copy()[7][np.newaxis, :, :]
-print(input_array.shape)
-heatmap = make_gradcam_heatmap(input_array, model, last_conv_layer_name)
-# print(heatmap)
+
+img_array = x_test[1][tf.newaxis, ...]
+
+heatmap = make_gradcam_heatmap(
+    img_array, model, last_conv_layer_name, pred_index=0)
+print(heatmap.shape)  # 19偵
+plt.matshow(heatmap)
+plt.show()
+heatmap = make_gradcam_heatmap(
+    img_array, model, last_conv_layer_name, pred_index=1)
+print(heatmap.shape)  # 19偵
 plt.matshow(heatmap)
 plt.show()
