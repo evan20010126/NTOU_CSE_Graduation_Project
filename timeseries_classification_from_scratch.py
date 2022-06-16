@@ -37,8 +37,16 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
 sign_language_df = pd.read_csv(
-    "Summary_stuff_zero_5st.csv")
-sign_language_df
+    "Summary_stuff_zero_5st.csv", header=None)
+# print(sign_language_df)
+
+# sign_language_df = sign_language_df[:][:-2]
+print(sign_language_df)
+# for i in range(308):
+#     if(sign_language_df.iat[i, 24311] != 0.0):
+#         print("\033[92m here no zero")
+#         print("\033[0m")
+
 
 # myself
 hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
