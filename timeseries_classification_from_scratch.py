@@ -36,8 +36,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
-sign_language_df = pd.read_excel(
-    "Summary_stuff_zero_5st.xlsx")
+sign_language_df = pd.read_csv(
+    "Summary_stuff_zero_5st.csv")
 sign_language_df
 
 # myself
