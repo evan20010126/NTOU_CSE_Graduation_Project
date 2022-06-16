@@ -193,6 +193,7 @@ for my_file in allFileList:
     cap = cv2.VideoCapture(f"{dirPath}\\{my_file}")
     # cap = cv2.VideoCapture(0)
     print(f"video: {file_counter} / {len(allFileList)}")
+    print(f"processing file: {my_file}")
     all_keypoints = list()
     file_counter += 1
     with mp_hands.Hands(
@@ -292,12 +293,12 @@ for my_file in allFileList:
             if (frame_keypoints_pose[16][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[16][1] != 0) or (frame_keypoints_pose[15][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[15][1] != 0):
                 Recording = True
 
-            print(f"Recording: {Recording}")
-            print(f"catch_error: {catch_error}")
+            # print(f"Recording: {Recording}")
+            # print(f"catch_error: {catch_error}")
 
             if Recording and not catch_error:
                 # <Normalize>
-                print("enter")
+                # print("enter")
                 for i in range(23):
                     all_keypoints.append(
                         (frame_keypoints_pose[i][0] - normalize_original_point[0])/normalize_distance)
