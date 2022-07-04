@@ -153,8 +153,8 @@ x_test, y_test = split_target(test)
 
 
 # .
-x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
-x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
+# x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
+# x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
 y_train[y_train == -1] = 0
 y_test[y_test == -1] = 0
 # print("len(x_train): ",len(x_train))
@@ -287,9 +287,9 @@ model = build_model(
 )
 
 model.compile(
-    # loss='sparse_categorical_crossentropy',
+    loss='sparse_categorical_crossentropy',
     # loss='poisson',
-    loss="mean_squared_error",
+    # loss="mean_squared_error",
 
     optimizer=keras.optimizers.Adam(learning_rate=1e-4),
     metrics=["sparse_categorical_accuracy"],  # "mae"
