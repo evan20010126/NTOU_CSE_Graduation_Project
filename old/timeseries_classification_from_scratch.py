@@ -37,7 +37,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
 sign_language_df = pd.read_csv(
-    "Summary_stuff_zero_5st.csv", header=None)
+    "Summary_stuff_zero_6st.csv", header=None)
 # print(sign_language_df)
 
 # sign_language_df = sign_language_df[:][:-2]
