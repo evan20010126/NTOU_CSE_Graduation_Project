@@ -1,6 +1,6 @@
 import pandas as pd
 
-summary_file_version = 5
+summary_file_version = 6
 
 # chunk_list = list()
 # data_chunks = pd.read_csv(
@@ -34,7 +34,7 @@ with open(csv_file, 'r') as temp_f:
             largest_column_count = column_count
 temp_f.close()
 
-# print(largest_column_count)
+print(largest_column_count)
 
 column_names = [i for i in range(0, largest_column_count)]
 
@@ -44,4 +44,5 @@ data = pd.read_csv(csv_file, delimiter=",",
                    header=None, encoding='utf8', names=column_names, engine='python')
 
 data = data.fillna(0.0)
-data.to_csv('Summary_stuff_zero_5st.csv', index=False, header=False)
+data.to_csv(
+    f'Summary_stuff_zero_{summary_file_version}st.csv', index=False, header=False)

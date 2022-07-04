@@ -55,7 +55,6 @@ def preprocess():
     # data = pd.read_csv(csv_file, delimiter=",",
     #                 header=None, encoding='utf8', names=column_names, engine='python')
 
-
     # data = data.fillna(0.0)
     # data.to_csv('Summary_stuff_zero_5st.csv', index=False, header=False)
 # preprocess()
