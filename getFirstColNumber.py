@@ -2,7 +2,7 @@ import pandas as pd
 
 
 largest_column_count = 0
-csv_file = 'Summary_stuff_zero_5st.csv'  # 最新的訓練資料檔
+csv_file = 'webcam_stuff_zero.csv'  # 最新的訓練資料檔
 with open(csv_file, 'r') as temp_f:
     lines = temp_f.readlines()
     for l in lines:
