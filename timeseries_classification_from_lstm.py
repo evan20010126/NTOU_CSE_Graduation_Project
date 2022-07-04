@@ -415,16 +415,3 @@ heatmap = make_gradcam_heatmap(
 print(heatmap.shape)  # 19偵
 plt.matshow(heatmap)
 plt.show()
-
-img_array = x_test[1][tf.newaxis, ...]
-
-heatmap = make_gradcam_heatmap(
-    img_array, model, last_conv_layer_name, pred_index=0)
-print(heatmap.shape)  # 19偵
-plt.matshow(heatmap)
-plt.show()
-heatmap = make_gradcam_heatmap(
-    img_array, model, last_conv_layer_name, pred_index=1)
-print(heatmap.shape)  # 19偵
-plt.matshow(heatmap)
-plt.show()
