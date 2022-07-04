@@ -325,7 +325,7 @@ history = model.fit(
     validation_split=0.2,
     verbose=1,
 )
-
+model.save('Lstm_model.h5')
 """## Evaluate model on test data"""
 
 model = keras.models.load_model("best_model.h5")
