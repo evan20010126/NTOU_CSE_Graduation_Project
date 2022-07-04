@@ -371,15 +371,23 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
                 # <Normalize>
                 # print("enter")
                 for i in range(23):
-                    all_keypoints.append(
-                        (frame_keypoints_pose[i][0] - normalize_original_point[0])/normalize_distance)
-                    all_keypoints.append(
-                        (frame_keypoints_pose[i][1] - normalize_original_point[1])/normalize_distance)
+                    if(frame_keypoints_pose[i][0] == 0 and frame_keypoints_pose[i][1] == 0):
+                        all_keypoints.append(0)
+                        all_keypoints.append(0)
+                    else:
+                        all_keypoints.append(
+                            (frame_keypoints_pose[i][0] - normalize_original_point[0])/normalize_distance)
+                        all_keypoints.append(
+                            (frame_keypoints_pose[i][1] - normalize_original_point[1])/normalize_distance)
                 for i in range(42):
-                    all_keypoints.append(
-                        (frame_keypoints_hands[i][0] - normalize_original_point[0])/normalize_distance)
-                    all_keypoints.append(
-                        (frame_keypoints_hands[i][1] - normalize_original_point[1])/normalize_distance)
+                    if(frame_keypoints_hands[i][0] == 0 and frame_keypoints_hands[i][1] == 0):
+                        all_keypoints.append(0)
+                        all_keypoints.append(0)
+                    else:
+                        all_keypoints.append(
+                            (frame_keypoints_hands[i][0] - normalize_original_point[0])/normalize_distance)
+                        all_keypoints.append(
+                            (frame_keypoints_hands[i][1] - normalize_original_point[1])/normalize_distance)
                 cv2.putText(image, "REC", (10, 40), cv2.FONT_HERSHEY_SIMPLEX,
                             1, (0, 0, 255), 3, cv2.LINE_AA)
                 writer.write(image)
