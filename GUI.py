@@ -7,6 +7,8 @@ from functools import partial
 import random
 import tkinter.font as tkFont
 import mediapipe_webcam
+import preprocess_userCSV
+from tensorflow import keras
 
 # def onOK():
 #     # 取得輸入文字
@@ -22,23 +24,16 @@ menu.title('Sign Language Interaction Tutorial System')
 menu.geometry("800x500+250+150")  # window大小+左上角定位
 menu['background'] = '#F4F1DE'
 
-# -----Webcam-----
+# -----Quiz start-----
 
 
-def open_webcam():
-    cap = cv2.VideoCapture(0)
-    writer = cv2.VideoWriter('./samplevideo.avi', cv2.VideoWriter_fourcc(*'XVID'), 20.0,
-                             (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
-    while(cap.isOpened()):
-        ret, frame = cap.read()
-        # time.sleep(0.05)
-        cv2.imshow('frame', frame)
-        if cv2.waitKey(100) & 0xFF == ord('q'):
-            break
-
-    cap.release()
-    cv2.destroyAllWindows()
-
+def start_btn_func():
+    # generate webcam.csv
+    mediapipe_webcam.open_cam(SAVE_REC=False, SAVE_EXCEL=False,
+                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True)
+    preprocess_userCSV.preprocess()  # generate webcam_stuff_zero.csv
+    model = keras.models.load_model('Convolution_model.h5')
+    model.summary()
 # -----確認退出-----
 
 
@@ -157,9 +152,8 @@ def createQuiz():
     fontStyle = tkFont.Font(family="Lucida Grande", size=35)
     label = tk.Label(Quiz, text=tt, font=fontStyle)
     label.place(relx=0.48, rely=0.25)
-    star_btn = tk.Button(Quiz, text='Start', bg='#F2CC8F', width=40, command=partial(mediapipe_webcam.open_cam, SAVE_REC=False, SAVE_EXCEL=False,
-                         SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True),
-                         height=3, cursor='star').place(relx=0.35, rely=0.5)
+    start_btn = tk.Button(Quiz, text='Start', bg='#F2CC8F', width=40, command=start_btn_func,
+                          height=3, cursor='star').place(relx=0.35, rely=0.5)
 
 
 # <Main>

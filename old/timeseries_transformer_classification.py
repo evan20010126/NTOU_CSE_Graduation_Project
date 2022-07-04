@@ -287,18 +287,18 @@ model.compile(
 )
 model.summary()
 
-callbacks = [keras.callbacks.EarlyStopping(
-    patience=10, restore_best_weights=True)]
-# callbacks = [
-#     keras.callbacks.ModelCheckpoint(
-#         "best_model.h5", save_best_only=True, monitor="sparse_categorical_accuracy"
-#     ),
-#     keras.callbacks.ReduceLROnPlateau(
-#         monitor="sparse_categorical_accuracy", factor=0.5, patience=20, min_lr=0.0001
-#     ),
-#     keras.callbacks.EarlyStopping(
-#         monitor="sparse_categorical_accuracy", patience=50, verbose=1),
-# ]
+# callbacks = [keras.callbacks.EarlyStopping(
+#     patience=10, restore_best_weights=True)]
+callbacks = [
+    keras.callbacks.ModelCheckpoint(
+        "Transformer_best_model.h5", save_best_only=True, monitor="sparse_categorical_accuracy"
+    ),
+    keras.callbacks.ReduceLROnPlateau(
+        monitor="sparse_categorical_accuracy", factor=0.5, patience=20, min_lr=0.0001
+    ),
+    keras.callbacks.EarlyStopping(
+        monitor="sparse_categorical_accuracy", patience=50, verbose=1),
+]
 
 model.fit(
     x_train,
@@ -309,7 +309,9 @@ model.fit(
     callbacks=callbacks,
 )
 
-model.save('transformer_model.h5')
+# model.save('transformer_model.h5')
+
+model = keras.models.load_model("Transformer_best_model.h5")
 
 test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
 print("Test Accuracy:", test_acc)
