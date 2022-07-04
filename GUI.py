@@ -9,8 +9,8 @@ import tkinter.font as tkFont
 import mediapipe_webcam
 import preprocess_userCSV
 from tensorflow import keras
-from numpy import genfromtxt
-
+import numpy as np
+import pandas as pd
 # def onOK():
 #     # 取得輸入文字
 #     print("Hello, {}確診.".format(entry.get()))
@@ -26,6 +26,17 @@ menu.geometry("800x500+250+150")  # window大小+左上角定位
 menu['background'] = '#F4F1DE'
 
 # -----Quiz start-----
+hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
+                 (0, 5), (5, 6), (6, 7), (7, 8),
+                 (0, 9), (9, 10), (10, 11), (11, 12),
+                 (0, 13), (13, 14), (14, 15), (15, 16),
+                 (0, 17), (17, 18), (18, 19), (19, 20)]  # 20個向量
+
+pose_sequence = [(0, 12), (0, 11),
+                 (12, 14), (14, 16),
+                 (11, 13), (13, 15), ]  # 7個向量->6個向量
+
+point_number = len(hand_sequence*2) + len(pose_sequence)
 
 
 def split_target(df):
@@ -40,6 +51,8 @@ def split_target(df):
             temp_row = np.append(temp_row, [-1.0, ])
         elif row[0] == "snack":
             temp_row = np.append(temp_row, [1.0, ])
+        else:
+            temp_row = np.append(temp_row, [-999.0, ])
 
         # pose: 23個點 left/right:各21個點 23+21*2=65
         vector = row[1:]
@@ -78,12 +91,20 @@ def start_btn_func():
     mediapipe_webcam.open_cam(SAVE_REC=False, SAVE_EXCEL=False,
                               SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True)
     preprocess_userCSV.preprocess()  # generate webcam_stuff_zero.csv
+
+    webcam_df = pd.read_csv("webcam_stuff_zero.csv",
+                            header=None)
+    x_test, y_test = split_target(webcam_df)
+    del webcam_df
+    x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
+    x_test = np.asarray(x_test).astype(np.float32)
+    y_test = np.asarray(y_test).astype(np.float32)
+    x_test = x_test.flatten().reshape(
+        x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
     model = keras.models.load_model('Convolution_best_model.h5')
     model.summary()
-    webcam_data = genfromtxt('webcam_stuff_zero.csv', delimiter=',',
-                             skip_header=1)  # numpy讀csv
-
-    model.predict()
+    answer = model.predict(x_test)
+    print("Predict: ", answer)
 # -----確認退出-----
 
 
