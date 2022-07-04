@@ -306,7 +306,7 @@ model.fit(
     callbacks=callbacks,
 )
 
-model.save('my_model_test.h5')
+model.save('transformer_model.h5')
 
 test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
 print("Test Accuracy:", test_acc)

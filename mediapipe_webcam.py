@@ -34,7 +34,7 @@ def write_csv(file_name, all_data):
     global signLanguageLabel
 
     all_data.insert(0, signLanguageLabel)
-    with open(file_name, 'a', newline='') as file:
+    with open(file_name, 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(all_data)
 
@@ -127,6 +127,8 @@ def get_label_and_points(index, hand, results, hand_num):
     global frame_keypoints_hands
     global image
     global catch_error
+    global record_leftHand
+    global record_rightHand
     # result.multi_handedness放此手的label跟score
     for idx, classification in enumerate(results.multi_handedness):
         # print(idx)
@@ -148,41 +150,75 @@ def get_label_and_points(index, hand, results, hand_num):
             # print("label: ", label)
 
             if(hand_num == 2):
-                for i in range(21):
-                    temp_xy = np.array(list())
-                    temp_xy = np.append(
-                        temp_xy, hand.landmark[i].x * image.shape[1])
-                    temp_xy = np.append(
-                        temp_xy, hand.landmark[i].y * image.shape[0])
-                    frame_keypoints_hands = np.append(
-                        frame_keypoints_hands, temp_xy)
+                if label == "Left":
+                    if record_leftHand:
+                        for i in range(21):
+                            temp_xy = np.array(list())
+                            temp_xy = np.append(
+                                temp_xy, hand.landmark[i].x * image.shape[1])
+                            temp_xy = np.append(
+                                temp_xy, hand.landmark[i].y * image.shape[0])
+                            frame_keypoints_hands = np.append(
+                                frame_keypoints_hands, temp_xy)
+                    else:
+                        for i in range(21):
+                            temp_xy = np.array([0, 0])
+                            frame_keypoints_hands = np.append(
+                                frame_keypoints_hands, temp_xy)
+                if label == "Right":
+                    if record_rightHand:
+                        for i in range(21):
+                            temp_xy = np.array(list())
+                            temp_xy = np.append(
+                                temp_xy, hand.landmark[i].x * image.shape[1])
+                            temp_xy = np.append(
+                                temp_xy, hand.landmark[i].y * image.shape[0])
+                            frame_keypoints_hands = np.append(
+                                frame_keypoints_hands, temp_xy)
+                    else:
+                        for i in range(21):
+                            temp_xy = np.array([0, 0])
+                            frame_keypoints_hands = np.append(
+                                frame_keypoints_hands, temp_xy)
             elif(hand_num == 1):
                 if label == "Left":
-                    for i in range(21):
-                        temp_xy = np.array(list())
-                        temp_xy = np.append(
-                            temp_xy, hand.landmark[i].x * image.shape[1])
-                        temp_xy = np.append(
-                            temp_xy, hand.landmark[i].y * image.shape[0])
-                        frame_keypoints_hands = np.append(
-                            frame_keypoints_hands, temp_xy)
-                    for i in range(21):
-                        temp_xy = np.array([0, 0])
-                        frame_keypoints_hands = np.append(
-                            frame_keypoints_hands, temp_xy)
+                    if record_leftHand:
+                        for i in range(21):
+                            temp_xy = np.array(list())
+                            temp_xy = np.append(
+                                temp_xy, hand.landmark[i].x * image.shape[1])
+                            temp_xy = np.append(
+                                temp_xy, hand.landmark[i].y * image.shape[0])
+                            frame_keypoints_hands = np.append(
+                                frame_keypoints_hands, temp_xy)
+                        for i in range(21):
+                            temp_xy = np.array([0, 0])
+                            frame_keypoints_hands = np.append(
+                                frame_keypoints_hands, temp_xy)
+                    else:
+                        for i in range(42):
+                            temp_xy = np.array([0, 0])
+                            frame_keypoints_hands = np.append(
+                                frame_keypoints_hands, temp_xy)
                 elif label == "Right":
-                    for i in range(21):
-                        temp_xy = np.array([0, 0])
-                        frame_keypoints_hands = np.append(
-                            frame_keypoints_hands, temp_xy)
-                    for i in range(21):
-                        temp_xy = np.array(list())
-                        temp_xy = np.append(
-                            temp_xy, hand.landmark[i].x * image.shape[1])
-                        temp_xy = np.append(
-                            temp_xy, hand.landmark[i].y * image.shape[0])
-                        frame_keypoints_hands = np.append(
-                            frame_keypoints_hands, temp_xy)
+                    if record_rightHand:
+                        for i in range(21):
+                            temp_xy = np.array([0, 0])
+                            frame_keypoints_hands = np.append(
+                                frame_keypoints_hands, temp_xy)
+                        for i in range(21):
+                            temp_xy = np.array(list())
+                            temp_xy = np.append(
+                                temp_xy, hand.landmark[i].x * image.shape[1])
+                            temp_xy = np.append(
+                                temp_xy, hand.landmark[i].y * image.shape[0])
+                            frame_keypoints_hands = np.append(
+                                frame_keypoints_hands, temp_xy)
+                    else:
+                        for i in range(42):
+                            temp_xy = np.array([0, 0])
+                            frame_keypoints_hands = np.append(
+                                frame_keypoints_hands, temp_xy)
             else:  # 有第三隻手
                 catch_error = True
         # print("hand.landmark.size: ", len(hand.landmark)) # = 21
@@ -197,7 +233,8 @@ break_processing = False
 frame_keypoints_pose = None
 frame_keypoints_hands = None
 image = None
-
+record_leftHand = False
+record_rightHand = False
 # cap = cv2.VideoCapture(f"{dirPath}\\{my_file}")
 
 
@@ -205,7 +242,11 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
     global image
     global frame_keypoints_hands
     global frame_keypoints_pose
-    cap = cv2.VideoCapture(0)
+    global record_leftHand
+    global record_rightHand
+    cap = cv2.VideoCapture(1)
+    writer = cv2.VideoWriter('./output_sample_videos/webcam.avi', cv2.VideoWriter_fourcc(*'XVID'), 20.0,
+                             (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
     all_keypoints = list()
     with mp_hands.Hands(
             model_complexity=0,
@@ -222,7 +263,6 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
                 print("Ignoring empty camera frame.")
                 # If loading a video, use 'break' instead of 'continue'.
                 break
-            origin_image = np.copy(image)
             # To improve performance, optionally mark the image as not writeable to
             # pass by reference.
 
@@ -278,6 +318,30 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
                     break
                 continue
 
+            frame_keypoints_pose = frame_keypoints_pose.reshape(-1, 2)
+            face_width = computeDistance(
+                frame_keypoints_pose[7], frame_keypoints_pose[8])
+
+            normalize_distance = computeDistance(
+                frame_keypoints_pose[11], frame_keypoints_pose[12])
+            normalize_original_point = (
+                frame_keypoints_pose[12] + frame_keypoints_pose[11]) / 2
+
+            Recording = False
+            record_leftHand = False
+            record_rightHand = False
+
+            # <Recording or not recording>
+            # * 任一隻手有高過水平線
+            if (frame_keypoints_pose[16][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[16][1] != 0) or (frame_keypoints_pose[15][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[15][1] != 0):
+                Recording = True
+            # * 右手有高過水平線
+            if (frame_keypoints_pose[16][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[16][1] != 0):
+                record_rightHand = True
+            # * 左手有高過水平線
+            if(frame_keypoints_pose[15][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[15][1] != 0):
+                record_leftHand = True
+
             if results.multi_hand_landmarks:
                 # len(results.multi_hand_landmarks)代表有抓到幾隻手
                 # <--畫手-->
@@ -295,20 +359,7 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
             else:  # 找不到任何手
                 catch_error = True
 
-            frame_keypoints_pose = frame_keypoints_pose.reshape(-1, 2)
             frame_keypoints_hands = frame_keypoints_hands.reshape(-1, 2)
-            Recording = False
-            face_width = computeDistance(
-                frame_keypoints_pose[7], frame_keypoints_pose[8])
-
-            normalize_distance = computeDistance(
-                frame_keypoints_pose[11], frame_keypoints_pose[12])
-            normalize_original_point = (
-                frame_keypoints_pose[12] + frame_keypoints_pose[11]) / 2
-
-            # <Recording or not recording>
-            if (frame_keypoints_pose[16][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[16][1] != 0) or (frame_keypoints_pose[15][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[15][1] != 0):
-                Recording = True
 
             # print(f"Recording: {Recording}")
             # print(f"catch_error: {catch_error}")
@@ -331,6 +382,7 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
                         (frame_keypoints_hands[i][1] - normalize_original_point[1])/normalize_distance)
                 cv2.putText(image, "REC", (10, 40), cv2.FONT_HERSHEY_SIMPLEX,
                             1, (0, 0, 255), 3, cv2.LINE_AA)
+                writer.write(image)
 
             # print("hands:")
             # print(results.multi_handedness)
@@ -338,19 +390,21 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
             #     break_processing = True
             #     break
 
-            # Flip the image horizoㄜntally for a selfie-view display.
+            # Flip the image horizontally for a selfie-view display.
             # cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
+
             cv2.imshow('MediaPipe Hands', image)
 
             if cv2.waitKey(5) & 0xFF == 27:
                 break_processing = True
                 break
     cap.release()
+    writer.release()
     cv2.destroyAllWindows()
     if SAVE_EXCEL:
         write_xlsx("output.xlsx", all_keypoints)
     if SAVE_CSV:
-        write_csv("output.csv", all_keypoints)
+        write_csv("webcam.csv", all_keypoints)
 
 
 # print(all_keypoints)
