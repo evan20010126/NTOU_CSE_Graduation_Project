@@ -67,7 +67,7 @@ import numpy as np
 import pandas as pd
 
 sign_language_df = pd.read_csv(
-    "Summary_stuff_zero_5st.csv")
+    "Summary_stuff_zero_5st.csv", header=None)
 print(sign_language_df)
 
 # from numpy import genfromtxt
@@ -204,6 +204,7 @@ def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0):
         key_dim=head_size, num_heads=num_heads, dropout=dropout
     )(inputs, inputs)
     x = layers.Dropout(dropout)(x)
+    x = layers.LayerNormalization(epsilon=1e-6)(x)
     res = x + inputs
 
     # Feed Forward Part
@@ -211,6 +212,7 @@ def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0):
     x = layers.Conv1D(filters=ff_dim, kernel_size=1, activation="relu")(res)
     x = layers.Dropout(dropout)(x)
     x = layers.Conv1D(filters=inputs.shape[-1], kernel_size=1)(x)
+    x = layers.LayerNormalization(epsilon=1e-6)(x)
     return x + res
 
 
@@ -240,6 +242,7 @@ def build_model(
         x = transformer_encoder(x, head_size, num_heads, ff_dim, dropout)
 
     x = layers.GlobalAveragePooling1D(data_format="channels_first")(x)
+
     for dim in mlp_units:
         x = layers.Dense(dim, activation="relu")(x)
         x = layers.Dropout(mlp_dropout)(x)
@@ -251,21 +254,33 @@ def build_model(
 
 input_shape = x_train.shape[1:]
 
+# model = build_model(
+#     input_shape,
+#     head_size=256,
+#     num_heads=4,
+#     ff_dim=64,
+#     num_transformer_blocks=4,
+#     mlp_units=[128],
+#     mlp_dropout=0.2,
+#     dropout=0.25,
+# )
 model = build_model(
     input_shape,
     head_size=256,
     num_heads=4,
-    ff_dim=64,
+    ff_dim=4,
     num_transformer_blocks=4,
     mlp_units=[128],
-    mlp_dropout=0.2,
+    mlp_dropout=0.4,
     dropout=0.25,
 )
 
 model.compile(
-    loss="sparse_categorical_crossentropy",
+    loss='sparse_categorical_crossentropy',
+    # loss='poisson',
+    # loss="mean_squared_error",
     optimizer=keras.optimizers.Adam(learning_rate=1e-4),
-    metrics=["sparse_categorical_accuracy"],
+    metrics=["sparse_categorical_accuracy"],  # "mae"
 )
 model.summary()
 
@@ -278,7 +293,8 @@ callbacks = [keras.callbacks.EarlyStopping(
 #     keras.callbacks.ReduceLROnPlateau(
 #         monitor="sparse_categorical_accuracy", factor=0.5, patience=20, min_lr=0.0001
 #     ),
-#     keras.callbacks.EarlyStopping(monitor="sparse_categorical_accuracy", patience=50, verbose=1),
+#     keras.callbacks.EarlyStopping(
+#         monitor="sparse_categorical_accuracy", patience=50, verbose=1),
 # ]
 
 model.fit(
@@ -286,7 +302,7 @@ model.fit(
     y_train,
     validation_split=0.2,
     epochs=200,
-    batch_size=32,  # 64
+    batch_size=64,  # 64
     callbacks=callbacks,
 )
 

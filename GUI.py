@@ -6,6 +6,7 @@ import time
 from functools import partial
 import random
 import tkinter.font as tkFont
+import mediapipe_webcam
 
 # def onOK():
 #     # 取得輸入文字
@@ -20,6 +21,23 @@ menu = tk.Tk()
 menu.title('Sign Language Interaction Tutorial System')
 menu.geometry("800x500+250+150")  # window大小+左上角定位
 menu['background'] = '#F4F1DE'
+
+# -----Webcam-----
+
+
+def open_webcam():
+    cap = cv2.VideoCapture(0)
+    writer = cv2.VideoWriter('./samplevideo.avi', cv2.VideoWriter_fourcc(*'XVID'), 20.0,
+                             (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+    while(cap.isOpened()):
+        ret, frame = cap.read()
+        # time.sleep(0.05)
+        cv2.imshow('frame', frame)
+        if cv2.waitKey(100) & 0xFF == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
 
 # -----確認退出-----
 
@@ -39,7 +57,7 @@ def openVideo(num):
     v3 = cv2.VideoCapture(
         'C:\\Users\\yumi\\Desktop\\good\\smaplevideo\\snack\\hot.avi')
     v4 = cv2.VideoCapture(
-        'C:\\Users\\yumi\\Desktop\\good\\smaplevideo\\snack\\salty.avi')
+        r'..\media\salty\220511_222809-6237668.MOV')
     v5 = cv2.VideoCapture(
         'C:\\Users\\yumi\\Desktop\\good\\smaplevideo\\snack\\snack.avi')
     v6 = cv2.VideoCapture(
@@ -110,7 +128,7 @@ def createPractice():
     Practice['background'] = '#F4F1DE'
 
     btn1 = tk.Button(Practice, bg='#F2CC8F',
-                     width=25, height=3).grid(row=0, column=0, padx=7, pady=35)
+                     width=25, height=3,).grid(row=0, column=0, padx=7, pady=35)
     btn2 = tk.Button(Practice, bg='#F2CC8F',
                      width=25, height=3).grid(row=0, column=1, padx=7, pady=35)
     btn3 = tk.Button(Practice, bg='#F2CC8F',
@@ -139,10 +157,12 @@ def createQuiz():
     fontStyle = tkFont.Font(family="Lucida Grande", size=35)
     label = tk.Label(Quiz, text=tt, font=fontStyle)
     label.place(relx=0.48, rely=0.25)
-    star_btn = tk.Button(Quiz, text='Start', bg='#F2CC8F',
-                         width=40, height=3, cursor='star').place(relx=0.35, rely=0.5)
+    star_btn = tk.Button(Quiz, text='Start', bg='#F2CC8F', width=40, command=partial(mediapipe_webcam.open_cam, SAVE_REC=False, SAVE_EXCEL=False,
+                         SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True),
+                         height=3, cursor='star').place(relx=0.35, rely=0.5)
 
 
+# <Main>
 # ------menu-----
 Tutorial_btn = tk.Button(
     menu, text="Tutorial Videos", bg='#F2CC8F', width=600, height=3, cursor='heart', command=createTutorialVideo).pack(padx=30, pady=20)

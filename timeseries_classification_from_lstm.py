@@ -37,7 +37,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
 sign_language_df = pd.read_csv(
-    "Summary_stuff_zero_5st.csv")
+    "Summary_stuff_zero_5st.csv", header=None)
 sign_language_df
 
 # myself
@@ -404,7 +404,14 @@ last_conv_layer_name = model.layers[-3].name
 
 img_array = x_test[50][tf.newaxis, ...]
 
-heatmap = make_gradcam_heatmap(img_array, model, last_conv_layer_name)
+heatmap = make_gradcam_heatmap(
+    img_array, model, last_conv_layer_name, pred_index=0)
+print(heatmap.shape)  # 19偵
+plt.matshow(heatmap)
+plt.show()
+
+heatmap = make_gradcam_heatmap(
+    img_array, model, last_conv_layer_name, pred_index=1)
 print(heatmap.shape)  # 19偵
 plt.matshow(heatmap)
 plt.show()
