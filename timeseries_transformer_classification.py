@@ -278,9 +278,9 @@ model = build_model(
 )
 
 model.compile(
-    loss='sparse_categorical_crossentropy',
+    # loss='sparse_categorical_crossentropy',
     # loss='poisson',
-    # loss="mean_squared_error",
+    loss="mean_squared_error",
 
     optimizer=keras.optimizers.Adam(learning_rate=1e-4),
     metrics=["sparse_categorical_accuracy"],  # "mae"
