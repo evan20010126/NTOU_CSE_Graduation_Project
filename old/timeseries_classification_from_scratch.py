@@ -113,7 +113,9 @@ x_train, y_train = split_target(train)
 x_test, y_test = split_target(test)
 
 # .
+print(x_train.shape)
 x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
+print(x_train.shape)
 x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
 num_classes = len(np.unique(y_train))
 
@@ -274,6 +276,7 @@ if is_Reshape == False:
     x_test = x_test.flatten().reshape(
         x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
     is_Reshape = True
+print(x_train.shape)
 
 # 2D
 # x_train = x_train.flatten().reshape(x_train.shape[0], (x_train.shape[1]//(point_number*2)), (point_number), 2)
@@ -313,7 +316,7 @@ batch_size = 32
 
 callbacks = [
     keras.callbacks.ModelCheckpoint(
-        "best_model.h5", save_best_only=True, monitor="val_loss"
+        "Convolution_best_model.h5", save_best_only=True, monitor="val_loss"
     ),
     keras.callbacks.ReduceLROnPlateau(
         monitor="val_loss", factor=0.5, patience=20, min_lr=0.0001
@@ -335,12 +338,12 @@ history = model.fit(
     validation_split=0.2,
     verbose=1,
 )
-model.save("Convolution_model.h5")
+# model.save("Convolution_model.h5")
 
 
 """## Evaluate model on test data"""
 
-model = keras.models.load_model("best_model.h5")
+model = keras.models.load_model("Convolution_best_model.h5")
 
 test_loss, test_acc = model.evaluate(x_test, y_test)
 

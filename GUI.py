@@ -9,6 +9,7 @@ import tkinter.font as tkFont
 import mediapipe_webcam
 import preprocess_userCSV
 from tensorflow import keras
+from numpy import genfromtxt
 
 # def onOK():
 #     # 取得輸入文字
@@ -27,13 +28,62 @@ menu['background'] = '#F4F1DE'
 # -----Quiz start-----
 
 
+def split_target(df):
+    data = df.to_numpy()
+    new_data = np.array(list())
+    row_length = 0
+
+    for row in data:
+        temp_row = np.array(list())
+
+        if row[0] == "salty":
+            temp_row = np.append(temp_row, [-1.0, ])
+        elif row[0] == "snack":
+            temp_row = np.append(temp_row, [1.0, ])
+
+        # pose: 23個點 left/right:各21個點 23+21*2=65
+        vector = row[1:]
+        vector = vector.reshape((vector.shape[0])//130, 65, 2)  # (幾偵, 點, xy)
+        for img in vector:  # 迭代每一偵
+            pose_points = img[0:23]
+            left_hand_points = img[23:23+21]
+            right_hand_points = img[23+21:23+21+21]
+
+            for p1, p2 in pose_sequence:
+                temp_row = np.append(
+                    temp_row, pose_points[p2] - pose_points[p1])
+
+            for p1, p2 in hand_sequence:
+                temp_row = np.append(
+                    temp_row, left_hand_points[p2] - left_hand_points[p1])
+
+            for p1, p2 in hand_sequence:
+                temp_row = np.append(
+                    temp_row, right_hand_points[p2] - right_hand_points[p1])
+        # print(temp_row.shape) # 1787
+        row_length = temp_row.shape[0]
+        new_data = np.append(new_data, temp_row)
+    new_data = new_data.reshape(data.shape[0], row_length)
+    y = new_data[:, 0]
+    x = new_data[:, 1:]
+    # y = data[:, 0]
+    # x = data[:, 1:]
+    # y[y == "salty"] = -1
+    # y[y == "snack"] = 1
+    return x, y.astype(int)
+
+
 def start_btn_func():
     # generate webcam.csv
     mediapipe_webcam.open_cam(SAVE_REC=False, SAVE_EXCEL=False,
                               SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True)
     preprocess_userCSV.preprocess()  # generate webcam_stuff_zero.csv
-    model = keras.models.load_model('Convolution_model.h5')
+    model = keras.models.load_model('Convolution_best_model.h5')
     model.summary()
+    webcam_data = genfromtxt('webcam_stuff_zero.csv', delimiter=',',
+                             skip_header=1)  # numpy讀csv
+
+    model.predict()
 # -----確認退出-----
 
 

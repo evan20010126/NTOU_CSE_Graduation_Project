@@ -151,8 +151,20 @@ train, test = train_test_split(sign_language_df, test_size=0.2)
 x_train, y_train = split_target(train)
 x_test, y_test = split_target(test)
 
+
+# .
+x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
+x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
+y_train[y_train == -1] = 0
+y_test[y_test == -1] = 0
 # print("len(x_train): ",len(x_train))
 # print("x_train.shape[1]: ",x_train.shape[1])
+
+x_train = np.asarray(x_train).astype(np.float32)
+y_train = np.asarray(y_train).astype(np.float32)
+x_test = np.asarray(x_train).astype(np.float32)
+y_test = np.asarray(y_train).astype(np.float32)
+
 
 x_train = x_train.flatten().reshape(
     x_train.shape[0], (x_train.shape[1]//(point_number*2)), point_number*2)
@@ -168,16 +180,13 @@ print("y_train[0]:\n", y_train[0])
 
 n_classes = len(np.unique(y_train))
 
-idx = np.random.permutation(len(x_train))
-idx_y = np.random.permutation(len(y_train))
-x_train = x_train[idx]
-y_train = y_train[idx_y]
+# idx = np.random.permutation(len(x_train))
+# idx_y = np.random.permutation(len(y_train))
+# x_train = x_train[idx]
+# y_train = y_train[idx_y]
 
 # Fail to convert a NumPy array to Tensor:
-x_train = np.asarray(x_train).astype(np.float32)
-y_train = np.asarray(y_train).astype(np.float32)
-x_test = np.asarray(x_train).astype(np.float32)
-y_test = np.asarray(y_train).astype(np.float32)
+
 
 """## Build the model
 

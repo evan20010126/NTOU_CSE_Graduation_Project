@@ -303,7 +303,7 @@ batch_size = 32
 
 callbacks = [
     keras.callbacks.ModelCheckpoint(
-        "best_model.h5", save_best_only=True, monitor="val_loss"
+        "Lstm_best_model.h5", save_best_only=True, monitor="val_loss"
     ),
     keras.callbacks.ReduceLROnPlateau(
         monitor="val_loss", factor=0.5, patience=20, min_lr=0.0001
@@ -325,10 +325,10 @@ history = model.fit(
     validation_split=0.2,
     verbose=1,
 )
-model.save('Lstm_model.h5')
+# model.save('Lstm_model.h5')
 """## Evaluate model on test data"""
 
-model = keras.models.load_model("best_model.h5")
+model = keras.models.load_model("Lstm_best_model.h5")
 
 test_loss, test_acc = model.evaluate(x_test, y_test)
 
