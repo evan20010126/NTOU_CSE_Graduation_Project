@@ -37,7 +37,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
 sign_language_df = pd.read_csv(
-    "Summary_stuff_zero_6st.csv", header=None)
+    "Summary_stuff_zero_7st.csv", header=None)
 sign_language_df
 
 # myself
@@ -63,9 +63,21 @@ def split_target(df):
         temp_row = np.array(list())
 
         if row[0] == "salty":
-            temp_row = np.append(temp_row, [-1.0, ])
+            temp_row = np.append(temp_row, [0.0, ])
         elif row[0] == "snack":
             temp_row = np.append(temp_row, [1.0, ])
+        elif row[0] == "bubbletea":
+            temp_row = np.append(temp_row, [2.0, ])
+        elif row[0] == "dumpling":
+            temp_row = np.append(temp_row, [3.0, ])
+        elif row[0] == "spicy":
+            temp_row = np.append(temp_row, [4.0, ])
+        elif row[0] == "sour":
+            temp_row = np.append(temp_row, [5.0, ])
+        elif row[0] == "sweet":
+            temp_row = np.append(temp_row, [6.0, ])
+        elif row[0] == "yummy":
+            temp_row = np.append(temp_row, [7.0, ])
 
         # pose: 23個點 left/right:各21個點 23+21*2=65
         vector = row[1:]
@@ -109,8 +121,8 @@ x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
 x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
 num_classes = len(np.unique(y_train))
 
-y_train[y_train == -1] = 0
-y_test[y_test == -1] = 0
+# y_train[y_train == -1] = 0
+# y_test[y_test == -1] = 0
 
 x_train = np.asarray(x_train).astype(np.float32)
 y_train = np.asarray(y_train).astype(np.float32)
