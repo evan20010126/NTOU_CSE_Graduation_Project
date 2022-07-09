@@ -13,9 +13,10 @@ SAVE_CSV = True
 PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = False  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
 #-------------------------------------------------------------#
 # Input argument
-signLanguageLabel = "snack"  # 鹹:salty 小吃:snack
+# 鹹:salty 小吃:snack 水餃: dumpling 辣: spicy 甜: sweet 酸: sour 好吃: yummy 珍珠奶茶: bubbletea
+signLanguageLabel = "bubbletea"
 # Input video的資料夾路徑
-dirPath = r'..\media\snack'
+dirPath = r'..\media\bubbletea'
 #-------------------------------------------------------------#
 
 mp_drawing = mp.solutions.drawing_utils
