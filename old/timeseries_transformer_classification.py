@@ -167,8 +167,8 @@ x_test, y_test = split_target(test)
 # .
 # x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
 # x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
-y_train[y_train == -1] = 0
-y_test[y_test == -1] = 0
+# y_train[y_train == -1] = 0
+# y_test[y_test == -1] = 0
 # print("len(x_train): ",len(x_train))
 # print("x_train.shape[1]: ",x_train.shape[1])
 
@@ -325,7 +325,7 @@ model.fit(
     x_train,
     y_train,
     validation_split=0.2,
-    epochs=200,
+    epochs=500,
     batch_size=64,  # 64
     callbacks=callbacks,
 )
