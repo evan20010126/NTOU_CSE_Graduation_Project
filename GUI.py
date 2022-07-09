@@ -23,7 +23,7 @@ import gradcam_detect
 # entry.pack()
 
 answer_classlist = ['Salty', 'Snack', 'Bubble Tea',
-                    'Dumpling', 'Hot', 'Sour', 'Sweet', 'Taste Good']
+                    'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy']
 
 
 menu = tk.Tk()
