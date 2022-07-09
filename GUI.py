@@ -54,9 +54,21 @@ def split_target(df):
         temp_row = np.array(list())
 
         if row[0] == "salty":
-            temp_row = np.append(temp_row, [-1.0, ])
+            temp_row = np.append(temp_row, [0.0, ])
         elif row[0] == "snack":
             temp_row = np.append(temp_row, [1.0, ])
+        elif row[0] == "bubbletea":
+            temp_row = np.append(temp_row, [2.0, ])
+        elif row[0] == "dumpling":
+            temp_row = np.append(temp_row, [3.0, ])
+        elif row[0] == "spicy":
+            temp_row = np.append(temp_row, [4.0, ])
+        elif row[0] == "sour":
+            temp_row = np.append(temp_row, [5.0, ])
+        elif row[0] == "sweet":
+            temp_row = np.append(temp_row, [6.0, ])
+        elif row[0] == "yummy":
+            temp_row = np.append(temp_row, [7.0, ])
         else:
             temp_row = np.append(temp_row, [-999.0, ])
 
@@ -95,8 +107,9 @@ def split_target(df):
 def start_btn_func(target_class_num):
     # generate webcam.csv
     mediapipe_webcam.open_cam(SAVE_REC=False, SAVE_EXCEL=False,
-                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True)
-    preprocess_userCSV.preprocess()  # generate webcam_stuff_zero.csv
+                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=1)
+    # generate webcam_stuff_zero.csv
+    preprocess_userCSV.preprocess(max_column=29251)
 
     webcam_df = pd.read_csv("webcam_stuff_zero.csv",
                             header=None)
@@ -120,6 +133,8 @@ def start_btn_func(target_class_num):
     #     idx = predict_answer.index(sort_predict_answer[i])
     #     gradcam_detect.get_heapmap(model, -3, x_test[0], idx)
     idx = predict_answer.index(sort_predict_answer[-1])  # 判斷出的類別
+    print(f"\033[92m{answer_classlist[idx]}")
+    print("\033[0m")
     CORRECT = False
     if (target_class_num == idx):
         # correct
@@ -253,7 +268,7 @@ def createQuiz():
     # 隨機標示文字
     # tt = random.choice(['Bubble Tea', 'Dumpling', 'Hot', 'Salty',
     #                     'Snack', 'Sour', 'Sweet', 'Taste Good'])
-    answer_number = random.randint(0, 1)
+    answer_number = random.randint(0, 7)
     fontStyle = tkFont.Font(family="Lucida Grande", size=35)
     label = tk.Label(
         Quiz, text=answer_classlist[answer_number], font=fontStyle)
