@@ -115,29 +115,35 @@ def split_target(df):
 
         # pose: 23個點 left/right:各21個點 23+21*2=65
         vector = row[1:]
-        vector = vector.reshape((vector.shape[0])//130, 65, 2)  # (幾偵, 點, xy)
-        for img in vector:  # 迭代每一偵
-            pose_points = img[0:23]
-            left_hand_points = img[23:23+21]
-            right_hand_points = img[23+21:23+21+21]
 
-            for p1, p2 in pose_sequence:
-                temp_row = np.append(
-                    temp_row, pose_points[p2] - pose_points[p1])
+        # change to vector
+        # vector = vector.reshape((vector.shape[0])//130, 65, 2)  # (幾偵, 點, xy)
 
-            for p1, p2 in hand_sequence:
-                temp_row = np.append(
-                    temp_row, left_hand_points[p2] - left_hand_points[p1])
+        # for img in vector:  # 迭代每一偵
+        #     pose_points = img[0:23]
+        #     left_hand_points = img[23:23+21]
+        #     right_hand_points = img[23+21:23+21+21]
 
-            for p1, p2 in hand_sequence:
-                temp_row = np.append(
-                    temp_row, right_hand_points[p2] - right_hand_points[p1])
+        #     for p1, p2 in pose_sequence:
+        #         temp_row = np.append(
+        #             temp_row, pose_points[p2] - pose_points[p1])
+
+        #     for p1, p2 in hand_sequence:
+        #         temp_row = np.append(
+        #             temp_row, left_hand_points[p2] - left_hand_points[p1])
+
+        #     for p1, p2 in hand_sequence:
+        #         temp_row = np.append(
+        #             temp_row, right_hand_points[p2] - right_hand_points[p1])
         # print(temp_row.shape) # 1787
+        # changing finish------
+        temp_row = np.append(temp_row, vector)  # new
         row_length = temp_row.shape[0]
         new_data = np.append(new_data, temp_row)
     new_data = new_data.reshape(data.shape[0], row_length)
     y = new_data[:, 0]
     x = new_data[:, 1:]
+
     # y = data[:, 0]
     # x = data[:, 1:]
     # y[y == "salty"] = -1
@@ -178,11 +184,15 @@ x_test = np.asarray(x_train).astype(np.float32)
 y_test = np.asarray(y_train).astype(np.float32)
 
 
-x_train = x_train.flatten().reshape(
-    x_train.shape[0], (x_train.shape[1]//(point_number*2)), point_number*2)
-x_test = x_test.flatten().reshape(
-    x_test.shape[0], (x_test.shape[1]//(point_number*2)), point_number*2)
+# x_train = x_train.flatten().reshape(
+#     x_train.shape[0], (x_train.shape[1]//(point_number*2)), point_number*2)
+# x_test = x_test.flatten().reshape(
+#     x_test.shape[0], (x_test.shape[1]//(point_number*2)), point_number*2)
 
+x_train = x_train.flatten().reshape(
+    x_train.shape[0], (x_train.shape[1]//130), 130)
+x_test = x_test.flatten().reshape(
+    x_test.shape[0], (x_test.shape[1]//130), 130)
 
 print("x_train[0]:\n", x_train[0])
 print("y_train[0]:\n", y_train[0])
