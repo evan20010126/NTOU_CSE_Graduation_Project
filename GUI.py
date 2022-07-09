@@ -6,11 +6,14 @@ import time
 from functools import partial
 import random
 import tkinter.font as tkFont
+
+from cv2 import sort
 import mediapipe_webcam
 import preprocess_userCSV
 from tensorflow import keras
 import numpy as np
 import pandas as pd
+import gradcam_detect
 # def onOK():
 #     # 取得輸入文字
 #     print("Hello, {}確診.".format(entry.get()))
@@ -18,6 +21,9 @@ import pandas as pd
 # entry = tk.Entry(menu,     # 輸入欄位所在視窗
 #                  width=20)  # 輸入欄位的寬度
 # entry.pack()
+
+answer_classlist = ['Salty', 'Snack', 'Bubble Tea',
+                    'Dumpling', 'Hot', 'Sour', 'Sweet', 'Taste Good']
 
 
 menu = tk.Tk()
@@ -86,7 +92,7 @@ def split_target(df):
     return x, y.astype(int)
 
 
-def start_btn_func():
+def start_btn_func(target_class_num):
     # generate webcam.csv
     mediapipe_webcam.open_cam(SAVE_REC=False, SAVE_EXCEL=False,
                               SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True)
@@ -102,10 +108,32 @@ def start_btn_func():
     x_test = x_test.flatten().reshape(
         x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
     # model = keras.models.load_model('Convolution_best_model.h5')
-    model = keras.models.load_model('Transformer_best_model.h5')
+    model = keras.models.load_model('Convolution_best_model.h5')
     model.summary()
-    answer = model.predict(x_test)
-    print("Predict: ", answer)
+    predict_answer = model.predict(x_test)
+    print("Predict: ", predict_answer)
+
+    predict_answer = predict_answer.flatten().tolist()
+    sort_predict_answer = sorted(predict_answer)
+
+    # for i in range(len(sort_predict_answer)-1, len(sort_predict_answer)-3, -1):
+    #     idx = predict_answer.index(sort_predict_answer[i])
+    #     gradcam_detect.get_heapmap(model, -3, x_test[0], idx)
+    idx = predict_answer.index(sort_predict_answer[-1])  # 判斷出的類別
+    CORRECT = False
+    if (target_class_num == idx):
+        # correct
+        CORRECT = True
+        second_idx = predict_answer.index(sort_predict_answer[-2])
+        gradcam_detect.get_heapmap(model, -3, x_test[0], second_idx)
+    else:
+        # wrong
+        CORRECT = False
+        first_idx = predict_answer.index(sort_predict_answer[-1])
+        gradcam_detect.get_heapmap(model, -3, x_test[0], first_idx)
+
+    createScore(CORRECT)
+
 # -----確認退出-----
 
 
@@ -187,6 +215,8 @@ def createTutorialVideo():
     btn8 = tk.Button(TutorialVideo, bg='#F2CC8F',
                      width=25, height=3, text='Taste Good', command=partial(openVideo, 8)).grid(row=1, column=3, padx=7, pady=35)
 
+# -----創Practice視窗-----
+
 
 def createPractice():
     Practice = tk.Toplevel(menu)
@@ -211,6 +241,8 @@ def createPractice():
     btn8 = tk.Button(Practice, bg='#F2CC8F',
                      width=25, height=3).grid(row=1, column=3, padx=7, pady=35)
 
+# -----創Quiz視窗-----
+
 
 def createQuiz():
     Quiz = tk.Toplevel(menu)
@@ -219,13 +251,37 @@ def createQuiz():
     Quiz['background'] = '#F4F1DE'
 
     # 隨機標示文字
-    tt = random.choice(['Bubble Tea', 'Dumpling', 'Hot', 'Salty',
-                        'Snack', 'Sour', 'Sweet', 'Taste Good'])
+    # tt = random.choice(['Bubble Tea', 'Dumpling', 'Hot', 'Salty',
+    #                     'Snack', 'Sour', 'Sweet', 'Taste Good'])
+    answer_number = random.randint(0, 1)
     fontStyle = tkFont.Font(family="Lucida Grande", size=35)
-    label = tk.Label(Quiz, text=tt, font=fontStyle)
+    label = tk.Label(
+        Quiz, text=answer_classlist[answer_number], font=fontStyle)
     label.place(relx=0.48, rely=0.25)
-    start_btn = tk.Button(Quiz, text='Start', bg='#F2CC8F', width=40, command=start_btn_func,
+    start_btn = tk.Button(Quiz, text='Start', bg='#F2CC8F', width=40, command=partial(start_btn_func, answer_number),
                           height=3, cursor='star').place(relx=0.35, rely=0.5)
+
+# -----創Score視窗-----
+
+
+def createScore(CORRECT):
+    Score = tk.Toplevel(menu)
+    Score.title('My Score')
+    Score.geometry("800x500")
+    Score['background'] = '#F4F1DE'
+    fontStyle = tkFont.Font(family="Lucida Grande", size=35)
+
+    if CORRECT:
+        label = tk.Label(
+            Score, text="You are right!!", font=fontStyle)
+        label.place(relx=0.48, rely=0.1)
+    else:
+        label = tk.Label(
+            Score, text="跨謀", font=fontStyle)
+        label.place(relx=0.48, rely=0.1)
+
+    replay_btn = tk.Button(Score, text='Repaly', bg='#F2CC8F', width=40,
+                           height=3, cursor='star').place(relx=0.35, rely=0.5)
 
 
 # <Main>

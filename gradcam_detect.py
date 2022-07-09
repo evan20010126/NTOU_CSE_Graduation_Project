@@ -50,7 +50,7 @@ def get_heapmap(model, layer_num, testing_data, class_idx):
     last_conv_layer_name = model.layers[layer_num].name
     # print(model.layers[-3].name)
 
-    img_array = testing_data[1][tf.newaxis, ...]
+    img_array = testing_data[tf.newaxis, ...]
 
     heatmap = make_gradcam_heatmap(
         img_array, model, last_conv_layer_name, pred_index=class_idx)
