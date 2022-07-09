@@ -244,7 +244,7 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
     global frame_keypoints_pose
     global record_leftHand
     global record_rightHand
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     writer = cv2.VideoWriter('./output_sample_videos/webcam.avi', cv2.VideoWriter_fourcc(*'XVID'), 20.0,
                              (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
     all_keypoints = list()
@@ -388,8 +388,14 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
                             (frame_keypoints_hands[i][0] - normalize_original_point[0])/normalize_distance)
                         all_keypoints.append(
                             (frame_keypoints_hands[i][1] - normalize_original_point[1])/normalize_distance)
-                cv2.putText(image, "REC", (10, 40), cv2.FONT_HERSHEY_SIMPLEX,
-                            1, (0, 0, 255), 3, cv2.LINE_AA)
+                if record_leftHand:
+                    cv2.putText(image, "REC Left Hand", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                                1, (0, 0, 255), 3, cv2.LINE_AA)
+                if record_rightHand:
+                    cv2.putText(image, "REC Right Hand", (10, 60), cv2.FONT_HERSHEY_SIMPLEX,
+                                1, (0, 0, 255), 3, cv2.LINE_AA)
+                # cv2.putText(image, "REC", (10, 40), cv2.FONT_HERSHEY_SIMPLEX,
+                #             1, (0, 0, 255), 3, cv2.LINE_AA)
                 writer.write(image)
 
             # print("hands:")
@@ -419,4 +425,4 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
 # f = open("te", mode="w")
 # f.write(all_keypoints.__str__())
 # f.close()
-# open_cam()
+# open_cam(SAVE_CSV=False)
