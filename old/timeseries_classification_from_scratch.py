@@ -95,6 +95,12 @@ def split_target(df):
             left_hand_points = img[23:23+21]
             right_hand_points = img[23+21:23+21+21]
 
+            # # 加上不是向量的點
+            # temp_row = np.append(temp_row, pose_points[0])
+            # temp_row = np.append(temp_row, pose_points[15])
+            # temp_row = np.append(temp_row, pose_points[16])
+            # #
+
             for p1, p2 in pose_sequence:
                 temp_row = np.append(
                     temp_row, pose_points[p2] - pose_points[p1])

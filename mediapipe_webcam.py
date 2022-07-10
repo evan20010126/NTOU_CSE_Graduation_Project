@@ -238,13 +238,13 @@ record_rightHand = False
 # cap = cv2.VideoCapture(f"{dirPath}\\{my_file}")
 
 
-def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True):
+def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num = 0):
     global image
     global frame_keypoints_hands
     global frame_keypoints_pose
     global record_leftHand
     global record_rightHand
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(cam_num)
     writer = cv2.VideoWriter('./output_sample_videos/webcam.avi', cv2.VideoWriter_fourcc(*'XVID'), 20.0,
                              (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
     all_keypoints = list()

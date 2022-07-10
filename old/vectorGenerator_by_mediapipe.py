@@ -18,7 +18,8 @@ PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨�
 # 鹹:salty 小吃:snack 水餃: dumpling 辣: spicy 甜: sweet 酸: sour 好吃: yummy 珍珠奶茶: bubbletea
 signLanguageLabel = "bubbletea"
 # Input video的資料夾路徑
-dirPath = r'..\media\bubbletea'
+rootdirPath = r"C:\Users\User\Desktop\openpose1\build\examples\media"
+# dirPath = r'..\media\bubbletea'
 
 #-------------------------------------------------------------#
 
@@ -232,7 +233,12 @@ def get_label_and_points(index, hand, results, hand_num):
 
 # <Main>
 # 列出指定路徑底下所有檔案(包含資料夾)
-allFileList = os.listdir(dirPath)  # allFileList: 為所有input影片檔案名稱
+
+# Run 1 class
+# allFileList = os.listdir(dirPath)  # allFileList: 為所有input影片檔案名稱
+
+# Run all class
+all_class_name = os.listdir(rootdirPath)
 
 file_counter = 1
 break_processing = False
@@ -241,179 +247,188 @@ frame_keypoints_hands = None
 image = None
 record_leftHand = False
 record_rightHand = False
-for my_file in allFileList:
-    if break_processing:
-        break
-    cap = cv2.VideoCapture(f"{dirPath}\\{my_file}")
-    # cap = cv2.VideoCapture(0)
-    print(f"video: {file_counter} / {len(allFileList)}")
-    print(f"processing file: {my_file}")
-    all_keypoints = list()
-    file_counter += 1
-    with mp_hands.Hands(
-            model_complexity=0,
-            min_detection_confidence=0.5,
-            min_tracking_confidence=0.5) as hands, mp_pose.Pose(
-            min_detection_confidence=0.5,
-            min_tracking_confidence=0.5) as pose:
-        while cap.isOpened():
-            frame_keypoints_pose = np.array(list())
-            frame_keypoints_hands = np.array(list())
-            catch_error = False
-            success, image = cap.read()
-            if not success:
-                print("Ignoring empty camera frame.")
-                # If loading a video, use 'break' instead of 'continue'.
-                break
+for label_name in all_class_name:
+    signLanguageLabel = label_name
+    print("\033[92m")
+    print(signLanguageLabel)
+    print("\033[0m")
+    # break_processing = False
+    file_counter = 1
+    dirPath = f"{rootdirPath}\\{signLanguageLabel}"
+    allFileList = os.listdir(dirPath)  # allFileList: 為所有input影片檔案名稱
+    for my_file in allFileList:
+        if break_processing:
+            break
+        cap = cv2.VideoCapture(f"{dirPath}\\{my_file}")
+        # cap = cv2.VideoCapture(0)
+        print(f"video: {file_counter} / {len(allFileList)}")
+        print(f"processing file: {my_file}")
+        all_keypoints = list()
+        file_counter += 1
+        with mp_hands.Hands(
+                model_complexity=0,
+                min_detection_confidence=0.5,
+                min_tracking_confidence=0.5) as hands, mp_pose.Pose(
+                min_detection_confidence=0.5,
+                min_tracking_confidence=0.5) as pose:
+            while cap.isOpened():
+                frame_keypoints_pose = np.array(list())
+                frame_keypoints_hands = np.array(list())
+                catch_error = False
+                success, image = cap.read()
+                if not success:
+                    print("Ignoring empty camera frame.")
+                    # If loading a video, use 'break' instead of 'continue'.
+                    break
 
-            # To improve performance, optionally mark the image as not writeable to
-            # pass by reference.
-            image.flags.writeable = False
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            results = hands.process(image)
-            results_pose = pose.process(image)
+                # To improve performance, optionally mark the image as not writeable to
+                # pass by reference.
+                image.flags.writeable = False
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                results = hands.process(image)
+                results_pose = pose.process(image)
 
-            # Draw the hand annotations on the image.
-            image.flags.writeable = True
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+                # Draw the hand annotations on the image.
+                image.flags.writeable = True
+                image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-            mp_drawing.draw_landmarks(
-                image,
-                results_pose.pose_landmarks,
-                mp_pose.POSE_CONNECTIONS,
-                landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
-            # print("pose:")
-            if results_pose.pose_landmarks:  # 當有偵測到pose
-                # frame_keypoints_pose
-                for i in range(23):  # 上半身的點(0~22)
-                    # print(f"pose{i}")
-                    # print(results_pose.pose_landmarks.landmark[i])
-                    if (results_pose.pose_landmarks.landmark[i].visibility >= 0.5):
-                        # ! 先隨便設，信心度超過0.5才填
-                        temp_xy = np.array(list())
-                        temp_xy = np.append(
-                            temp_xy, results_pose.pose_landmarks.landmark[i].x * image.shape[1])
-                        temp_xy = np.append(
-                            temp_xy, results_pose.pose_landmarks.landmark[i].y * image.shape[0])
+                mp_drawing.draw_landmarks(
+                    image,
+                    results_pose.pose_landmarks,
+                    mp_pose.POSE_CONNECTIONS,
+                    landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
+                # print("pose:")
+                if results_pose.pose_landmarks:  # 當有偵測到pose
+                    # frame_keypoints_pose
+                    for i in range(23):  # 上半身的點(0~22)
+                        # print(f"pose{i}")
+                        # print(results_pose.pose_landmarks.landmark[i])
+                        if (results_pose.pose_landmarks.landmark[i].visibility >= 0.5):
+                            # ! 先隨便設，信心度超過0.5才填
+                            temp_xy = np.array(list())
+                            temp_xy = np.append(
+                                temp_xy, results_pose.pose_landmarks.landmark[i].x * image.shape[1])
+                            temp_xy = np.append(
+                                temp_xy, results_pose.pose_landmarks.landmark[i].y * image.shape[0])
 
-                        frame_keypoints_pose = np.append(
-                            frame_keypoints_pose, temp_xy)
-                        # all_keypoints.append(
-                        #     results_pose.pose_landmarks.landmark[i].x * image.shape[1])
-                        # all_keypoints.append(
-                        #     results_pose.pose_landmarks.landmark[i].y * image.shape[0])
-                    else:
-                        #! 信心度太低就填0
-                        temp_xy = np.array([0, 0])
-                        frame_keypoints_pose = np.append(
-                            frame_keypoints_pose, temp_xy)
-                        # all_keypoints.append(0)
-                        # all_keypoints.append(0)
-                # print(results_pose.pose_landmarks.landmark[0].x)
-            else:
-                # for i in range(46):  # (23*2) = 46
-                #     all_keypoints.append(0)
-                continue
+                            frame_keypoints_pose = np.append(
+                                frame_keypoints_pose, temp_xy)
+                            # all_keypoints.append(
+                            #     results_pose.pose_landmarks.landmark[i].x * image.shape[1])
+                            # all_keypoints.append(
+                            #     results_pose.pose_landmarks.landmark[i].y * image.shape[0])
+                        else:
+                            #! 信心度太低就填0
+                            temp_xy = np.array([0, 0])
+                            frame_keypoints_pose = np.append(
+                                frame_keypoints_pose, temp_xy)
+                            # all_keypoints.append(0)
+                            # all_keypoints.append(0)
+                    # print(results_pose.pose_landmarks.landmark[0].x)
+                else:
+                    # for i in range(46):  # (23*2) = 46
+                    #     all_keypoints.append(0)
+                    continue
 
-            frame_keypoints_pose = frame_keypoints_pose.reshape(-1, 2)
-            face_width = computeDistance(
-                frame_keypoints_pose[7], frame_keypoints_pose[8])
+                frame_keypoints_pose = frame_keypoints_pose.reshape(-1, 2)
+                face_width = computeDistance(
+                    frame_keypoints_pose[7], frame_keypoints_pose[8])
 
-            normalize_distance = computeDistance(
-                frame_keypoints_pose[11], frame_keypoints_pose[12])
-            normalize_original_point = (
-                frame_keypoints_pose[12] + frame_keypoints_pose[11]) / 2
+                normalize_distance = computeDistance(
+                    frame_keypoints_pose[11], frame_keypoints_pose[12])
+                normalize_original_point = (
+                    frame_keypoints_pose[12] + frame_keypoints_pose[11]) / 2
 
-            Recording = False
-            record_leftHand = False
-            record_rightHand = False
+                Recording = False
+                record_leftHand = False
+                record_rightHand = False
 
-            # <Recording or not recording>
-            # * 任一隻手有高過水平線
-            if (frame_keypoints_pose[16][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[16][1] != 0) or (frame_keypoints_pose[15][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[15][1] != 0):
-                Recording = True
-            # * 右手有高過水平線
-            if (frame_keypoints_pose[16][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[16][1] != 0):
-                record_rightHand = True
-            # * 左手有高過水平線
-            if(frame_keypoints_pose[15][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[15][1] != 0):
-                record_leftHand = True
+                # <Recording or not recording>
+                # * 任一隻手有高過水平線
+                if (frame_keypoints_pose[16][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[16][1] != 0) or (frame_keypoints_pose[15][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[15][1] != 0):
+                    Recording = True
+                # * 右手有高過水平線
+                if (frame_keypoints_pose[16][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[16][1] != 0):
+                    record_rightHand = True
+                # * 左手有高過水平線
+                if(frame_keypoints_pose[15][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[15][1] != 0):
+                    record_leftHand = True
 
-            if results.multi_hand_landmarks:
-                # len(results.multi_hand_landmarks)代表有抓到幾隻手
-                # <--畫手-->
-                for num, hand_landmarks in enumerate(results.multi_hand_landmarks):
-                    mp_drawing.draw_landmarks(
-                        image,
-                        hand_landmarks,
-                        mp_hands.HAND_CONNECTIONS,
-                        mp_drawing_styles.get_default_hand_landmarks_style(),
-                        mp_drawing_styles.get_default_hand_connections_style())
-                    get_label_and_points(num, hand_landmarks, results, len(
-                        results.multi_hand_landmarks))
-                    # print(all_keypoints)
-                # <--End-->
-            else:  # 找不到任何手
-                catch_error = True
+                if results.multi_hand_landmarks:
+                    # len(results.multi_hand_landmarks)代表有抓到幾隻手
+                    # <--畫手-->
+                    for num, hand_landmarks in enumerate(results.multi_hand_landmarks):
+                        mp_drawing.draw_landmarks(
+                            image,
+                            hand_landmarks,
+                            mp_hands.HAND_CONNECTIONS,
+                            mp_drawing_styles.get_default_hand_landmarks_style(),
+                            mp_drawing_styles.get_default_hand_connections_style())
+                        get_label_and_points(num, hand_landmarks, results, len(
+                            results.multi_hand_landmarks))
+                        # print(all_keypoints)
+                    # <--End-->
+                else:  # 找不到任何手
+                    catch_error = True
 
-            frame_keypoints_hands = frame_keypoints_hands.reshape(-1, 2)
+                frame_keypoints_hands = frame_keypoints_hands.reshape(-1, 2)
 
-            # print(f"Recording: {Recording}")
-            # print(f"catch_error: {catch_error}")
+                # print(f"Recording: {Recording}")
+                # print(f"catch_error: {catch_error}")
 
-            if(frame_keypoints_hands.size == 0 or frame_keypoints_pose.size == 0):
-                catch_error = True
+                if(frame_keypoints_hands.size == 0 or frame_keypoints_pose.size == 0):
+                    catch_error = True
 
-            if Recording and not catch_error:
-                # <Normalize>
-                # print("enter")
-                for i in range(23):
-                    if(frame_keypoints_pose[i][0] == 0 and frame_keypoints_pose[i][1] == 0):
-                        all_keypoints.append(0)
-                        all_keypoints.append(0)
-                    else:
-                        all_keypoints.append(
-                            (frame_keypoints_pose[i][0] - normalize_original_point[0])/normalize_distance)
-                        all_keypoints.append(
-                            (frame_keypoints_pose[i][1] - normalize_original_point[1])/normalize_distance)
-                for i in range(42):
-                    if(frame_keypoints_hands[i][0] == 0 and frame_keypoints_hands[i][1] == 0):
-                        all_keypoints.append(0)
-                        all_keypoints.append(0)
-                    else:
-                        all_keypoints.append(
-                            (frame_keypoints_hands[i][0] - normalize_original_point[0])/normalize_distance)
-                        all_keypoints.append(
-                            (frame_keypoints_hands[i][1] - normalize_original_point[1])/normalize_distance)
-                if record_leftHand:
-                    cv2.putText(image, "REC Left Hand", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                                1, (0, 0, 255), 3, cv2.LINE_AA)
-                if record_rightHand:
-                    cv2.putText(image, "REC Right Hand", (10, 60), cv2.FONT_HERSHEY_SIMPLEX,
-                                1, (0, 0, 255), 3, cv2.LINE_AA)
-                # cv2.putText(image, "REC", (10, 40), cv2.FONT_HERSHEY_SIMPLEX,
-                #             1, (0, 0, 255), 3, cv2.LINE_AA)
+                if Recording and not catch_error:
+                    # <Normalize>
+                    # print("enter")
+                    for i in range(23):
+                        if(frame_keypoints_pose[i][0] == 0 and frame_keypoints_pose[i][1] == 0):
+                            all_keypoints.append(0)
+                            all_keypoints.append(0)
+                        else:
+                            all_keypoints.append(
+                                (frame_keypoints_pose[i][0] - normalize_original_point[0])/normalize_distance)
+                            all_keypoints.append(
+                                (frame_keypoints_pose[i][1] - normalize_original_point[1])/normalize_distance)
+                    for i in range(42):
+                        if(frame_keypoints_hands[i][0] == 0 and frame_keypoints_hands[i][1] == 0):
+                            all_keypoints.append(0)
+                            all_keypoints.append(0)
+                        else:
+                            all_keypoints.append(
+                                (frame_keypoints_hands[i][0] - normalize_original_point[0])/normalize_distance)
+                            all_keypoints.append(
+                                (frame_keypoints_hands[i][1] - normalize_original_point[1])/normalize_distance)
+                    if record_leftHand:
+                        cv2.putText(image, "REC Left Hand", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                                    1, (0, 0, 255), 3, cv2.LINE_AA)
+                    if record_rightHand:
+                        cv2.putText(image, "REC Right Hand", (10, 60), cv2.FONT_HERSHEY_SIMPLEX,
+                                    1, (0, 0, 255), 3, cv2.LINE_AA)
+                    # cv2.putText(image, "REC", (10, 40), cv2.FONT_HERSHEY_SIMPLEX,
+                    #             1, (0, 0, 255), 3, cv2.LINE_AA)
 
-            # print("hands:")
-            # print(results.multi_handedness)
-            # if (results.multi_handedness != None):
-            #     break_processing = True
-            #     break
+                # print("hands:")
+                # print(results.multi_handedness)
+                # if (results.multi_handedness != None):
+                #     break_processing = True
+                #     break
 
-            # Flip the image horizoㄜntally for a selfie-view display.
-            # cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
-            cv2.imshow('MediaPipe Hands', image)
+                # Flip the image horizoㄜntally for a selfie-view display.
+                # cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
+                cv2.imshow('MediaPipe Hands', image)
 
-            if cv2.waitKey(5) & 0xFF == 27:
-                break_processing = True
-                break
-    cap.release()
-    cv2.destroyAllWindows()
-    if SAVE_EXCEL:
-        write_xlsx("output.xlsx", all_keypoints)
-    if SAVE_CSV:
-        write_csv("output.csv", all_keypoints)
-# print(all_keypoints)
-# f = open("te", mode="w")
-# f.write(all_keypoints.__str__())
-# f.close()
+                if cv2.waitKey(5) & 0xFF == 27:
+                    break_processing = True
+                    break
+        cap.release()
+        cv2.destroyAllWindows()
+        if SAVE_EXCEL:
+            write_xlsx("output.xlsx", all_keypoints)
+        if SAVE_CSV:
+            write_csv("output.csv", all_keypoints)
+    # print(all_keypoints)
+    # f = open("te", mode="w")
+    # f.write(all_keypoints.__str__())
+    # f.close()
