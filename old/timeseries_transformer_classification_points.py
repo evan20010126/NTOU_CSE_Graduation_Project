@@ -348,6 +348,7 @@ test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
 print("Test Accuracy:", test_acc)
 print("Test loss:", test_loss)
 
+
 """## Conclusions
 
 In about 110-120 epochs (25s each on Colab), the model reaches a training
