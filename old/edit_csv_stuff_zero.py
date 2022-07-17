@@ -1,6 +1,6 @@
 import pandas as pd
 
-summary_file_version = 7
+summary_file_version = 8
 
 # chunk_list = list()
 # data_chunks = pd.read_csv(
