@@ -16,9 +16,9 @@ PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨�
 
 
 # 鹹:salty 小吃:snack 水餃: dumpling 辣: spicy 甜: sweet 酸: sour 好吃: yummy 珍珠奶茶: bubbletea
-signLanguageLabel = "bubbletea"
+signLanguageLabel = ""
 # Input video的資料夾路徑
-rootdirPath = r"C:\Users\User\Desktop\openpose1\build\examples\media_test"
+rootdirPath = r"..\media"
 # dirPath = r'..\media\bubbletea'
 
 #-------------------------------------------------------------#
