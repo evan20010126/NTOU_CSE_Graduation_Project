@@ -3,7 +3,8 @@ from tensorflow import keras
 from sklearn.model_selection import train_test_split
 import numpy as np
 import pandas as pd
-
+import seaborn as sn
+import matplotlib.pyplot as plt
 sign_language_df = pd.read_csv(
     "Summary_stuff_zero_8st.csv", header=None)
 print(sign_language_df)
@@ -108,12 +109,23 @@ model = keras.models.load_model("Convolution_best_model.h5")
 
 # confusion matrix
 predict_ans = np.argmax(model.predict(x_test), axis=-1)  # *  argmax 找最大值的index
-# y_true = np.argmax(y_test)
-print(x_test)
-print(y_test)
-print("predict: ", predict_ans.shape)
-print("predict: ", predict_ans)
-# print("y_true: ", y_true.shape)
-# print("y_true: ", y_true)
-cm = tf.math.confusion_matrix(y_test, predict_ans).numpy()
+cm = tf.math.confusion_matrix(y_test, predict_ans).numpy().astype(np.float32)
 print(cm)
+print(cm.shape[0])
+print(cm.shape[1])
+
+for i in range(cm.shape[0]):
+    total_num = 0.0
+    for j in range(cm.shape[1]):
+        total_num += cm[i][j]
+    for j in range(cm.shape[1]):
+        cm[i][j] = float(cm[i][j]) / float(total_num)
+print(type(cm[0][0]))
+df_cm = pd.DataFrame(cm, index=['Salty', 'Snack', 'Bubble Tea',
+                                'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'],
+                     columns=['Salty', 'Snack', 'Bubble Tea',
+                              'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'])
+fig = plt.figure(figsize=(10, 7))
+sn.heatmap(df_cm, annot=True)
+plt.show()
+fig.savefig('confusion_matrix.png')
