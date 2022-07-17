@@ -67,7 +67,7 @@ import numpy as np
 import pandas as pd
 
 sign_language_df = pd.read_csv(
-    "Summary_stuff_zero_7st.csv", header=None)
+    "Summary_stuff_zero_8st.csv", header=None)
 print(sign_language_df)
 
 # from numpy import genfromtxt
@@ -322,7 +322,7 @@ model.summary()
 #     patience=10, restore_best_weights=True)]
 callbacks = [
     keras.callbacks.ModelCheckpoint(
-        "Transformer_best_model.h5", save_best_only=True, monitor="sparse_categorical_accuracy"
+        "Transformer_best_model_points.h5", save_best_only=True, monitor="sparse_categorical_accuracy"
     ),
     keras.callbacks.ReduceLROnPlateau(
         monitor="sparse_categorical_accuracy", factor=0.5, patience=20, min_lr=0.0001
@@ -342,7 +342,7 @@ model.fit(
 
 # model.save('transformer_model.h5')
 
-model = keras.models.load_model("Transformer_best_model.h5")
+model = keras.models.load_model("Transformer_best_model_points.h5")
 
 test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
 print("Test Accuracy:", test_acc)

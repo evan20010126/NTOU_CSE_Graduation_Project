@@ -16,9 +16,9 @@ PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨�
 
 
 # 鹹:salty 小吃:snack 水餃: dumpling 辣: spicy 甜: sweet 酸: sour 好吃: yummy 珍珠奶茶: bubbletea
-signLanguageLabel = "bubbletea"
+signLanguageLabel = ""
 # Input video的資料夾路徑
-rootdirPath = r"C:\Users\User\Desktop\openpose1\build\examples\media_test"
+rootdirPath = r"..\media"
 # dirPath = r'..\media\bubbletea'
 
 #-------------------------------------------------------------#
@@ -145,7 +145,7 @@ def get_label_and_points(index, hand, results, hand_num):
             label = classification.classification[0].label
             score = classification.classification[0].score
             # text = '{} {}'.format(label, round(score, 2))
-            print(label)
+            # print(label)
             # Extract Coordinates
             # coords = tuple(np.multiply(
             #     np.array((hand.landmark[mp_hands.HandLandmark.WRIST].x,
