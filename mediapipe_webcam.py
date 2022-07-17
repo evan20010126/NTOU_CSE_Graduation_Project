@@ -181,44 +181,37 @@ def get_label_and_points(index, hand, results, hand_num):
                             frame_keypoints_hands = np.append(
                                 frame_keypoints_hands, temp_xy)
             elif(hand_num == 1):
-                if label == "Left":
-                    if record_leftHand:
-                        for i in range(21):
-                            temp_xy = np.array(list())
-                            temp_xy = np.append(
-                                temp_xy, hand.landmark[i].x * image.shape[1])
-                            temp_xy = np.append(
-                                temp_xy, hand.landmark[i].y * image.shape[0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
-                        for i in range(21):
-                            temp_xy = np.array([0, 0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
-                    else:
-                        for i in range(42):
-                            temp_xy = np.array([0, 0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
-                elif label == "Right":
-                    if record_rightHand:
-                        for i in range(21):
-                            temp_xy = np.array([0, 0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
-                        for i in range(21):
-                            temp_xy = np.array(list())
-                            temp_xy = np.append(
-                                temp_xy, hand.landmark[i].x * image.shape[1])
-                            temp_xy = np.append(
-                                temp_xy, hand.landmark[i].y * image.shape[0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
-                    else:
-                        for i in range(42):
-                            temp_xy = np.array([0, 0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
+                if record_leftHand:
+                    for i in range(21):
+                        temp_xy = np.array(list())
+                        temp_xy = np.append(
+                            temp_xy, hand.landmark[i].x * image.shape[1])
+                        temp_xy = np.append(
+                            temp_xy, hand.landmark[i].y * image.shape[0])
+                        frame_keypoints_hands = np.append(
+                            frame_keypoints_hands, temp_xy)
+                    for i in range(21):
+                        temp_xy = np.array([0, 0])
+                        frame_keypoints_hands = np.append(
+                            frame_keypoints_hands, temp_xy)
+                elif record_rightHand:
+                    for i in range(21):
+                        temp_xy = np.array([0, 0])
+                        frame_keypoints_hands = np.append(
+                            frame_keypoints_hands, temp_xy)
+                    for i in range(21):
+                        temp_xy = np.array(list())
+                        temp_xy = np.append(
+                            temp_xy, hand.landmark[i].x * image.shape[1])
+                        temp_xy = np.append(
+                            temp_xy, hand.landmark[i].y * image.shape[0])
+                        frame_keypoints_hands = np.append(
+                            frame_keypoints_hands, temp_xy)
+                else:
+                    for i in range(42):
+                        temp_xy = np.array([0, 0])
+                        frame_keypoints_hands = np.append(
+                            frame_keypoints_hands, temp_xy)
             else:  # 有第三隻手
                 catch_error = True
         # print("hand.landmark.size: ", len(hand.landmark)) # = 21
@@ -238,7 +231,7 @@ record_rightHand = False
 # cap = cv2.VideoCapture(f"{dirPath}\\{my_file}")
 
 
-def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num = 0):
+def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=0):
     global image
     global frame_keypoints_hands
     global frame_keypoints_pose
