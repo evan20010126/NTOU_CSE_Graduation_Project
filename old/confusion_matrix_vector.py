@@ -6,7 +6,7 @@ import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
 sign_language_df = pd.read_csv(
-    "Summary_stuff_zero_8st.csv", header=None)
+    "Summary_stuff_zero_9st.csv", header=None)
 print(sign_language_df)
 
 hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
@@ -105,8 +105,8 @@ x_train = x_train.flatten().reshape(
     x_train.shape[0], (x_train.shape[1]//(point_number*2)), (point_number*2))
 x_test = x_test.flatten().reshape(
     x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
-model = keras.models.load_model("Convolution_best_model.h5")
-
+model_name = "Convolution"
+model = keras.models.load_model(f"{model_name}_best_model.h5")
 # confusion matrix
 predict_ans = np.argmax(model.predict(x_test), axis=-1)  # *  argmax 找最大值的index
 cm = tf.math.confusion_matrix(y_test, predict_ans).numpy().astype(np.float32)
@@ -128,4 +128,4 @@ df_cm = pd.DataFrame(cm, index=['Salty', 'Snack', 'Bubble Tea',
 fig = plt.figure(figsize=(10, 7))
 sn.heatmap(df_cm, annot=True)
 plt.show()
-fig.savefig('confusion_matrix.png')
+fig.savefig(f'{model_name}_confusion_matrix.png')
