@@ -8,8 +8,6 @@ if START:
     import preprocess_userCSV
 
 
-summary_file_version = 9
-
 # chunk_list = list()
 # data_chunks = pd.read_csv(
 #     f'Summary_{summary_file_version}st.csv', chunksize=10)
@@ -32,19 +30,21 @@ summary_file_version = 9
 #     'Summary_stuff_zero_5st.csv', index=False, header=False)
 
 # 00853029
-largest_column_count = 0
-csv_file = f'Summary_{summary_file_version}st.csv'
+
+summary_file_version = "9_1"  # !改這裡就好
+largest_column_count = 0  # !還有這裡
+csv_file = f'output.csv'
 row_num = 0
 with open(csv_file, 'r') as temp_f:
     lines = temp_f.readlines()
     row_num = len(lines)
-    for l in lines:
-        column_count = len(l.split(','))
-        if largest_column_count < column_count:
-            largest_column_count = column_count
+    # for l in lines:
+    #     column_count = len(l.split(','))
+    #     if largest_column_count < column_count:
+    #         largest_column_count = column_count
 temp_f.close()
 
-print(largest_column_count)
+# print(largest_column_count)
 
 # column_names = [i for i in range(0, largest_column_count)]
 
