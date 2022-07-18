@@ -107,7 +107,7 @@ def split_target(df):
 def start_btn_func(target_class_num):
     # generate webcam.csv
     mediapipe_webcam.open_cam(SAVE_REC=False, SAVE_EXCEL=False,
-                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=1)
+                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=0)
     # generate webcam_stuff_zero.csv
     preprocess_userCSV.preprocess(max_column=29251)
 
@@ -121,7 +121,8 @@ def start_btn_func(target_class_num):
     x_test = x_test.flatten().reshape(
         x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
     # model = keras.models.load_model('Convolution_best_model.h5')
-    model = keras.models.load_model('Convolution_best_model.h5')
+    select_model_name = 'Lstm_best_model.h5'
+    model = keras.models.load_model(select_model_name)
     model.summary()
     predict_answer = model.predict(x_test)
     print("Predict: ", predict_answer)
@@ -136,16 +137,23 @@ def start_btn_func(target_class_num):
     print(f"\033[92m{answer_classlist[idx]}")
     print("\033[0m")
     CORRECT = False
+
+    if select_model_name == 'Transformer_best_model_vector.h5':
+        layer_num = -5
+    elif select_model_name == 'Transformer_best_model_points.h5':
+        layer_num = -5
+    else:
+        layer_num = -3
     if (target_class_num == idx):
         # correct
         CORRECT = True
         second_idx = predict_answer.index(sort_predict_answer[-2])
-        gradcam_detect.get_heapmap(model, -5, x_test[0], second_idx)
+        gradcam_detect.get_heapmap(model, layer_num, x_test[0], second_idx)
     else:
         # wrong
         CORRECT = False
         first_idx = predict_answer.index(sort_predict_answer[-1])
-        gradcam_detect.get_heapmap(model, -5, x_test[0], first_idx)
+        gradcam_detect.get_heapmap(model, layer_num, x_test[0], first_idx)
 
     createScore(CORRECT)
 

@@ -126,7 +126,7 @@ def start_btn_func(target_class_num):
     x_test = x_test.flatten().reshape(
         x_test.shape[0], (x_test.shape[1]//130), 130)
     # model = keras.models.load_model('Convolution_best_model.h5')
-    model = keras.models.load_model('Transformer_best_model.h5')
+    model = keras.models.load_model('Transformer_best_model_points.h5')
     model.summary()
     predict_answer = model.predict(x_test)
     print("Predict: ", predict_answer)

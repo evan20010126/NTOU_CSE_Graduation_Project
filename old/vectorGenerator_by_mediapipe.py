@@ -7,9 +7,9 @@ from sklearn.feature_extraction import img_to_graph
 import csv
 #-------------------------------------------------------------#
 # Switch
-SAVE_REC = False  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
+SAVE_REC = True  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
 SAVE_EXCEL = False  # 是否儲存特徵點到output.xlsx
-SAVE_CSV = True
+SAVE_CSV = False
 PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
 #-------------------------------------------------------------#
 # Input argument
@@ -18,7 +18,7 @@ PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨�
 # 鹹:salty 小吃:snack 水餃: dumpling 辣: spicy 甜: sweet 酸: sour 好吃: yummy 珍珠奶茶: bubbletea
 signLanguageLabel = ""
 # Input video的資料夾路徑
-rootdirPath = r"..\media"
+rootdirPath = r"..\media_test"
 # dirPath = r'..\media\bubbletea'
 
 #-------------------------------------------------------------#
@@ -253,6 +253,10 @@ for label_name in all_class_name:
         if break_processing:
             break
         cap = cv2.VideoCapture(f"{dirPath}\\{my_file}")
+
+        if SAVE_REC:
+            writer = cv2.VideoWriter(f'./output_sample_videos/{my_file}', cv2.VideoWriter_fourcc(*'XVID'), 20.0,
+                                     (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
         # cap = cv2.VideoCapture(0)
         print(f"video: {file_counter} / {len(allFileList)}")
         print(f"processing file: {my_file}")
@@ -410,11 +414,15 @@ for label_name in all_class_name:
 
                 # Flip the image horizoㄜntally for a selfie-view display.
                 # cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
+                if SAVE_REC:
+                    writer.write(image)
                 cv2.imshow('MediaPipe Hands', image)
 
                 if cv2.waitKey(5) & 0xFF == 27:
                     break_processing = True
                     break
+        if SAVE_REC:
+            writer.release()
         cap.release()
         cv2.destroyAllWindows()
         if SAVE_EXCEL:
