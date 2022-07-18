@@ -105,7 +105,7 @@ x_train = x_train.flatten().reshape(
     x_train.shape[0], (x_train.shape[1]//130), 130)
 x_test = x_test.flatten().reshape(
     x_test.shape[0], (x_test.shape[1]//130), 130)
-model = keras.models.load_model("Transformer_best_model_points.h5")
+model = keras.models.load_model("Transformer_points_best_model.h5")
 
 # confusion matrix
 predict_ans = np.argmax(model.predict(x_test), axis=-1)  # *  argmax 找最大值的index
@@ -128,4 +128,4 @@ df_cm = pd.DataFrame(cm, index=['Salty', 'Snack', 'Bubble Tea',
 fig = plt.figure(figsize=(10, 7))
 sn.heatmap(df_cm, annot=True)
 plt.show()
-fig.savefig('confusion_matrix.png')
+fig.savefig('Transformer_points_confusion_matrix.png')
