@@ -9,7 +9,7 @@ import csv
 # Switch
 SAVE_REC = True  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
 SAVE_EXCEL = False  # 是否儲存特徵點到output.xlsx
-SAVE_CSV = False
+SAVE_CSV = True
 PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
 #-------------------------------------------------------------#
 # Input argument
@@ -403,6 +403,8 @@ for label_name in all_class_name:
                     if record_rightHand:
                         cv2.putText(image, "REC Right Hand", (10, 60), cv2.FONT_HERSHEY_SIMPLEX,
                                     1, (0, 0, 255), 3, cv2.LINE_AA)
+                    if SAVE_REC:
+                        writer.write(image)
                     # cv2.putText(image, "REC", (10, 40), cv2.FONT_HERSHEY_SIMPLEX,
                     #             1, (0, 0, 255), 3, cv2.LINE_AA)
 
@@ -414,8 +416,7 @@ for label_name in all_class_name:
 
                 # Flip the image horizoㄜntally for a selfie-view display.
                 # cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
-                if SAVE_REC:
-                    writer.write(image)
+
                 cv2.imshow('MediaPipe Hands', image)
 
                 if cv2.waitKey(5) & 0xFF == 27:
