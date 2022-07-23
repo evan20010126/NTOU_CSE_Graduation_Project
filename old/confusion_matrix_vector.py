@@ -105,7 +105,10 @@ x_train = x_train.flatten().reshape(
     x_train.shape[0], (x_train.shape[1]//(point_number*2)), (point_number*2))
 x_test = x_test.flatten().reshape(
     x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
-model_name = "Transformer_vector"
+
+
+model_name = "Lstm"
+
 model = keras.models.load_model(f"{model_name}_best_model.h5")
 # confusion matrix
 predict_ans = np.argmax(model.predict(x_test), axis=-1)  # *  argmax 找最大值的index
