@@ -35,7 +35,9 @@ def preprocess(max_column=0, src_csv_file='webcam.csv', dest_csv_file="webcam_st
         frame_cutting = math.ceil(
             ((largest_column_count-1)/130.0) / ((max_column-1)/130.0))
         print(f"frame_compact(frame_cutting):{frame_cutting}")
-
+        trans1 = list()
+        number1 = 0
+        trans2 = list()
         # data = genfromtxt(src_csv_file, delimiter=',',)  # numpy讀csv
 
         with open(src_csv_file, newline='') as f:
@@ -52,6 +54,8 @@ def preprocess(max_column=0, src_csv_file='webcam.csv', dest_csv_file="webcam_st
             for j in range(130):
                 new_row.append(data[i+j])
                 count_column += 1
+            trans1.append(number1)
+            number1 += frame_cutting
         # for i in range(max_column - count_column):
             # new_row.append(0)
 
@@ -81,10 +85,21 @@ def preprocess(max_column=0, src_csv_file='webcam.csv', dest_csv_file="webcam_st
                 stuffed_list = np.append(stuffed_list, new_row[math.floor(i)])
             else:
                 stuffed_list = np.append(stuffed_list, new_row[math.floor(i)])
+            trans2.append(math.floor(i))
 
         stuffed_list = stuffed_list.flatten()
         write_csv(dest_csv_file, stuffed_list, mode)
         print(len(stuffed_list))
+        # (0,2,4,6)
+        # (0,0,1,1,2,2,2,3....)
+        # => newarr[i] = arr1[arr2[i]]
+        print(f"TTTTT1{trans1}")
+        print(f"TTTTT2{trans2}")
+
+        summary_trans = list()
+        for ele in trans2:
+            summary_trans.append(trans1[ele])
+        return summary_trans
         # stuff 0
         # column_names = [i for i in range(0, largest_column_count)]
 

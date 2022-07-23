@@ -107,9 +107,9 @@ def split_target(df):
 def start_btn_func(target_class_num):
     # generate webcam.csv
     mediapipe_webcam.open_cam(SAVE_REC=False, SAVE_EXCEL=False,
-                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=0)
+                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=1)
     # generate webcam_stuff_zero.csv
-    preprocess_userCSV.preprocess(max_column=29251)
+    FTTAB = preprocess_userCSV.preprocess(max_column=29251)
 
     webcam_df = pd.read_csv("webcam_stuff_zero.csv",
                             header=None)
@@ -121,7 +121,7 @@ def start_btn_func(target_class_num):
     x_test = x_test.flatten().reshape(
         x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
     # model = keras.models.load_model('Convolution_best_model.h5')
-    select_model_name = 'Lstm_best_model.h5'
+    select_model_name = 'Convolution_best_model.h5'
     model = keras.models.load_model(select_model_name)
     model.summary()
     predict_answer = model.predict(x_test)
@@ -148,12 +148,14 @@ def start_btn_func(target_class_num):
         # correct
         CORRECT = True
         second_idx = predict_answer.index(sort_predict_answer[-2])
-        gradcam_detect.get_heapmap(model, layer_num, x_test[0], second_idx)
+        gradcam_detect.get_heapmap(
+            model, layer_num, x_test[0], second_idx, FTTAB)
     else:
         # wrong
         CORRECT = False
         first_idx = predict_answer.index(sort_predict_answer[-1])
-        gradcam_detect.get_heapmap(model, layer_num, x_test[0], first_idx)
+        gradcam_detect.get_heapmap(
+            model, layer_num, x_test[0], first_idx, FTTAB)
 
     createScore(CORRECT)
 
