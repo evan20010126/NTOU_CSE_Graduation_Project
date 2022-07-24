@@ -165,7 +165,16 @@ def split_target(df):
 #   new_df = data_df.iloc[:,:501]
 #   return new_df
 #re_sign_language_df = reduce_data(sign_language_df)
-train, test = train_test_split(sign_language_df, test_size=0.2)
+
+# train, test = train_test_split(sign_language_df, test_size=0.2)
+
+evan = sign_language_df[:406, :]
+edmund = sign_language_df[406:814, :]
+yumi = sign_language_df[814:, :]
+
+train = pd.concat([evan, yumi])
+test = edmund
+
 x_train, y_train = split_target(train)
 x_test, y_test = split_target(test)
 
