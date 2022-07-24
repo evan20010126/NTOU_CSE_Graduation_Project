@@ -168,9 +168,9 @@ def split_target(df):
 
 # train, test = train_test_split(sign_language_df, test_size=0.2)
 
-evan = sign_language_df[:406, :]
-edmund = sign_language_df[406:814, :]
-yumi = sign_language_df[814:, :]
+evan = sign_language_df.iloc[:406, :]
+edmund = sign_language_df.iloc[406:814, :]
+yumi = sign_language_df.iloc[814:, :]
 
 train = pd.concat([evan, yumi])
 test = edmund
