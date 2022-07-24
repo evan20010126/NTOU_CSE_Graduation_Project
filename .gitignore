@@ -1,7 +1,5 @@
 
-__pycache__/gradcam_detect.cpython-37.pyc
-__pycache__/mediapipe_webcam.cpython-37.pyc
-__pycache__/preprocess_userCSV.cpython-37.pyc
+
 CSV_old_data/Summary_7st.csv
 CSV_old_data/Summary_stuff_zero_7st.csv
 output.csv
@@ -19,6 +17,4 @@ Summary_stuff_zero_8st.csv
 Summary_stuff_zero_9st.csv
 output_sample_videos/220709_124851-5668087.MOV
 output_sample_videos/220709_133048-9788325.MOV
-__pycache__/gradcam_detect.cpython-37.pyc
-__pycache__/preprocess_userCSV.cpython-37.pyc
 *.pyc
