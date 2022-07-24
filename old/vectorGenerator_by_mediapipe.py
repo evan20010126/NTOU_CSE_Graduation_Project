@@ -7,7 +7,7 @@ from sklearn.feature_extraction import img_to_graph
 import csv
 #-------------------------------------------------------------#
 # Switch
-SAVE_REC = True  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
+SAVE_REC = False  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
 SAVE_EXCEL = False  # 是否儲存特徵點到output.xlsx
 SAVE_CSV = True
 PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
@@ -138,8 +138,8 @@ def get_label_and_points(index, hand, results, hand_num):
         # print(idx)
         # # print(classification.classification)
         # print(f"index: {index}")
-        # if classification.classification[0].index == index:
-        if idx == index:    #
+        if classification.classification[0].index == index:
+            # if idx == index:    #
 
             # Process results
             label = classification.classification[0].label
