@@ -21,3 +21,4 @@ output_sample_videos/220709_124851-5668087.MOV
 output_sample_videos/220709_133048-9788325.MOV
 __pycache__/gradcam_detect.cpython-37.pyc
 __pycache__/preprocess_userCSV.cpython-37.pyc
+*.pyc
