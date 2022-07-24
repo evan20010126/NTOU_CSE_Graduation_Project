@@ -15,4 +15,9 @@ output_sample_videos/phonecam.mp4
 output_sample_videos/webcam.avi
 Summary_8st.csv
 Summary_9st.csv
+Summary_stuff_zero_8st.csv
 Summary_stuff_zero_9st.csv
+output_sample_videos/220709_124851-5668087.MOV
+output_sample_videos/220709_133048-9788325.MOV
+__pycache__/gradcam_detect.cpython-37.pyc
+__pycache__/preprocess_userCSV.cpython-37.pyc
