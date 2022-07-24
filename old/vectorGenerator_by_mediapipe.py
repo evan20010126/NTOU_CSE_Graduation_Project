@@ -138,8 +138,8 @@ def get_label_and_points(index, hand, results, hand_num):
         # print(idx)
         # # print(classification.classification)
         # print(f"index: {index}")
-        # if classification.classification[0].index == index:
-        if idx == index:    #
+        if classification.classification[0].index == index:
+            # if idx == index:    #
 
             # Process results
             label = classification.classification[0].label
