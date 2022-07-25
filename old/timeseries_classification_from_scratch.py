@@ -37,7 +37,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
 sign_language_df = pd.read_csv(
-    "Summary_stuff_zero_9st.csv", header=None)
+    "Summary_stuff_zero_10st.csv", header=None)
 # print(sign_language_df)
 
 # sign_language_df = sign_language_df[:][:-2]
@@ -131,8 +131,8 @@ evan = sign_language_df.iloc[:406, :]
 edmund = sign_language_df.iloc[406:814, :]
 yumi = sign_language_df.iloc[814:, :]
 
-train = pd.concat([yumi, edmund])
-test = evan
+train = pd.concat([edmund, evan])
+test = yumi
 
 x_train, y_train = split_target(train)
 x_test, y_test = split_target(test)
