@@ -13,6 +13,6 @@ def create_gif(source, name, duration):
 path = os.chdir("../path_img/")
 pic_list = os.listdir()
 print(pic_list)
-gif_name = f"test.gif"
+gif_name = f"salty.gif"
 duration_time = 0.05
 create_gif(pic_list, gif_name, duration_time)

@@ -18,7 +18,12 @@ pose_sequence = [(11, 12),
 
 point_number = len(hand_sequence*2) + len(pose_sequence)
 
-colorlist = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (0, 0, 0), ]
+colorlist_left = [(255, 150, 150), (255, 48, 48), (194, 0, 0), ]  # bgr
+colorlist_pose = [(171, 255, 171), (13, 255, 13), (0, 178, 0), ]
+colorlist_right = [(140, 140, 255), (38, 38, 255), (0, 0, 194), ]
+thick = 3
+circle_thickness = -1
+radius = 1
 
 
 def draw_path(df):
@@ -34,7 +39,10 @@ def draw_path(df):
         path_img.fill(255)
         color_idx = 0
         for row in data:
-            point_color = colorlist[color_idx % len(colorlist)]
+            point_color_left = colorlist_left[color_idx % len(colorlist_left)]
+            point_color_pose = colorlist_pose[color_idx % len(colorlist_pose)]
+            point_color_right = colorlist_right[color_idx % len(
+                colorlist_right)]
             color_idx += 1
             # row = data[0]
             # pose: 23個點 left/right:各21個點 23+21*2=65
@@ -47,7 +55,7 @@ def draw_path(df):
             right_hand_points = img[23+21:23+21+21]
 
             cv2.circle(path_img, (int(pose_points[0][0]*large_scale+path_img_center[0]), int(
-                pose_points[0][1]*large_scale+path_img_center[0])), radius=3, color=point_color, thickness=1)
+                pose_points[0][1]*large_scale+path_img_center[0])), radius=radius, color=point_color_pose, thickness=circle_thickness)
 
             for p1, p2 in pose_sequence:
                 point1 = (pose_points[p1] *
@@ -56,15 +64,13 @@ def draw_path(df):
                           large_scale)+path_img_center[1]
                 cv2.line(path_img, (int(point1[0]), int(point1[1])),
                          (int(point2[0]),
-                          int(point2[1])), point_color, 1)
+                          int(point2[1])), point_color_pose, thick)
                 cv2.circle(path_img, (int(point1[0]), int(
-                    point1[1])), radius=1, color=point_color, thickness=-1)
+                    point1[1])), radius=1, color=point_color_pose, thickness=circle_thickness)
                 cv2.circle(path_img, (int(point2[0]), int(
-                    point2[1])), radius=1, color=point_color, thickness=-1)
+                    point2[1])), radius=1, color=point_color_pose, thickness=circle_thickness)
 
             for p1, p2 in hand_sequence:
-                print(right_hand_points[p1])
-                print(right_hand_points[p2])
                 point1 = (left_hand_points[p1] *
                           large_scale)+path_img_center[0]
                 point2 = (left_hand_points[p2] *
@@ -73,11 +79,11 @@ def draw_path(df):
                 print(f"leftHand: {point1}")
                 cv2.line(path_img, (int(point1[0]), int(point1[1])),
                          (int(point2[0]),
-                          int(point2[1])), point_color, 1)
+                          int(point2[1])), point_color_left, thick)
                 cv2.circle(path_img, (int(point1[0]), int(
-                    point1[1])), radius=1, color=point_color, thickness=-1)
+                    point1[1])), radius=radius, color=point_color_left, thickness=circle_thickness)
                 cv2.circle(path_img, (int(point2[0]), int(
-                    point2[1])), radius=1, color=point_color, thickness=-1)
+                    point2[1])), radius=radius, color=point_color_left, thickness=circle_thickness)
 
             for p1, p2 in hand_sequence:
                 point1 = (right_hand_points[p1] *
@@ -87,11 +93,11 @@ def draw_path(df):
 
                 print(f"rightHand: {point1}")
                 cv2.line(path_img, (int(point1[0]), int(point1[1])), (int(
-                    point2[0]), int(point2[1])), point_color, 1)
+                    point2[0]), int(point2[1])), point_color_right, thick)
                 cv2.circle(path_img, (int(point1[0]), int(
-                    point1[1])), radius=1, color=point_color, thickness=-1)
+                    point1[1])), radius=radius, color=point_color_right, thickness=circle_thickness)
                 cv2.circle(path_img, (int(point2[0]), int(
-                    point2[1])), radius=1, color=point_color, thickness=-1)
+                    point2[1])), radius=radius, color=point_color_right, thickness=circle_thickness)
 
         cv2.imshow('path img', path_img)
         counter_str = "%05d" % counter

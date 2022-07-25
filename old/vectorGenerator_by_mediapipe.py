@@ -1,3 +1,4 @@
+from glob import glob
 import cv2
 import mediapipe as mp
 import os
@@ -18,7 +19,7 @@ PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨�
 # 鹹:salty 小吃:snack 水餃: dumpling 辣: spicy 甜: sweet 酸: sour 好吃: yummy 珍珠奶茶: bubbletea
 signLanguageLabel = ""
 # Input video的資料夾路徑
-rootdirPath = r"..\media"
+rootdirPath = r"..\media_test"
 # dirPath = r'..\media\bubbletea'
 
 #-------------------------------------------------------------#
@@ -125,6 +126,11 @@ def computeDistance(p1, p2):
     return ((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2) ** 0.5
 
 
+my_counter = 0
+temp_left = np.array(list())
+temp_right = np.array(list())
+
+
 def get_label_and_points(index, hand, results, hand_num):
     global previous_hand, first
     global all_keypoints
@@ -133,6 +139,10 @@ def get_label_and_points(index, hand, results, hand_num):
     global catch_error
     global record_leftHand
     global record_rightHand
+    global my_counter
+    global temp_left
+    global temp_right
+
     # result.multi_handedness放此手的label跟score
     for idx, classification in enumerate(results.multi_handedness):
         # print(idx)
@@ -154,7 +164,8 @@ def get_label_and_points(index, hand, results, hand_num):
             # print("label: ", label)
 
             if(hand_num == 2):
-                if label == "Left":
+                my_counter += 1
+                if label == "Right":
                     if record_leftHand:
                         for i in range(21):
                             temp_xy = np.array(list())
@@ -162,14 +173,14 @@ def get_label_and_points(index, hand, results, hand_num):
                                 temp_xy, hand.landmark[i].x * image.shape[1])
                             temp_xy = np.append(
                                 temp_xy, hand.landmark[i].y * image.shape[0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
+                            temp_left = np.append(
+                                temp_left, temp_xy)
                     else:
                         for i in range(21):
                             temp_xy = np.array([0, 0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
-                if label == "Right":
+                            temp_left = np.append(
+                                temp_left, temp_xy)
+                if label == "Left":
                     if record_rightHand:
                         for i in range(21):
                             temp_xy = np.array(list())
@@ -177,13 +188,21 @@ def get_label_and_points(index, hand, results, hand_num):
                                 temp_xy, hand.landmark[i].x * image.shape[1])
                             temp_xy = np.append(
                                 temp_xy, hand.landmark[i].y * image.shape[0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
+                            temp_right = np.append(
+                                temp_right, temp_xy)
                     else:
                         for i in range(21):
                             temp_xy = np.array([0, 0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
+                            temp_right = np.append(
+                                temp_right, temp_xy)
+                if my_counter == 2:
+                    my_counter = 0
+                    frame_keypoints_hands = np.append(
+                        frame_keypoints_hands, temp_left)
+                    frame_keypoints_hands = np.append(
+                        frame_keypoints_hands, temp_right)
+                    temp_left = np.array(list())
+                    temp_right = np.array(list())
             elif(hand_num == 1):
                 if record_leftHand:
                     for i in range(21):
