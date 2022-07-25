@@ -170,8 +170,10 @@ evan = sign_language_df.iloc[:406, :]
 edmund = sign_language_df.iloc[406:814, :]
 yumi = sign_language_df.iloc[814:, :]
 
+
 train = pd.concat([evan, edmund])
 test = yumi
+
 
 x_train, y_train = split_target(train)
 x_test, y_test = split_target(test)
