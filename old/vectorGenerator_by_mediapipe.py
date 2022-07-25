@@ -9,7 +9,7 @@ import csv
 # Switch
 SAVE_REC = False  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
 SAVE_EXCEL = False  # 是否儲存特徵點到output.xlsx
-SAVE_CSV = False
+SAVE_CSV = True
 PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
 #-------------------------------------------------------------#
 # Input argument
