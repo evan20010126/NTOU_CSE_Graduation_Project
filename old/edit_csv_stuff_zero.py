@@ -32,6 +32,7 @@ if START:
 # 00853029
 
 summary_file_version = "9_3"  # !改這裡就好
+
 largest_column_count = 27431  # !還有這裡
 csv_file = f'output.csv'
 row_num = 0
