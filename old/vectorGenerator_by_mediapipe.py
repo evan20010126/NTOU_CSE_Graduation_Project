@@ -10,7 +10,7 @@ import csv
 # Switch
 SAVE_REC = False  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
 SAVE_EXCEL = False  # 是否儲存特徵點到output.xlsx
-SAVE_CSV = True
+SAVE_CSV = False
 PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
 #-------------------------------------------------------------#
 # Input argument
@@ -175,6 +175,9 @@ def get_label_and_points(index, hand, results, hand_num):
                                 temp_xy, hand.landmark[i].y * image.shape[0])
                             temp_left = np.append(
                                 temp_left, temp_xy)
+                        print(temp_left)
+                        cv2.circle(image, (int(temp_left[0]), int(
+                            temp_left[1])), radius=30, color=(255, 255, 0), thickness=2)
                     else:
                         for i in range(21):
                             temp_xy = np.array([0, 0])
@@ -182,6 +185,9 @@ def get_label_and_points(index, hand, results, hand_num):
                                 temp_left, temp_xy)
                 if label == "Left":
                     if record_rightHand:
+                        print("hello L")
+                        print(results.multi_handedness)
+
                         for i in range(21):
                             temp_xy = np.array(list())
                             temp_xy = np.append(
@@ -190,6 +196,8 @@ def get_label_and_points(index, hand, results, hand_num):
                                 temp_xy, hand.landmark[i].y * image.shape[0])
                             temp_right = np.append(
                                 temp_right, temp_xy)
+                        cv2.circle(image, (int(temp_right[0]), int(
+                            temp_right[1])), radius=30, color=(255, 0, 255), thickness=2)
                     else:
                         for i in range(21):
                             temp_xy = np.array([0, 0])
