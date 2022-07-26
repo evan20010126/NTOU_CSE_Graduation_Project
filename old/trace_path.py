@@ -18,7 +18,7 @@ pose_sequence = [(11, 12),
 
 point_number = len(hand_sequence*2) + len(pose_sequence)
 
-colorlist_left = [(255, 150, 150), (255, 48, 48), (194, 0, 0), ]  # bgr
+colorlist_left = [(255, 150, 150), (255, 48, 48), (194, 0, 0), ]
 colorlist_pose = [(171, 255, 171), (13, 255, 13), (0, 178, 0), ]
 colorlist_right = [(140, 140, 255), (38, 38, 255), (0, 0, 194), ]
 thick = 3
