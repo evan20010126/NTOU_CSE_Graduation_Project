@@ -131,8 +131,8 @@ evan = sign_language_df.iloc[:406, :]
 edmund = sign_language_df.iloc[406:814, :]
 yumi = sign_language_df.iloc[814:, :]
 
-train = pd.concat([edmund, yumi])
-test = evan
+train = pd.concat([evan, yumi])
+test = edmund
 
 #! <do shuffle> -> train
 # print("before")
@@ -157,8 +157,8 @@ num_classes = len(np.unique(y_train))
 
 x_train = np.asarray(x_train).astype(np.float32)
 y_train = np.asarray(y_train).astype(np.float32)
-x_test = np.asarray(x_train).astype(np.float32)
-y_test = np.asarray(y_train).astype(np.float32)
+x_test = np.asarray(x_test).astype(np.float32)
+y_test = np.asarray(y_test).astype(np.float32)
 
 """## Load the data: the FordA dataset
 
