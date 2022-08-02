@@ -66,7 +66,7 @@ import numpy as np
 import pandas as pd
 
 sign_language_df = pd.read_csv(
-    "Summary_stuff_zero_10st.csv", header=None)
+    "Summary_stuff_zero_11st.csv", header=None)
 print(sign_language_df)
 
 # from numpy import genfromtxt
@@ -170,8 +170,8 @@ edmund = sign_language_df.iloc[406:814, :]
 yumi = sign_language_df.iloc[814:, :]
 
 
-train = pd.concat([evan, edmund])
-test = yumi
+train = pd.concat([evan, yumi])
+test = edmund
 
 #! <do shuffle> -> train
 # print("before")
@@ -195,8 +195,8 @@ x_test, y_test = split_target(test)
 
 x_train = np.asarray(x_train).astype(np.float32)
 y_train = np.asarray(y_train).astype(np.float32)
-x_test = np.asarray(x_train).astype(np.float32)
-y_test = np.asarray(y_train).astype(np.float32)
+x_test = np.asarray(x_test).astype(np.float32)
+y_test = np.asarray(y_test).astype(np.float32)
 
 
 x_train = x_train.flatten().reshape(
@@ -342,7 +342,7 @@ callbacks = [
         monitor="sparse_categorical_accuracy", patience=50, verbose=1),
 ]
 
-model.fit(
+history = model.fit(
     x_train,
     y_train,
     validation_split=0.2,
@@ -359,6 +359,16 @@ test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
 print("Test Accuracy:", test_acc)
 print("Test loss:", test_loss)
 
+metric = "sparse_categorical_accuracy"
+plt.figure()
+plt.plot(history.history[metric])
+plt.plot(history.history["val_" + metric])
+plt.title("model " + metric)
+plt.ylabel(metric, fontsize="large")
+plt.xlabel("epoch", fontsize="large")
+plt.legend(["train", "val"], loc="best")
+plt.show()
+plt.close()
 """## Conclusions
 
 In about 110-120 epochs (25s each on Colab), the model reaches a training
