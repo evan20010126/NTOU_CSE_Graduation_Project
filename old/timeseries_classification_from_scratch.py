@@ -134,6 +134,14 @@ yumi = sign_language_df.iloc[814:, :]
 train = pd.concat([edmund, evan])
 test = yumi
 
+#! <do shuffle> -> train
+# print("before")
+# print(train)
+train = train.sample(frac=1).reset_index(drop=True)
+test = test.sample(frac=1).reset_index(drop=True)
+# print("after")
+# print(train)
+
 x_train, y_train = split_target(train)
 x_test, y_test = split_target(test)
 

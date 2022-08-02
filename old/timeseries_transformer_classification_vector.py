@@ -58,7 +58,6 @@
 # y_test[y_test == -1] = 0
 
 from sklearn.model_selection import train_test_split
-import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.keras import layers
@@ -174,6 +173,13 @@ yumi = sign_language_df.iloc[814:, :]
 train = pd.concat([evan, edmund])
 test = yumi
 
+#! <do shuffle> -> train
+# print("before")
+# print(train)
+train = train.sample(frac=1).reset_index(drop=True)
+test = test.sample(frac=1).reset_index(drop=True)
+# print("after")
+# print(train)
 
 x_train, y_train = split_target(train)
 x_test, y_test = split_target(test)

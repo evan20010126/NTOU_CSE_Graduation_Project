@@ -175,6 +175,10 @@ yumi = sign_language_df.iloc[814:, :]
 train = pd.concat([evan, yumi])
 test = edmund
 
+#! <do shuffle> -> train
+train = train.sample(frac=1).reset_index(drop=True)
+test = test.sample(frac=1).reset_index(drop=True)
+
 x_train, y_train = split_target(train)
 x_test, y_test = split_target(test)
 
