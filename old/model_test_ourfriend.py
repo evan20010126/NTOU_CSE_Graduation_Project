@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 sign_language_df = pd.read_csv(
-    "friend.csv", header=None)
+    "Friend_stuff_zero.csv", header=None)
 
 # myself
 hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
