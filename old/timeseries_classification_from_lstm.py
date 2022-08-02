@@ -117,8 +117,8 @@ evan = sign_language_df.iloc[:406, :]
 edmund = sign_language_df.iloc[406:814, :]
 yumi = sign_language_df.iloc[814:, :]
 
-train = pd.concat([edmund, yumi])
-test = evan
+train = pd.concat([evan, yumi])
+test = edmund
 
 #! shuffle
 train = train.sample(frac=1).reset_index(drop=True)
