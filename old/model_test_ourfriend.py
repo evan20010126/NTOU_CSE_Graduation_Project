@@ -93,6 +93,9 @@ x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
 x_test = np.asarray(x_test).astype(np.float32)
 y_test = np.asarray(y_test).astype(np.float32)
 
+x_test = x_test.flatten().reshape(
+    x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
+
 model = keras.models.load_model("Convolution_best_model.h5")
 model.summary()
 
