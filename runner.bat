@@ -1,0 +1,10 @@
+python old/mediapipe_left_right_test.py big
+python old/edit_csv_stuff_zero.py big
+python old/mediapipe_left_right_test.py bingbing
+python old/edit_csv_stuff_zero.py bingbing
+python old/mediapipe_left_right_test.py chen
+python old/edit_csv_stuff_zero.py chen
+python old/mediapipe_left_right_test.py Chiayi
+python old/edit_csv_stuff_zero.py Chiayi
+python old/mediapipe_left_right_test.py pich
+python old/edit_csv_stuff_zero.py pich

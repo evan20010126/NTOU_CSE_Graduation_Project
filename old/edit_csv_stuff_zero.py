@@ -32,12 +32,13 @@ if START:
 # 00853029
 
 
-summary_file_version = "11_2"  # !改這裡就好
-# summary_file_version = "Friend"  # !改這裡就好
+# summary_file_version = "11_2"  # !改這裡就好
+summary_file_version = "Friend"  # !改這裡就好
 
 
 largest_column_count = 27301  # !還有這裡
-csv_file = f'output.csv'
+# csv_file = f'output.csv'
+csv_file = f'output_{sys.argv[1]}.csv'  # 08/11 bingchen modify
 row_num = 0
 with open(csv_file, 'r') as temp_f:
     lines = temp_f.readlines()
@@ -60,7 +61,7 @@ temp_f.close()
 # data = data.fillna(0.0)
 for i in range(row_num):
     preprocess_userCSV.preprocess(max_column=largest_column_count, src_csv_file=csv_file,
-                                  dest_csv_file=f'Summary_stuff_zero_{summary_file_version}st.csv', process_row=i, mode='a')
+                                  dest_csv_file=f'output_{sys.argv[1]}_stuff_zero.csv', process_row=i, mode='a')
 
 # data.to_csv(
 #     f'Summary_stuff_zero_{summary_file_version}st.csv', index=False, header=False)

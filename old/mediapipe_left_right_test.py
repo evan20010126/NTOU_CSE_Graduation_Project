@@ -6,12 +6,13 @@ import openpyxl
 import numpy as np
 from sklearn.feature_extraction import img_to_graph
 import csv
+import sys
 #-------------------------------------------------------------#
 # Switch
 SAVE_REC = False  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
 SAVE_EXCEL = False  # 是否儲存特徵點到output.xlsx
 SAVE_CSV = True
-PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
+PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = False  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
 #-------------------------------------------------------------#
 # Input argument
 
@@ -20,6 +21,7 @@ PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨�
 signLanguageLabel = ""
 # Input video的資料夾路徑
 rootdirPath = r"..\media_test"
+rootdirPath = f"{rootdirPath}/{sys.argv[1]}"
 # dirPath = r'..\media\bubbletea'
 
 #-------------------------------------------------------------#
@@ -471,7 +473,7 @@ for label_name in all_class_name:
         if SAVE_EXCEL:
             write_xlsx("output.xlsx", all_keypoints)
         if SAVE_CSV:
-            write_csv("output.csv", all_keypoints)
+            write_csv(f"output_{sys.argv[1]}.csv", all_keypoints)
     # print(all_keypoints)
     # f = open("te", mode="w")
     # f.write(all_keypoints.__str__())
