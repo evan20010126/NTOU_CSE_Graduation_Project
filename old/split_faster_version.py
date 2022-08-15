@@ -1,12 +1,8 @@
-import tensorflow as tf
-from tensorflow import keras
+from fileinput import filename
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.model_selection import train_test_split
-
-sign_language_df = pd.read_csv(
-    "Friend_stuff_zero.csv", header=None)
+import sys
 
 # myself
 hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
@@ -22,12 +18,21 @@ pose_sequence = [(0, 12), (0, 11),
 point_number = len(hand_sequence*2) + len(pose_sequence)
 
 
-def split_target(df):
+def to_vector_evanVersion(df):
+
     data = df.to_numpy()
     new_data = np.array(list())
     row_length = 0
 
+    Progress_bar_counter_now = 0
+    Progress_bar_counter_max = len(data)-1
+
     for row in data:
+        print("\r", end="")
+        print(f"row: {Progress_bar_counter_now}/{Progress_bar_counter_max} " +
+              int(Progress_bar_counter_now/Progress_bar_counter_max*10)*"▓", end="")
+        sys.stdout.flush()
+        Progress_bar_counter_now += 1
         temp_row = np.array(list())
 
         if row[0] == "salty":
@@ -75,31 +80,55 @@ def split_target(df):
         # print(temp_row.shape) # 1787
         row_length = temp_row.shape[0]
         new_data = np.append(new_data, temp_row)
+    print("\n")
     new_data = new_data.reshape(data.shape[0], row_length)
-    y = new_data[:, 0]
-    x = new_data[:, 1:]
-    # y = data[:, 0]
-    # x = data[:, 1:]
-    # y[y == "salty"] = -1
-    # y[y == "snack"] = 1
-    return x, y.astype(int)
-
-# train, test = train_test_split(sign_language_df, test_size=0.2)
+    return new_data
 
 
-test = sign_language_df
-x_test, y_test = split_target(test)
-x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
-x_test = np.asarray(x_test).astype(np.float32)
-y_test = np.asarray(y_test).astype(np.float32)
+evan = pd.read_csv(
+    "Summary_stuff_zero_11_1st.csv", header=None)
+edmund = pd.read_csv(
+    "Summary_stuff_zero_11_2st.csv", header=None)
+yumi = pd.read_csv(
+    "Summary_stuff_zero_11_3st.csv", header=None)
 
-x_test = x_test.flatten().reshape(
-    x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
+friend_1 = pd.read_csv(
+    "../edmund_friends/output_media_1_stuff_zero.csv", header=None)
+friend_2 = pd.read_csv(
+    "../edmund_friends/output_media_2_stuff_zero.csv", header=None)
+friend_3 = pd.read_csv(
+    "../edmund_friends/output_media_3_stuff_zero.csv", header=None)
+friend_4 = pd.read_csv(
+    "../edmund_friends/output_media_4_stuff_zero.csv", header=None)
+friend_5 = pd.read_csv(
+    "../evan_friends/output_big_stuff_zero.csv", header=None)
+friend_6 = pd.read_csv(
+    "../evan_friends/output_bingbing_stuff_zero.csv", header=None)
+friend_7 = pd.read_csv(
+    "../evan_friends/output_chen_stuff_zero.csv", header=None)
+friend_8 = pd.read_csv(
+    "../evan_friends/output_Chiayi_stuff_zero.csv", header=None)
+friend_9 = pd.read_csv(
+    "../evan_friends/output_pich_stuff_zero.csv", header=None)
+friend_10 = pd.read_csv(
+    "../yumi_friends/output_Howard_stuff_zero.csv", header=None)
+friend_11 = pd.read_csv(
+    "../yumi_friends/output_justin_stuff_zero.csv", header=None)
+friend_12 = pd.read_csv(
+    "../yumi_friends/output_me_stuff_zero.csv", header=None)
+friend_13 = pd.read_csv(
+    "../yumi_friends/output_other_stuff_zero.csv", header=None)
 
-model = keras.models.load_model("Transformer_vector_best_model.h5")
-model.summary()
+all_person = \
+    [evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
+     friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13]
 
-test_loss, test_acc = model.evaluate(x_test, y_test)
-
-print("Test accuracy", test_acc)
-print("Test loss", test_loss)
+file_name_list = \
+    ["evan", "yumi", "edmund", "friend_1", "friend_2", "friend_3", "friend_4", "friend_5",
+             "friend_6", "friend_7", "friend_8", "friend_9", "friend_10", "friend_11", "friend_12", "friend_13"]
+# split_data_for_each_one
+for i in range(len(all_person)):
+    print(file_name_list[i])
+    new_data = to_vector_evanVersion(all_person[i])
+    pd.DataFrame(new_data).to_csv(
+        f'split_data_for_each_one\{file_name_list[i]}.csv', index=False, header=False)

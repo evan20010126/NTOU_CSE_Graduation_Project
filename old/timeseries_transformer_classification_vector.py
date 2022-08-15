@@ -170,8 +170,8 @@ edmund = sign_language_df.iloc[406:814, :]
 yumi = sign_language_df.iloc[814:, :]
 
 
-train = pd.concat([evan, yumi])
-test = edmund
+train = pd.concat([edmund, yumi])
+test = evan
 
 #! <do shuffle> -> train
 # print("before")
