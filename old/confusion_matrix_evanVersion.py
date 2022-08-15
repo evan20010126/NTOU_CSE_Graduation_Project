@@ -1,3 +1,5 @@
+from distutils.command.build_scripts import first_line_re
+from operator import truediv
 import tensorflow as tf
 from tensorflow import keras
 from sklearn.model_selection import train_test_split
@@ -129,74 +131,90 @@ def split_target_evanVersion(new_data_df):
     return x, y.astype(int)
 
 
+person_list_df = \
+    [evan, yumi, edmund, friend_1, friend_2, friend_3,
+     friend_4, friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13]
+
+person_list_str = \
+    ["evan", "yumi", "edmund", "friend_1", "friend_2", "friend_3", "friend_4", "friend_5",
+     "friend_6", "friend_7", "friend_8", "friend_9", "friend_10", "friend_11", "friend_12", "friend_13"]
 model_name = "Convolution"
-train = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3,
-                  friend_4, friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12])
-test = friend_13
-leave_person_name = "friend_13"
-
-#! <do shuffle> -> train
-# print("before")
-# print(train)
-train = train.sample(frac=1).reset_index(drop=True)
-test = test.sample(frac=1).reset_index(drop=True)
-# print("after")
-# print(train)
 
 
-x_train, y_train = \
-    split_target_evanVersion(
-        train)  # origin: x_train, y_train = split_target(train)
-x_test, y_test = \
-    split_target_evanVersion(
-        test)  # origin: x_test, y_test = split_target(test)
+for leave_idx in range(len(person_list_str)):
+    first = True
+    for j in range(len(person_list_str)):
+        if(leave_idx == j):
+            test = person_list_df[j]
+            leave_person_name = person_list_str[j]
+        else:
+            if first:
+                train = person_list_df[j]
+                first = False
+            else:
+                train = pd.concat([train, person_list_df[j]])
 
+    #! <do shuffle> -> train
+    # print("before")
+    # print(train)
+    train = train.sample(frac=1).reset_index(drop=True)
+    test = test.sample(frac=1).reset_index(drop=True)
+    # print("after")
+    # print(train)
 
-# train, test = train_test_split(sign_language_df, test_size=0.2)
-# x_train, y_train = split_target(train)
-# x_test, y_test = split_target(test)
+    x_train, y_train = \
+        split_target_evanVersion(
+            train)  # origin: x_train, y_train = split_target(train)
+    x_test, y_test = \
+        split_target_evanVersion(
+            test)  # origin: x_test, y_test = split_target(test)
 
+    # train, test = train_test_split(sign_language_df, test_size=0.2)
+    # x_train, y_train = split_target(train)
+    # x_test, y_test = split_target(test)
 
-x_train = np.asarray(x_train).astype(np.float32)
-y_train = np.asarray(y_train).astype(np.float32)
-x_test = np.asarray(x_train).astype(np.float32)
-y_test = np.asarray(y_train).astype(np.float32)
+    x_train = np.asarray(x_train).astype(np.float32)
+    y_train = np.asarray(y_train).astype(np.float32)
+    x_test = np.asarray(x_test).astype(np.float32)
+    y_test = np.asarray(y_test).astype(np.float32)
 
+    # x_train = x_train.flatten().reshape(
+    #     x_train.shape[0], (x_train.shape[1]//(point_number*2)), point_number*2)
+    # x_test = x_test.flatten().reshape(
+    #     x_test.shape[0], (x_test.shape[1]//(point_number*2)), point_number*2)
 
-# x_train = x_train.flatten().reshape(
-#     x_train.shape[0], (x_train.shape[1]//(point_number*2)), point_number*2)
-# x_test = x_test.flatten().reshape(
-#     x_test.shape[0], (x_test.shape[1]//(point_number*2)), point_number*2)
+    x_train = x_train.flatten().reshape(
+        x_train.shape[0], (x_train.shape[1]//(point_number*2)), (point_number*2))
+    x_test = x_test.flatten().reshape(
+        x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
 
-x_train = x_train.flatten().reshape(
-    x_train.shape[0], (x_train.shape[1]//(point_number*2)), (point_number*2))
-x_test = x_test.flatten().reshape(
-    x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
+    model = keras.models.load_model(
+        f"{model_name}_best_model_leave_{leave_person_name}.h5")
+    # confusion matrix
+    predict_ans = np.argmax(model.predict(
+        x_test), axis=-1)  # *  argmax 找最大值的index
+    cm = tf.math.confusion_matrix(
+        y_test, predict_ans).numpy().astype(np.float32)
+    print(cm)
+    print(cm.shape[0])
+    print(cm.shape[1])
 
+    for i in range(cm.shape[0]):
+        total_num = 0.0
+        for j in range(cm.shape[1]):
+            total_num += cm[i][j]
+        for j in range(cm.shape[1]):
+            cm[i][j] = float(cm[i][j]) / float(total_num)
+    print(type(cm[0][0]))
+    df_cm = pd.DataFrame(cm, index=['Salty', 'Snack', 'Bubble Tea',
+                                    'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'],
+                         columns=['Salty', 'Snack', 'Bubble Tea',
+                                  'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'])
+    fig = plt.figure(figsize=(10, 7))
 
-model = keras.models.load_model(
-    f"{model_name}_best_model_leave_{leave_person_name}.h5")
-# confusion matrix
-predict_ans = np.argmax(model.predict(x_test), axis=-1)  # *  argmax 找最大值的index
-cm = tf.math.confusion_matrix(y_test, predict_ans).numpy().astype(np.float32)
-print(cm)
-print(cm.shape[0])
-print(cm.shape[1])
-
-for i in range(cm.shape[0]):
-    total_num = 0.0
-    for j in range(cm.shape[1]):
-        total_num += cm[i][j]
-    for j in range(cm.shape[1]):
-        cm[i][j] = float(cm[i][j]) / float(total_num)
-print(type(cm[0][0]))
-df_cm = pd.DataFrame(cm, index=['Salty', 'Snack', 'Bubble Tea',
-                                'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'],
-                     columns=['Salty', 'Snack', 'Bubble Tea',
-                              'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'])
-fig = plt.figure(figsize=(10, 7))
-sn.heatmap(df_cm, annot=True)
-# plt.show()
-# fig.savefig(f'{model_name}_confusion_matrix.png')
-fig.savefig(
-    f'C:/Users/User/Desktop/16person_leaveOneOut/{model_name}_confusion_matrix_leave_{leave_person_name}.png')
+    print(f"df: {df_cm}")
+    sn.heatmap(df_cm, annot=True, fmt='.3f')
+    # plt.show()
+    # fig.savefig(f'{model_name}_confusion_matrix.png')
+    fig.savefig(
+        f'C:/Users/User/Desktop/16person_leaveOneOut/{model_name}_confusion_matrix_leave_{leave_person_name}.png')
