@@ -6,9 +6,34 @@ import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
 sign_language_df = pd.read_csv(
-    "Summary_stuff_zero_9st.csv", header=None)
+    "Summary_stuff_zero_11st.csv", header=None)
 print(sign_language_df)
-
+friend_1 = pd.read_csv(
+    "../edmund_friends/output_media_1_stuff_zero.csv", header=None)
+friend_2 = pd.read_csv(
+    "../edmund_friends/output_media_2_stuff_zero.csv", header=None)
+friend_3 = pd.read_csv(
+    "../edmund_friends/output_media_3_stuff_zero.csv", header=None)
+friend_4 = pd.read_csv(
+    "../edmund_friends/output_media_4_stuff_zero.csv", header=None)
+friend_5 = pd.read_csv(
+    "../evan_friends/output_big_stuff_zero.csv", header=None)
+friend_6 = pd.read_csv(
+    "../evan_friends/output_bingbing_stuff_zero.csv", header=None)
+friend_7 = pd.read_csv(
+    "../evan_friends/output_chen_stuff_zero.csv", header=None)
+friend_8 = pd.read_csv(
+    "../evan_friends/output_Chiayi_stuff_zero.csv", header=None)
+friend_9 = pd.read_csv(
+    "../evan_friends/output_pich_stuff_zero.csv", header=None)
+friend_10 = pd.read_csv(
+    "../yumi_friends/output_Howard_stuff_zero.csv", header=None)
+friend_11 = pd.read_csv(
+    "../yumi_friends/output_justin_stuff_zero.csv", header=None)
+friend_12 = pd.read_csv(
+    "../yumi_friends/output_me_stuff_zero.csv", header=None)
+friend_13 = pd.read_csv(
+    "../yumi_friends/output_other_stuff_zero.csv", header=None)
 hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
                  (0, 5), (5, 6), (6, 7), (7, 8),
                  (0, 9), (9, 10), (10, 11), (11, 12),
@@ -85,10 +110,27 @@ def split_target(df):
     return x, y.astype(int)
 
 
-train, test = train_test_split(sign_language_df, test_size=0.2)
+evan = sign_language_df.iloc[:406, :]
+edmund = sign_language_df.iloc[406:814, :]
+yumi = sign_language_df.iloc[814:, :]
+
+
+train = pd.concat([evan, yumi, edmund, friend_2, friend_3, friend_4, friend_5, friend_6,
+                  friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
+test = friend_1
+
+#! <do shuffle> -> train
+# print("before")
+# print(train)
+train = train.sample(frac=1).reset_index(drop=True)
+test = test.sample(frac=1).reset_index(drop=True)
+# print("after")
+# print(train)
+
 x_train, y_train = split_target(train)
 x_test, y_test = split_target(test)
 
+print("Split_target FINISH !!!!!!!!!!")
 
 x_train = np.asarray(x_train).astype(np.float32)
 y_train = np.asarray(y_train).astype(np.float32)
@@ -107,7 +149,7 @@ x_test = x_test.flatten().reshape(
     x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
 
 
-model_name = "Lstm"
+model_name = "Transformer_vector"
 
 model = keras.models.load_model(f"{model_name}_best_model.h5")
 # confusion matrix

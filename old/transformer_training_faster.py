@@ -65,36 +65,41 @@ from tensorflow import keras
 import numpy as np
 import pandas as pd
 
-sign_language_df = pd.read_csv(
-    "Summary_stuff_zero_11st.csv", header=None)
-print(sign_language_df)
+evan = pd.read_csv("split_data_for_each_one/evan.csv", header=None)
+edmund = pd.read_csv("split_data_for_each_one/edmund.csv", header=None)
+yumi = pd.read_csv("split_data_for_each_one/yumi.csv", header=None)
+# sign_language_df = pd.read_csv(
+#     "Summary_stuff_zero_11st.csv", header=None)
+# print(sign_language_df)
 
+# sign_language_df = sign_language_df[:][:-2]
+# print(sign_language_df)
 friend_1 = pd.read_csv(
-    "../edmund_friends/output_media_1_stuff_zero.csv", header=None)
+    "split_data_for_each_one/friend_1.csv", header=None)
 friend_2 = pd.read_csv(
-    "../edmund_friends/output_media_2_stuff_zero.csv", header=None)
+    "split_data_for_each_one/friend_2.csv", header=None)
 friend_3 = pd.read_csv(
-    "../edmund_friends/output_media_3_stuff_zero.csv", header=None)
+    "split_data_for_each_one/friend_3.csv", header=None)
 friend_4 = pd.read_csv(
-    "../edmund_friends/output_media_4_stuff_zero.csv", header=None)
+    "split_data_for_each_one/friend_4.csv", header=None)
 friend_5 = pd.read_csv(
-    "../evan_friends/output_big_stuff_zero.csv", header=None)
+    "split_data_for_each_one/friend_5.csv", header=None)
 friend_6 = pd.read_csv(
-    "../evan_friends/output_bingbing_stuff_zero.csv", header=None)
+    "split_data_for_each_one/friend_6.csv", header=None)
 friend_7 = pd.read_csv(
-    "../evan_friends/output_chen_stuff_zero.csv", header=None)
+    "split_data_for_each_one/friend_7.csv", header=None)
 friend_8 = pd.read_csv(
-    "../evan_friends/output_Chiayi_stuff_zero.csv", header=None)
+    "split_data_for_each_one/friend_8.csv", header=None)
 friend_9 = pd.read_csv(
-    "../evan_friends/output_pich_stuff_zero.csv", header=None)
+    "split_data_for_each_one/friend_9.csv", header=None)
 friend_10 = pd.read_csv(
-    "../yumi_friends/output_Howard_stuff_zero.csv", header=None)
+    "split_data_for_each_one/friend_10.csv", header=None)
 friend_11 = pd.read_csv(
-    "../yumi_friends/output_justin_stuff_zero.csv", header=None)
+    "split_data_for_each_one/friend_11.csv", header=None)
 friend_12 = pd.read_csv(
-    "../yumi_friends/output_me_stuff_zero.csv", header=None)
+    "split_data_for_each_one/friend_12.csv", header=None)
 friend_13 = pd.read_csv(
-    "../yumi_friends/output_other_stuff_zero.csv", header=None)
+    "split_data_for_each_one/friend_13.csv", header=None)
 # from numpy import genfromtxt
 
 # data = genfromtxt('Summary_stuff_zero_5st.csv', delimiter=',')
@@ -175,6 +180,16 @@ def split_target(df):
     return x, y.astype(int)
 
 
+def split_target_evanVersion(new_data_df):
+    new_data = new_data_df.to_numpy()
+    y = new_data[:, 0]
+    x = new_data[:, 1:]
+    # y = data[:, 0]
+    # x = data[:, 1:]
+    # y[y == "salty"] = -1
+    # y[y == "snack"] = 1
+    return x, y.astype(int)
+
 # def split_target(data_df):
 #   data_np = data_df.to_numpy()
 #   y = data_np[:, 0]
@@ -191,14 +206,14 @@ def split_target(df):
 #re_sign_language_df = reduce_data(sign_language_df)
 # train, test = train_test_split(sign_language_df, test_size=0.2)
 
-evan = sign_language_df.iloc[:406, :]
-edmund = sign_language_df.iloc[406:814, :]
-yumi = sign_language_df.iloc[814:, :]
 
+# evan = sign_language_df.iloc[:406, :]
+# edmund = sign_language_df.iloc[406:814, :]
+# yumi = sign_language_df.iloc[814:, :]
 
-train = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
-                  friend_6, friend_7, friend_8, friend_9, friend_10, friend_12, friend_13])
-test = friend_11
+train = pd.concat([evan, yumi, friend_1, friend_2, friend_3, friend_4,
+                  friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
+test = edmund
 
 #! <do shuffle> -> train
 # print("before")
@@ -209,8 +224,10 @@ test = test.sample(frac=1).reset_index(drop=True)
 # print(train)
 
 print("start split target !!!")
-x_train, y_train = split_target(train)
-x_test, y_test = split_target(test)
+# origin: x_train, y_train = split_target(train)
+x_train, y_train = split_target_evanVersion(train)
+# origin: x_test, y_test = split_target(test)
+x_test, y_test = split_target_evanVersion(test)
 print("finish split target !!!")
 
 
