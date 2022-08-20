@@ -109,7 +109,7 @@ def start_btn_func(target_class_num):
     mediapipe_webcam.open_cam(SAVE_REC=False, SAVE_EXCEL=False,
                               SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=0)
     # generate webcam_stuff_zero.csv
-    FTTAB = preprocess_userCSV.preprocess(max_column=27431)
+    FTTAB = preprocess_userCSV.preprocess(max_column=27301)
 
     webcam_df = pd.read_csv("webcam_stuff_zero.csv",
                             header=None)
