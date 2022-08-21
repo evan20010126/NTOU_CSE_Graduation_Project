@@ -1,4 +1,3 @@
-from distutils.command.build_scripts import first_line_re
 from operator import truediv
 import tensorflow as tf
 from tensorflow import keras
@@ -141,6 +140,10 @@ person_list_str = \
 
 model_name = "Lstm"
 
+###
+Average = None
+avg_first = True
+###
 
 for leave_idx in range(len(person_list_str)):
     first = True
@@ -207,6 +210,12 @@ for leave_idx in range(len(person_list_str)):
         for j in range(cm.shape[1]):
             cm[i][j] = float(cm[i][j]) / float(total_num)
     print(type(cm[0][0]))
+    if avg_first:
+        Average = cm
+        avg_first = False
+    else:
+        Average = Average + cm
+
     df_cm = pd.DataFrame(cm, index=['Salty', 'Snack', 'Bubble Tea',
                                     'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'],
                          columns=['Salty', 'Snack', 'Bubble Tea',
@@ -219,5 +228,8 @@ for leave_idx in range(len(person_list_str)):
     # fig.savefig(f'{model_name}_confusion_matrix.png')
     fig.savefig(
         f'C:/Users/yumi/Desktop/16person/{model_name}_confusion_matrix_leave_{leave_person_name}.png')
-
+Average = Average / 16
+print("*"*100)
+print(Average)
+print("*"*100)
 # "C:\Users\yumi\Desktop\16person"
