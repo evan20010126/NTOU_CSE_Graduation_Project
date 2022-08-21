@@ -72,6 +72,7 @@ def get_heapmap(model, layer_num, testing_data, class_idx, FTTAB):
         # while (i < heatmap.shape[-1]):
         ele = heatmap[0][i]
         if (ele >= 0.3 and (FTTAB[i] not in important_frame)):
+            # FTTAB[i]可以對應到正確的偵數
             important_frame.append(FTTAB[i])
             print(FTTAB[i])
     save_frames = list()
@@ -126,8 +127,8 @@ def get_heapmap(model, layer_num, testing_data, class_idx, FTTAB):
     # buttonaxe = plt.axes([0.94, 0.03, 0.03, 0.03])
     ax3 = fig.add_subplot(gs1[rows_num-1, :])
     # ax3.set_zorder(10)
-    button1 = plt.Button(ax3, 'p2')
-    button1.on_clicked(review)
+    button1 = plt.Button(ax3, 'replay')
+    button1.on_clicked(fn_maker(heatmap=heatmap, FTTAB=FTTAB))
     plt.subplots_adjust(left=0.03, right=0.98)
     plt.show()
     # heatmap = np.array([heatmap, heatmap, heatmap, heatmap, heatmap, heatmap])
@@ -144,11 +145,83 @@ def get_heapmap(model, layer_num, testing_data, class_idx, FTTAB):
     # cv2.imshow("sth", cv_img)
 
 
-def review(event):
-    global important_frame
-    cap = cv2.VideoCapture("output_sample_videos/webcam.avi")
+def fn_maker(heatmap, FTTAB):
+    def review(event):
+        important_frame = []
+        # i = 0
+        # 取平均 0 -> 0 -> 0 -> 1 -> 1 -> 1 -> 2 -> 2 -> 2
+        score_list = []
+        counter = 0
+        for i in range(0, heatmap.shape[-1]):
+            # FTTAB[i]可以對應到正確的偵數
+            ele = heatmap[0][i]
+            if (FTTAB[i] not in important_frame):
+                if (i != 0):
+                    score_list[-1] /= counter  # 結算上一偵
+                counter = 1
+                important_frame.append(FTTAB[i])
+                score_list.append(ele)
+            else:
+                score_list[-1] += ele
+                counter += 1
+        score_list[-1] /= counter  # 最後一偵結算掉
 
-    print('1234')
+        # ---依照heatmap數值填色---
+        cap = cv2.VideoCapture('output_sample_videos/webcam.avi')
+
+        print('height:{} width:{}'.format(int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+                                          int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))))
+        # cv2.VideoCapture.get: Returns the specified VideoCapture property.
+        # property 列表: https://docs.opencv.org/3.4/d4/d15/group__videoio__flags__base.html#:~:text=Enumerator-,CAP_PROP_POS_MSEC%C2%A0,Python%3A%20cv.CAP_PROP_READ_TIMEOUT_MSEC,-%E2%97%86%C2%A0
+
+        frame_num = 0
+        total_frame = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+        def set_frame_number(x):
+            nonlocal frame_num
+            frame_num = x
+            return
+
+        cv2.namedWindow('video file')
+        # cv2.namedWindow('名稱')
+        # 設定視窗的名稱
+
+        cv2.createTrackbar('frame no.', 'video file', 0,
+                           total_frame-1, set_frame_number)
+        # 第一個參數時滑動條的名字，
+        # 第二個參數是滑動條被放置的窗口的名字，
+        # 第三個參數是滑動條默認值，
+        # 第四個參數滑動條的最大值，
+        # 第五個參數為 callback function, 當 trackbar 的值有改變時會觸發
+
+        while frame_num < total_frame:
+            # cv2.setTrackbarPos('frame no.', 'video file', frame_num)
+            # cv2.setTrackbarPos() 設定 TrackbarPos 目前的位置
+            # 第一個參數是滑動條名字，
+            # 第二個時所在窗口，
+            # 第三個參數是滑動條默認值，
+
+            cap.set(cv2.CAP_PROP_POS_FRAMES, frame_num)
+            # 主要為此條指令配合 create 時的 callback function (設定frame_name) 達到 trackbar 拖曳時影片跟著動
+
+            ret, frame = cap.read()
+            if ret == False:
+                break
+
+            # 著色
+            # print(type(frame))
+            frame[:, :, 2] = (
+                255 * (score_list[frame_num])).astype(np.uint8)
+
+            cv2.imshow('video file', frame)
+            key = cv2.waitKey(20) & 0xFF
+            if key == 27:
+                break
+            # frame_num += 1
+
+        cap.release()
+        cv2.destroyAllWindows()
+    return review
 
 
 def hello_its_me():
@@ -200,3 +273,6 @@ def hello_its_me():
 
     cap.release()
     cv2.destroyAllWindows()
+
+
+# hello_its_me()

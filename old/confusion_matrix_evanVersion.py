@@ -138,7 +138,8 @@ person_list_df = \
 person_list_str = \
     ["evan", "yumi", "edmund", "friend_1", "friend_2", "friend_3", "friend_4", "friend_5",
      "friend_6", "friend_7", "friend_8", "friend_9", "friend_10", "friend_11", "friend_12", "friend_13"]
-model_name = "Convolution"
+
+model_name = "Lstm"
 
 
 for leave_idx in range(len(person_list_str)):
@@ -217,4 +218,6 @@ for leave_idx in range(len(person_list_str)):
     # plt.show()
     # fig.savefig(f'{model_name}_confusion_matrix.png')
     fig.savefig(
-        f'C:/Users/User/Desktop/16person_leaveOneOut/{model_name}_confusion_matrix_leave_{leave_person_name}.png')
+        f'C:/Users/yumi/Desktop/16person/{model_name}_confusion_matrix_leave_{leave_person_name}.png')
+
+# "C:\Users\yumi\Desktop\16person"
