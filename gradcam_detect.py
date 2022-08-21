@@ -1,4 +1,6 @@
 from random import randrange
+from tkinter import Button
+from turtle import color
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
@@ -48,8 +50,11 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None
     return heatmap.numpy()
 
 
-def get_heapmap(model, layer_num, testing_data, class_idx, FTTAB):
+important_frame = None
 
+
+def get_heapmap(model, layer_num, testing_data, class_idx, FTTAB):
+    global important_frame
     last_conv_layer_name = model.layers[layer_num].name
     # print(model.layers[-3].name)
 
@@ -105,30 +110,45 @@ def get_heapmap(model, layer_num, testing_data, class_idx, FTTAB):
 
     # fig = plt.figure(figsize=(15, 8), dpi=100, )
     fig = plt.figure()
-
-    gs1 = gridspec.GridSpec(nrows=6, ncols=len(save_frames), wspace=0.05)
+    rows_num = 7
+    gs1 = gridspec.GridSpec(
+        nrows=rows_num, ncols=len(save_frames), wspace=0.05)
     ax1 = fig.add_subplot(gs1[0, :])
     ax1.matshow(heatmap)
 
     for i in range(0, len(save_frames)):
-        ax2 = fig.add_subplot(gs1[1:, i])
+        ax2 = fig.add_subplot(gs1[1:rows_num-1, i])
         ax2.imshow(save_frames[i][:, :, [2, 1, 0]])
         ax2.axis('off')  # on: 顯示坐標軸; off: 不顯示座標軸
 
     # plt.gca().xaxis.set_major_locator(plt.NullLocator())
     # plt.gca().yaxis.set_major_locator(plt.NullLocator())
+    # buttonaxe = plt.axes([0.94, 0.03, 0.03, 0.03])
+    ax3 = fig.add_subplot(gs1[rows_num-1, :])
+    # ax3.set_zorder(10)
+    button1 = plt.Button(ax3, 'p2')
+    button1.on_clicked(review)
     plt.subplots_adjust(left=0.03, right=0.98)
     plt.show()
     # heatmap = np.array([heatmap, heatmap, heatmap, heatmap, heatmap, heatmap])
     # heatmap = heatmap.reshape(6, -1)
-    cv_img = cv2.cvtColor(heatmap, cv2.COLOR_GRAY2BGR)
-    print(cv_img)
-    # cv_img = 1-cv_img
-    cv_img[:, :, 0] = 0
-    cv_img[:, :, 2] = 0
-    cv_img = cv2.resize(
-        cv_img, (5*heatmap.shape[1], 20), interpolation=cv2.INTER_LINEAR)
-    cv2.imshow("sth", cv_img)
+
+    # 0820 modify
+    # cv_img = cv2.cvtColor(heatmap, cv2.COLOR_GRAY2BGR)
+    # print(cv_img)
+    # # cv_img = 1-cv_img
+    # cv_img[:, :, 0] = 0
+    # cv_img[:, :, 2] = 0
+    # cv_img = cv2.resize(
+    #     cv_img, (5*heatmap.shape[1], 20), interpolation=cv2.INTER_LINEAR)
+    # cv2.imshow("sth", cv_img)
+
+
+def review(event):
+    global important_frame
+    cap = cv2.VideoCapture("output_sample_videos/webcam.avi")
+
+    print('1234')
 
 
 def hello_its_me():

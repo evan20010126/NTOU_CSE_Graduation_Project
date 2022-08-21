@@ -107,7 +107,7 @@ def split_target(df):
 def start_btn_func(target_class_num):
     # generate webcam.csv
     mediapipe_webcam.open_cam(SAVE_REC=False, SAVE_EXCEL=False,
-                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=0)
+                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=1)
     # generate webcam_stuff_zero.csv
     FTTAB = preprocess_userCSV.preprocess(max_column=27301)
 
@@ -121,7 +121,7 @@ def start_btn_func(target_class_num):
     x_test = x_test.flatten().reshape(
         x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
     # model = keras.models.load_model('Convolution_best_model.h5')
-    select_model_name = 'Lstm_best_model.h5'
+    select_model_name = 'Lstm_best_model_leave_yumi.h5'
     model = keras.models.load_model(select_model_name)
     model.summary()
     predict_answer = model.predict(x_test)
