@@ -28,9 +28,16 @@ answer_classlist = ['Salty', 'Snack', 'Bubble Tea',
 
 menu = tk.Tk()
 menu.title('Sign Language Interaction Tutorial System')
-menu.geometry("800x500+250+150")  # window大小+左上角定位
 menu['background'] = '#F4F1DE'
 
+w = 800  # width for the Tk root
+h = 500  # height for the Tk root
+ws = menu.winfo_screenwidth()  # width of the screen
+hs = menu.winfo_screenheight()  # height of the screen
+x = (ws/2) - (w/2)
+y = (hs/2) - (h/2)
+menu.geometry('%dx%d+%d+%d' % (w, h, x, y))
+# menu.geometry("800x500+250+150")  # window大小+左上角定位
 # -----Quiz start-----
 hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
                  (0, 5), (5, 6), (6, 7), (7, 8),
@@ -162,9 +169,13 @@ def start_btn_func(target_class_num):
 # -----確認退出-----
 
 
-def confirm_to_quit():
-    if tk.messagebox.askokcancel('溫馨提示', '確定要退出嗎?'):
-        menu.quit()
+def confirm_to_quit(page):
+    if page == menu:
+        if tk.messagebox.askokcancel('溫馨提示', '確定要退出嗎?'):
+            # page.quit()
+            page.destroy()
+    else:
+        page.destroy()
 
 # -----開影片-----
 
@@ -220,7 +231,9 @@ def openVideo(num):
 def createTutorialVideo():
     TutorialVideo = tk.Toplevel(menu)
     TutorialVideo.title('Tutorial Video')
-    TutorialVideo.geometry("800x500")
+    global w, h, x, y
+    TutorialVideo.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    # TutorialVideo.geometry("800x500")
     TutorialVideo['background'] = '#F4F1DE'
 
     btn1 = tk.Button(TutorialVideo, bg='#F2CC8F',
@@ -244,8 +257,10 @@ def createTutorialVideo():
 
 
 def createPractice():
+    global w, h, x, y
     Practice = tk.Toplevel(menu)
     Practice.title('Practice')
+    Practice.geometry('%dx%d+%d+%d' % (w, h, x, y))
     Practice.geometry("800x500")
     Practice['background'] = '#F4F1DE'
 
@@ -270,9 +285,11 @@ def createPractice():
 
 
 def createQuiz():
+    global w, h, x, y
     Quiz = tk.Toplevel(menu)
-    Quiz.title('Practice')
-    Quiz.geometry("800x500")
+    Quiz.title('Quiz')
+    Quiz.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    # Quiz.geometry("800x500")
     Quiz['background'] = '#F4F1DE'
 
     # 隨機標示文字
@@ -282,31 +299,39 @@ def createQuiz():
     fontStyle = tkFont.Font(family="Lucida Grande", size=35)
     label = tk.Label(
         Quiz, text=answer_classlist[answer_number], font=fontStyle)
-    label.place(relx=0.48, rely=0.25)
+    label.place(relx=0.4, rely=0.25)
     start_btn = tk.Button(Quiz, text='Start', bg='#F2CC8F', width=40, command=partial(start_btn_func, answer_number),
                           height=3, cursor='star').place(relx=0.35, rely=0.5)
+    quit_btn = tk.Button(
+        Quiz, text='上一頁', command=partial(confirm_to_quit, Quiz)).place(relx=0.02, rely=0.92)
+
 
 # -----創Score視窗-----
 
 
 def createScore(CORRECT):
+    global w, h, x, y
     Score = tk.Toplevel(menu)
     Score.title('My Score')
-    Score.geometry("800x500")
+    Score.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    # Score.geometry("800x500")
     Score['background'] = '#F4F1DE'
     fontStyle = tkFont.Font(family="Lucida Grande", size=35)
 
     if CORRECT:
         label = tk.Label(
             Score, text="You are right!!", font=fontStyle)
-        label.place(relx=0.48, rely=0.1)
+        label.place(relx=0.45, rely=0.15)
+
     else:
         label = tk.Label(
             Score, text="跨謀", font=fontStyle)
-        label.place(relx=0.48, rely=0.1)
+        label.place(relx=0.45, rely=0.15)
 
     replay_btn = tk.Button(Score, text='Repaly', bg='#F2CC8F', width=40,
                            height=3, cursor='star').place(relx=0.35, rely=0.5)
+    quit_btn = tk.Button(
+        Score, text='上一頁', command=partial(confirm_to_quit, Score)).place(relx=0.02, rely=0.92)
 
 
 # <Main>
@@ -321,7 +346,7 @@ Quiz_btn = tk.Button(
     menu, text="Start A Quiz", bg='#F2CC8F', width=600, height=3, cursor='heart', command=createQuiz).pack(padx=30, pady=20)
 
 quit_btn = tk.Button(
-    menu, text='退出', command=confirm_to_quit).place(relx=0.02, rely=0.92)
+    menu, text='退出', command=partial(confirm_to_quit, menu)).place(relx=0.02, rely=0.92)
 menu.mainloop()
 # ------menu-----
 

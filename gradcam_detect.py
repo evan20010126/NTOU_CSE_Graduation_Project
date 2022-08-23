@@ -182,9 +182,18 @@ def fn_maker(heatmap, FTTAB):
             frame_num = x
             return
 
+        click_close = 0
+
+        def close_window(x):
+            nonlocal click_close
+            click_close = x
+            return
+
         cv2.namedWindow('video file')
         # cv2.namedWindow('名稱')
         # 設定視窗的名稱
+
+        cv2.createTrackbar('On | Off', 'video file', 0, 1, close_window)
 
         cv2.createTrackbar('frame no.', 'video file', 0,
                            total_frame-1, set_frame_number)
@@ -215,7 +224,8 @@ def fn_maker(heatmap, FTTAB):
 
             cv2.imshow('video file', frame)
             key = cv2.waitKey(20) & 0xFF
-            if key == 27:
+            # if key == 27:
+            if click_close == 1:
                 break
             # frame_num += 1
 
@@ -240,12 +250,20 @@ def hello_its_me():
         frame_num = x
         return
 
+    click_close = 0
+
+    def close_window(x):
+        global click_close
+        click_close = x
+        return
+
     cv2.namedWindow('video file')
     # cv2.namedWindow('名稱')
     # 設定視窗的名稱
 
-    cv2.createTrackbar('frame no.', 'video file', 0,
-                       total_frame-1, set_frame_number)
+    cv2.createTrackbar('OpenClose', 'video file', 0, 1, close_window)
+    # cv2.createTrackbar('frame no.', 'video file', 0,
+    #    total_frame-1, set_frame_number)
     # 第一個參數時滑動條的名字，
     # 第二個參數是滑動條被放置的窗口的名字，
     # 第三個參數是滑動條默認值，
@@ -253,7 +271,8 @@ def hello_its_me():
     # 第五個參數為 callback function, 當 trackbar 的值有改變時會觸發
 
     while frame_num < total_frame:
-        cv2.setTrackbarPos('frame no.', 'video file', frame_num)
+        cv2.setTrackbarPos('OpenClose', 'video file', click_close)
+        # cv2.setTrackbarPos('frame no.', 'video file', frame_num)
         # cv2.setTrackbarPos() 設定 TrackbarPos 目前的位置
         # 第一個參數是滑動條名字，
         # 第二個時所在窗口，
@@ -267,7 +286,8 @@ def hello_its_me():
             break
         cv2.imshow('video file', frame)
         key = cv2.waitKey(20) & 0xFF
-        if key == 27:
+        # if key == 27:
+        if (click_close == 1):
             break
         frame_num += 1
 
