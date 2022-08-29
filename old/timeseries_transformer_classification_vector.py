@@ -196,9 +196,9 @@ edmund = sign_language_df.iloc[406:814, :]
 yumi = sign_language_df.iloc[814:, :]
 
 
-train = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
-                  friend_6, friend_7, friend_8, friend_9, friend_10, friend_12, friend_13])
-test = friend_11
+train = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3, friend_5,
+                  friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
+test = friend_4
 
 #! <do shuffle> -> train
 # print("before")
@@ -271,18 +271,18 @@ The projection layers are implemented through `keras.layers.Conv1D`.
 def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0):
     # Normalization and Attention
     # x = layers.LayerNormalization(epsilon=1e-6)(inputs)
-    x = keras.layers.BatchNormalization()(inputs)
+    # x = keras.layers.BatchNormalization()(inputs)
     x = layers.MultiHeadAttention(
         key_dim=head_size, num_heads=num_heads, dropout=dropout
-    )(x, x)
+    )(inputs, inputs)
     x = layers.Dropout(dropout)(x)
     x = layers.LayerNormalization(epsilon=1e-6)(x)
     res = x + inputs
 
     # Feed Forward Part
     # x = layers.LayerNormalization(epsilon=1e-6)(res)
-    x = keras.layers.BatchNormalization()(res)
-    x = layers.Conv1D(filters=ff_dim, kernel_size=1, activation="relu")(x)
+    # x = keras.layers.BatchNormalization()(res)
+    x = layers.Conv1D(filters=ff_dim, kernel_size=1, activation="relu")(res)
     x = layers.Dropout(dropout)(x)
     x = layers.Conv1D(filters=inputs.shape[-1], kernel_size=1)(x)
     x = layers.LayerNormalization(epsilon=1e-6)(x)
@@ -358,18 +358,22 @@ model.compile(
 )
 model.summary()
 
-# callbacks = [keras.callbacks.EarlyStopping(
-#     patience=10, restore_best_weights=True)]
-callbacks = [
-    keras.callbacks.ModelCheckpoint(
-        "Transformer_vector_best_model.h5", save_best_only=True, monitor="sparse_categorical_accuracy"
-    ),
-    keras.callbacks.ReduceLROnPlateau(
-        monitor="sparse_categorical_accuracy", factor=0.5, patience=20, min_lr=0.0001
-    ),
+callbacks = [keras.callbacks.ModelCheckpoint(
+    "Transformer_vector_best_model.h5", save_best_only=True, monitor="sparse_categorical_accuracy"
+),
     keras.callbacks.EarlyStopping(
-        monitor="sparse_categorical_accuracy", patience=50, verbose=1),
-]
+    patience=10, restore_best_weights=True)]
+
+# callbacks = [
+#     keras.callbacks.ModelCheckpoint(
+#         "Transformer_vector_best_model.h5", save_best_only=True, monitor="sparse_categorical_accuracy"
+#     ),
+#     keras.callbacks.ReduceLROnPlateau(
+#         monitor="sparse_categorical_accuracy", factor=0.5, patience=20, min_lr=0.0001
+#     ),
+#     keras.callbacks.EarlyStopping(
+#         monitor="sparse_categorical_accuracy", patience=50, verbose=1),
+# ]
 
 history = model.fit(
     x_train,
@@ -381,7 +385,7 @@ history = model.fit(
 )
 
 # model.save('transformer_model.h5')
-
+print("Training finish!")
 model = keras.models.load_model("Transformer_vector_best_model.h5")
 
 test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
