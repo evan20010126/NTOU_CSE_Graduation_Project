@@ -313,15 +313,15 @@ def build_model(
     x = inputs
 
     # conv
-    conv1 = keras.layers.Conv1D(
-        filters=64, kernel_size=3, padding="same")(x)
-    conv1 = keras.layers.BatchNormalization()(conv1)
-    conv1 = keras.layers.ReLU()(conv1)
-    conv2 = keras.layers.Conv1D(
-        filters=64, kernel_size=3, padding="same")(conv1)
-    conv2 = keras.layers.BatchNormalization()(conv2)
-    x = keras.layers.ReLU()(conv2)
-    x = layers.Dropout(mlp_dropout)(x)
+    # conv1 = keras.layers.Conv1D(
+    #     filters=64, kernel_size=3, padding="same")(x)
+    # conv1 = keras.layers.BatchNormalization()(conv1)
+    # conv1 = keras.layers.ReLU()(conv1)
+    # conv2 = keras.layers.Conv1D(
+    #     filters=64, kernel_size=3, padding="same")(conv1)
+    # conv2 = keras.layers.BatchNormalization()(conv2)
+    # x = keras.layers.ReLU()(conv2)
+    # x = layers.Dropout(mlp_dropout)(x)
     ###########
 
     for _ in range(num_transformer_blocks):
