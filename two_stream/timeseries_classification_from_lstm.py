@@ -291,7 +291,7 @@ via random search using [KerasTuner](https://github.com/keras-team/keras-tuner).
 is_Reshape = False
 
 
-def make_model(input_shape):
+def share_stream(input_shape):
     # ? 跟大小無關 None 甚麼大小都可以 因為globalAveragepooling的設計
     input_layer = keras.layers.Input(shape=input_shape)
     # ? (None, 1)
@@ -323,6 +323,15 @@ def make_model(input_shape):
     gap = keras.layers.GlobalAveragePooling1D()(conv3)
     # ? globalaveragepooling不用寫啦，最後一個LSTM return sequence為false就好了
     # gap = conv3
+
+    shared_layer = keras.models.Model(input_layer, gap)
+
+    return shared_layer
+
+
+def make_model(input_shape):
+
+    input_layer = keras.layers.Input(shape=input_shape)
 
     output_layer = keras.layers.Dense(num_classes, activation="softmax")(gap)
 
