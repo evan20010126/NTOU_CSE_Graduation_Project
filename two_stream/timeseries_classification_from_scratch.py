@@ -198,8 +198,8 @@ def split_target(df):
 # edmund = sign_language_df.iloc[406:814, :]
 # yumi = sign_language_df.iloc[814:, :]
 
-train_vectors = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3,
-                           friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
+train_vectors = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
+                          friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
 test_vectors = friend_4
 
 evan, edmund, yumi,\
@@ -207,7 +207,7 @@ evan, edmund, yumi,\
     friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
     = share_function.load_point_data()
 
-train_points = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3,
+train_points = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4,
                           friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
 
 train_points = share_function.label_to_float(train_points)

@@ -9,6 +9,7 @@ def shuffle(df):
 
 def two_stream_shuffle(points, vectors):
     last_col = points.shape[-1]
+    print(last_col)
     temp = pd.concat([points, vectors], axis=1)
     temp = shuffle(df=temp)
     temp1 = temp.iloc[:, :last_col]
