@@ -87,7 +87,9 @@ evan, edmund, yumi,\
 
 train_points = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3,
                           friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
+train_points = share_function.label_to_float(train_points)
 test_points = friend_4
+test_points = share_function.label_to_float(test_points)
 
 del evan, edmund, yumi, friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
     friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13
@@ -99,6 +101,17 @@ train_points, train_vectors = share_function.two_stream_shuffle(
 # share_function.two_stream_shuffle(points=train_points, vectors=train_vectors)
 # train = train.sample(frac=1).reset_index(drop=True)
 # test = test.sample(frac=1).reset_index(drop=True)
+
+
+def split_target_evanVersion(new_data_df):
+    new_data = new_data_df.to_numpy()
+    y = new_data[:, 0]
+    x = new_data[:, 1:]
+    # y = data[:, 0]
+    # x = data[:, 1:]
+    # y[y == "salty"] = -1
+    # y[y == "snack"] = 1
+    return x, y.astype(int)
 
 
 x_train_points, y_train_points = \
@@ -128,17 +141,6 @@ pose_sequence = [(0, 12), (0, 11),
                  (11, 13), (13, 15), ]  # 7個向量->6個向量
 
 point_number = len(hand_sequence*2) + len(pose_sequence)
-
-
-def split_target_evanVersion(new_data_df):
-    new_data = new_data_df.to_numpy()
-    y = new_data[:, 0]
-    x = new_data[:, 1:]
-    # y = data[:, 0]
-    # x = data[:, 1:]
-    # y[y == "salty"] = -1
-    # y[y == "snack"] = 1
-    return x, y.astype(int)
 
 
 x_train_points = np.asarray(x_train_points).astype(np.float32)
