@@ -56,6 +56,7 @@
 
 # y_train[y_train == -1] = 0
 # y_test[y_test == -1] = 0
+import sys
 import seaborn as sn
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
@@ -64,46 +65,57 @@ from tensorflow.keras import layers
 from tensorflow import keras
 import numpy as np
 import pandas as pd
+abcdefg = True
+sys.path.append(".")
+# sys.path.append("..")
+if abcdefg:
+    import old.share_function as share_function
 
-evan = pd.read_csv("split_data_for_each_one/evan.csv", header=None)
-edmund = pd.read_csv("split_data_for_each_one/edmund.csv", header=None)
-yumi = pd.read_csv("split_data_for_each_one/yumi.csv", header=None)
-# sign_language_df = pd.read_csv(
-#     "Summary_stuff_zero_11st.csv", header=None)
-# print(sign_language_df)
+evan, edmund, yumi,\
+    friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
+    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
+    = share_function.load_vector_data()
 
-# sign_language_df = sign_language_df[:][:-2]
-# print(sign_language_df)
-friend_1 = pd.read_csv(
-    "split_data_for_each_one/friend_1.csv", header=None)
-friend_2 = pd.read_csv(
-    "split_data_for_each_one/friend_2.csv", header=None)
-friend_3 = pd.read_csv(
-    "split_data_for_each_one/friend_3.csv", header=None)
-friend_4 = pd.read_csv(
-    "split_data_for_each_one/friend_4.csv", header=None)
-friend_5 = pd.read_csv(
-    "split_data_for_each_one/friend_5.csv", header=None)
-friend_6 = pd.read_csv(
-    "split_data_for_each_one/friend_6.csv", header=None)
-friend_7 = pd.read_csv(
-    "split_data_for_each_one/friend_7.csv", header=None)
-friend_8 = pd.read_csv(
-    "split_data_for_each_one/friend_8.csv", header=None)
-friend_9 = pd.read_csv(
-    "split_data_for_each_one/friend_9.csv", header=None)
-friend_10 = pd.read_csv(
-    "split_data_for_each_one/friend_10.csv", header=None)
-friend_11 = pd.read_csv(
-    "split_data_for_each_one/friend_11.csv", header=None)
-friend_12 = pd.read_csv(
-    "split_data_for_each_one/friend_12.csv", header=None)
-friend_13 = pd.read_csv(
-    "split_data_for_each_one/friend_13.csv", header=None)
-# from numpy import genfromtxt
+train_vectors = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3,
+                           friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
+test_vectors = friend_4
 
-# data = genfromtxt('Summary_stuff_zero_5st.csv', delimiter=',')
+evan, edmund, yumi,\
+    friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
+    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
+    = share_function.load_point_data()
 
+train_points = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3,
+                          friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
+test_points = friend_4
+
+del evan, edmund, yumi, friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
+    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13
+
+#! <do shuffle> -> train
+train_points, train_vectors = share_function.two_stream_shuffle(
+    points=train_points, vectors=train_vectors)
+
+# share_function.two_stream_shuffle(points=train_points, vectors=train_vectors)
+# train = train.sample(frac=1).reset_index(drop=True)
+# test = test.sample(frac=1).reset_index(drop=True)
+
+
+x_train_points, y_train_points = \
+    split_target_evanVersion(
+        train_points)  # origin: x_train, y_train = split_target(train)
+
+x_train_vectors, y_train_vectors = \
+    split_target_evanVersion(
+        train_vectors)  # origin: x_train, y_train = split_target(train)
+
+x_test_points, y_test_points = \
+    split_target_evanVersion(
+        test_points)  # origin: x_train, y_train = split_target(train)
+
+x_test_vectors, y_test_vectors = \
+    split_target_evanVersion(
+        test_vectors)  # origin: x_train, y_train = split_target(train)
 # myself
 hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
                  (0, 5), (5, 6), (6, 7), (7, 8),
@@ -129,138 +141,32 @@ def split_target_evanVersion(new_data_df):
     return x, y.astype(int)
 
 
-def split_target(df):
-    data = df.to_numpy()
-    new_data = np.array(list())
-    row_length = 0
+x_train_points = np.asarray(x_train_points).astype(np.float32)
+y_train_points = np.asarray(y_train_points).astype(np.float32)
 
-    for row in data:
-        temp_row = np.array(list())
+x_train_vectors = np.asarray(x_train_vectors).astype(np.float32)
+y_train_vectors = np.asarray(y_train_vectors).astype(np.float32)
 
-        if row[0] == "salty":
-            temp_row = np.append(temp_row, [0.0, ])
-        elif row[0] == "snack":
-            temp_row = np.append(temp_row, [1.0, ])
-        elif row[0] == "bubbletea":
-            temp_row = np.append(temp_row, [2.0, ])
-        elif row[0] == "dumpling":
-            temp_row = np.append(temp_row, [3.0, ])
-        elif row[0] == "spicy":
-            temp_row = np.append(temp_row, [4.0, ])
-        elif row[0] == "sour":
-            temp_row = np.append(temp_row, [5.0, ])
-        elif row[0] == "sweet":
-            temp_row = np.append(temp_row, [6.0, ])
-        elif row[0] == "yummy":
-            temp_row = np.append(temp_row, [7.0, ])
+x_test_points = np.asarray(x_test_points).astype(np.float32)
+y_test_points = np.asarray(y_test_points).astype(np.float32)
 
-        # pose: 23個點 left/right:各21個點 23+21*2=65
-        vector = row[1:]
-
-        # change to vector
-        vector = vector.reshape((vector.shape[0])//130, 65, 2)  # (幾偵, 點, xy)
-
-        for img in vector:  # 迭代每一偵
-            pose_points = img[0:23]
-            left_hand_points = img[23:23+21]
-            right_hand_points = img[23+21:23+21+21]
-
-            for p1, p2 in pose_sequence:
-                temp_row = np.append(
-                    temp_row, pose_points[p2] - pose_points[p1])
-
-            for p1, p2 in hand_sequence:
-                temp_row = np.append(
-                    temp_row, left_hand_points[p2] - left_hand_points[p1])
-
-            for p1, p2 in hand_sequence:
-                temp_row = np.append(
-                    temp_row, right_hand_points[p2] - right_hand_points[p1])
-        # print(temp_row.shape) # 1787
-        # changing finish------
-        row_length = temp_row.shape[0]
-        new_data = np.append(new_data, temp_row)
-    new_data = new_data.reshape(data.shape[0], row_length)
-    y = new_data[:, 0]
-    x = new_data[:, 1:]
-
-    # y = data[:, 0]
-    # x = data[:, 1:]
-    # y[y == "salty"] = -1
-    # y[y == "snack"] = 1
-    return x, y.astype(int)
+x_test_vectors = np.asarray(x_test_vectors).astype(np.float32)
+y_test_vectors = np.asarray(y_test_vectors).astype(np.float32)
 
 
-# def split_target(data_df):
-#   data_np = data_df.to_numpy()
-#   y = data_np[:, 0]
-#   x = data_np[:, 1:]
-#   x = transfer_to_vector(x)
-#   y[y == 'salty'] = 0
-#   y[y == 'snack'] = 1
-#   return x, y
+x_train_points = x_train_points.flatten().reshape(
+    x_train_points.shape[0], x_train_points.shape[1]//130, 130)
 
-# 為了解決ResourceExhaustedError的暫時處理方法:
-# def reduce_data(data_df):
-#   new_df = data_df.iloc[:,:501]
-#   return new_df
-#re_sign_language_df = reduce_data(sign_language_df)
-# train, test = train_test_split(sign_language_df, test_size=0.2)
+x_test_points = x_test_points.flatten().reshape(
+    x_test_points.shape[0], x_test_points.shape[1]//130, 130)
 
-# evan = sign_language_df.iloc[:406, :]
-# edmund = sign_language_df.iloc[406:814, :]
-# yumi = sign_language_df.iloc[814:, :]
+x_train_vectors = x_train_vectors.flatten().reshape(
+    x_train_vectors.shape[0], (x_train_vectors.shape[1]//(point_number*2)), (point_number*2))
 
+x_test_vectors = x_test_vectors.flatten().reshape(
+    x_test_vectors.shape[0], (x_test_vectors.shape[1]//(point_number*2)), (point_number*2))
 
-train = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
-                  friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
-test = friend_4
-
-#! <do shuffle> -> train
-# print("before")
-# print(train)
-train = train.sample(frac=1).reset_index(drop=True)
-test = test.sample(frac=1).reset_index(drop=True)
-# print("after")
-# print(train)
-
-print("start split target !!!")
-x_train, y_train = \
-    split_target_evanVersion(
-        train)  # origin: x_train, y_train = split_target(train)
-x_test, y_test = \
-    split_target_evanVersion(
-        test)  # origin: x_test, y_test = split_target(test)
-print("finish split target !!!")
-
-
-# .
-# x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
-# x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
-# y_train[y_train == -1] = 0
-# y_test[y_test == -1] = 0
-# print("len(x_train): ",len(x_train))
-# print("x_train.shape[1]: ",x_train.shape[1])
-
-x_train = np.asarray(x_train).astype(np.float32)
-y_train = np.asarray(y_train).astype(np.float32)
-x_test = np.asarray(x_test).astype(np.float32)
-y_test = np.asarray(y_test).astype(np.float32)
-
-
-x_train = x_train.flatten().reshape(
-    x_train.shape[0], (x_train.shape[1]//(point_number*2)), point_number*2)
-x_test = x_test.flatten().reshape(
-    x_test.shape[0], (x_test.shape[1]//(point_number*2)), point_number*2)
-
-
-print("x_train[0]:\n", x_train[0])
-print("y_train[0]:\n", y_train[0])
-
-# x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
-# x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
-
-n_classes = len(np.unique(y_train))
+n_classes = len(np.unique(y_train_vectors))
 
 # idx = np.random.permutation(len(x_train))
 # idx_y = np.random.permutation(len(y_train))
@@ -392,7 +298,7 @@ def build_model(
 
 """## Train and evaluate"""
 
-input_shape = x_train.shape[1:]
+# input_shape = x_train.shape[1:]
 
 # model = build_model(
 #     input_shape,
@@ -405,7 +311,9 @@ input_shape = x_train.shape[1:]
 #     dropout=0.25,
 # )
 model = build_model(
-    input_shape,
+    input_shape_point=x_train_points.shape[1:
+                                           ], input_shape_vector=x_train_vectors.shape[1:
+                                                                                       ],
     head_size=256,
     num_heads=4,
     ff_dim=4,
@@ -443,8 +351,8 @@ callbacks = [
 ]
 
 history = model.fit(
-    x_train,
-    y_train,
+    [x_train_points, x_train_vectors],
+    y_train_points,
     validation_split=0.2,
     epochs=500,
     batch_size=64,  # 64
@@ -455,7 +363,8 @@ history = model.fit(
 print("Training finish!")
 model = keras.models.load_model("Transformer_vector_best_model.h5")
 
-test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
+test_loss, test_acc = model.evaluate(
+    [x_test_points, x_test_vectors], y_test_vectors, verbose=1)
 print("Test Accuracy:", test_acc)
 print("Test loss:", test_loss)
 
@@ -465,6 +374,16 @@ plt.plot(history.history[metric])
 plt.plot(history.history["val_" + metric])
 plt.title("model " + metric)
 plt.ylabel(metric, fontsize="large")
+plt.xlabel("epoch", fontsize="large")
+plt.legend(["train", "val"], loc="best")
+plt.show()
+plt.close()
+
+plt.figure()
+plt.plot(history.history["loss"])
+plt.plot(history.history["val_" + "loss"])
+plt.title("model loss")
+plt.ylabel("loss", fontsize="large")
 plt.xlabel("epoch", fontsize="large")
 plt.legend(["train", "val"], loc="best")
 plt.show()
@@ -484,8 +403,10 @@ You can use the trained model hosted on [Hugging Face Hub](https://huggingface.c
 
 # model = keras.models.load_model(f"{model_name}_best_model.h5")
 # confusion matrix
-predict_ans = np.argmax(model.predict(x_test), axis=-1)  # *  argmax 找最大值的index
-cm = tf.math.confusion_matrix(y_test, predict_ans).numpy().astype(np.float32)
+predict_ans = np.argmax(model.predict(
+    [x_test_points, x_test_vectors]), axis=-1)  # *  argmax 找最大值的index
+cm = tf.math.confusion_matrix(
+    y_test_vectors, predict_ans).numpy().astype(np.float32)
 print(cm)
 print(cm.shape[0])
 print(cm.shape[1])
@@ -504,7 +425,7 @@ df_cm = pd.DataFrame(cm, index=['Salty', 'Snack', 'Bubble Tea',
 fig = plt.figure(figsize=(10, 7))
 sn.heatmap(df_cm, annot=True)
 plt.show()
-fig.savefig(f'Transformer_leave_friend_2_confusion_matrix.png')
+fig.savefig(f'Transformer_confusion_matrix.png')
 
 
 def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None):
@@ -554,15 +475,11 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None
 print(model.layers[-5].name)
 last_conv_layer_name = model.layers[-5].name
 
-img_array = x_test[1][tf.newaxis, ...]
-
+img_array_vectors = x_test_vectors[1][tf.newaxis, ...]
+img_array_points = x_test_points[1][tf.newaxis, ...]
+img_array = [img_array_points, img_array_vectors]
 heatmap = make_gradcam_heatmap(
     img_array, model, last_conv_layer_name, pred_index=0)
-print(heatmap.shape)  # 19偵
-plt.matshow(heatmap)
-plt.show()
-heatmap = make_gradcam_heatmap(
-    img_array, model, last_conv_layer_name, pred_index=1)
 print(heatmap.shape)  # 19偵
 plt.matshow(heatmap)
 plt.show()

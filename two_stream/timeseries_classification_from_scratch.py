@@ -31,55 +31,23 @@ CSV timeseries files on disk. We demonstrate the workflow on the FordA dataset f
 
 # sign_language_df = pd.read_excel("/content/drive/MyDrive/timeseries/Summary_stuff_zero.xlsx")
 
-
+import sys
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
-evan = pd.read_csv("split_data_for_each_one/evan.csv", header=None)
-edmund = pd.read_csv("split_data_for_each_one/edmund.csv", header=None)
-yumi = pd.read_csv("split_data_for_each_one/yumi.csv", header=None)
-# sign_language_df = pd.read_csv(
-#     "Summary_stuff_zero_11st.csv", header=None)
-# print(sign_language_df)
+abcdefg = True
+sys.path.append(".")
+# sys.path.append("..")
+if abcdefg:
+    import old.share_function as share_function
 
-# sign_language_df = sign_language_df[:][:-2]
-# print(sign_language_df)
-friend_1 = pd.read_csv(
-    "split_data_for_each_one/friend_1.csv", header=None)
-friend_2 = pd.read_csv(
-    "split_data_for_each_one/friend_2.csv", header=None)
-friend_3 = pd.read_csv(
-    "split_data_for_each_one/friend_3.csv", header=None)
-friend_4 = pd.read_csv(
-    "split_data_for_each_one/friend_4.csv", header=None)
-friend_5 = pd.read_csv(
-    "split_data_for_each_one/friend_5.csv", header=None)
-friend_6 = pd.read_csv(
-    "split_data_for_each_one/friend_6.csv", header=None)
-friend_7 = pd.read_csv(
-    "split_data_for_each_one/friend_7.csv", header=None)
-friend_8 = pd.read_csv(
-    "split_data_for_each_one/friend_8.csv", header=None)
-friend_9 = pd.read_csv(
-    "split_data_for_each_one/friend_9.csv", header=None)
-friend_10 = pd.read_csv(
-    "split_data_for_each_one/friend_10.csv", header=None)
-friend_11 = pd.read_csv(
-    "split_data_for_each_one/friend_11.csv", header=None)
-friend_12 = pd.read_csv(
-    "split_data_for_each_one/friend_12.csv", header=None)
-friend_13 = pd.read_csv(
-    "split_data_for_each_one/friend_13.csv", header=None)
-
-# for i in range(308):
-#     if(sign_language_df.iat[i, 24311] != 0.0):
-#         print("\033[92m here no zero")
-#         print("\033[0m")
-
-
+evan, edmund, yumi,\
+    friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
+    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
+    = share_function.load_vector_data()
 # myself
 hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
                  (0, 5), (5, 6), (6, 7), (7, 8),
@@ -230,39 +198,89 @@ def split_target(df):
 # edmund = sign_language_df.iloc[406:814, :]
 # yumi = sign_language_df.iloc[814:, :]
 
-train = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3,
-                  friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
-test = friend_4
+train_vectors = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3,
+                           friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
+test_vectors = friend_4
+
+evan, edmund, yumi,\
+    friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
+    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
+    = share_function.load_point_data()
+
+train_points = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3,
+                          friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
+
+train_points = share_function.label_to_float(train_points)
+
+test_points = friend_4
+test_points = share_function.label_to_float(test_points)
+
+
+del evan, edmund, yumi, friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
+    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13
 
 #! <do shuffle> -> train
-# print("before")
-# print(train)
-train = train.sample(frac=1).reset_index(drop=True)
-test = test.sample(frac=1).reset_index(drop=True)
-# print("after")
-# print(train)
+train_points, train_vectors = share_function.two_stream_shuffle(
+    points=train_points, vectors=train_vectors)
 
-x_train, y_train = \
+# share_function.two_stream_shuffle(points=train_points, vectors=train_vectors)
+# train = train.sample(frac=1).reset_index(drop=True)
+# test = test.sample(frac=1).reset_index(drop=True)
+
+
+x_train_points, y_train_points = \
     split_target_evanVersion(
-        train)  # origin: x_train, y_train = split_target(train)
-x_test, y_test = \
+        train_points)  # origin: x_train, y_train = split_target(train)
+
+x_train_vectors, y_train_vectors = \
     split_target_evanVersion(
-        test)  # origin: x_test, y_test = split_target(test)
+        train_vectors)  # origin: x_train, y_train = split_target(train)
+
+x_test_points, y_test_points = \
+    split_target_evanVersion(
+        test_points)  # origin: x_train, y_train = split_target(train)
+
+x_test_vectors, y_test_vectors = \
+    split_target_evanVersion(
+        test_vectors)  # origin: x_train, y_train = split_target(train)
 
 # .
-print(x_train.shape)
-x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
-print(x_train.shape)
-x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
-num_classes = len(np.unique(y_train))
+# print(x_train.shape)
+# x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
+# print(x_train.shape)
+# x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
+x_train_points = np.asarray(x_train_points).astype(np.float32)
+y_train_points = np.asarray(y_train_points).astype(np.float32)
+
+x_train_vectors = np.asarray(x_train_vectors).astype(np.float32)
+y_train_vectors = np.asarray(y_train_vectors).astype(np.float32)
+
+x_test_points = np.asarray(x_test_points).astype(np.float32)
+y_test_points = np.asarray(y_test_points).astype(np.float32)
+
+x_test_vectors = np.asarray(x_test_vectors).astype(np.float32)
+y_test_vectors = np.asarray(y_test_vectors).astype(np.float32)
+
+# x_test = np.asarray(x_test).astype(np.float32)
+# y_test = np.asarray(y_test).astype(np.float32)
+
+num_classes = len(np.unique(y_train_vectors))
+
+x_train_points = x_train_points.flatten().reshape(
+    x_train_points.shape[0], x_train_points.shape[1]//130, 130)
+
+x_test_points = x_test_points.flatten().reshape(
+    x_test_points.shape[0], x_test_points.shape[1]//130, 130)
+
+x_train_vectors = x_train_vectors.flatten().reshape(
+    x_train_vectors.shape[0], (x_train_vectors.shape[1]//(point_number*2)), (point_number*2))
+
+x_test_vectors = x_test_vectors.flatten().reshape(
+    x_test_vectors.shape[0], (x_test_vectors.shape[1]//(point_number*2)), (point_number*2))
 
 # y_train[y_train == -1] = 0
 # y_test[y_test == -1] = 0
 
-x_train = np.asarray(x_train).astype(np.float32)
-y_train = np.asarray(y_train).astype(np.float32)
-x_test = np.asarray(x_test).astype(np.float32)
-y_test = np.asarray(y_test).astype(np.float32)
 
 """## Load the data: the FordA dataset
 
@@ -367,8 +385,6 @@ The following hyperparameters (kernel_size, filters, the usage of BatchNorm) wer
 via random search using [KerasTuner](https://github.com/keras-team/keras-tuner).
 """
 
-is_Reshape = False
-
 
 def share_stream(input_shape):
     # ? 跟大小無關 None 甚麼大小都可以 因為globalAveragepooling的設計
@@ -409,8 +425,8 @@ def share_stream(input_shape):
 def make_model(input_shape_point, input_shape_vector):
     inputs_point = keras.layers.Input(shape=input_shape_point)
     inputs_vector = keras.layers.Input(shape=input_shape_vector)
-    point_stream = share_stream(x_shape=input_shape_point)
-    vector_stream = share_stream(x_shape=input_shape_vector)
+    point_stream = share_stream(input_shape_point)
+    vector_stream = share_stream(input_shape_vector)
 
     point_feature = point_stream(inputs_point)
     vector_feature = vector_stream(inputs_vector)
@@ -422,21 +438,14 @@ def make_model(input_shape_point, input_shape_vector):
 
     return keras.models.Model(inputs=[inputs_point, inputs_vector], outputs=output_layer)
 
-
-if is_Reshape == False:
-    x_train = x_train.flatten().reshape(
-        x_train.shape[0], (x_train.shape[1]//(point_number*2)), (point_number*2))
-    x_test = x_test.flatten().reshape(
-        x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
-    is_Reshape = True
-print(x_train.shape)
-
 # 2D
 # x_train = x_train.flatten().reshape(x_train.shape[0], (x_train.shape[1]//(point_number*2)), (point_number), 2)
 # x_test = x_test.flatten().reshape(x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number), 2)
 
 
-model = make_model(input_shape=x_train.shape[1:])
+model = make_model(
+    input_shape_point=x_train_points.shape[1:], input_shape_vector=x_train_vectors.shape[1:])
+
 keras.utils.plot_model(model, show_shapes=True)
 
 # 1. 錄影怎麼錄影
@@ -483,8 +492,8 @@ model.compile(
 )
 
 history = model.fit(
-    x_train,
-    y_train,
+    [x_train_points, x_train_vectors],
+    y_train_points,
     batch_size=batch_size,
     epochs=epochs,
     callbacks=callbacks,
@@ -498,7 +507,8 @@ history = model.fit(
 
 model = keras.models.load_model("Convolution_best_model.h5")
 
-test_loss, test_acc = model.evaluate(x_test, y_test)
+test_loss, test_acc = model.evaluate(
+    [x_test_points, x_test_vectors], y_test_vectors)
 
 print("Test accuracy", test_acc)
 print("Test loss", test_loss)
@@ -570,16 +580,11 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None
 last_conv_layer_name = model.layers[-3].name
 # print(model.layers[-3].name)
 
-img_array = x_test[1][tf.newaxis, ...]
+img_array_vectors = x_test_vectors[1][tf.newaxis, ...]
+img_array_points = x_test_points[1][tf.newaxis, ...]
 
 heatmap = make_gradcam_heatmap(
-    img_array, model, last_conv_layer_name, pred_index=0)
-print(heatmap.shape)  # 19偵
-plt.matshow(heatmap)
-plt.show()
-
-heatmap = make_gradcam_heatmap(
-    img_array, model, last_conv_layer_name, pred_index=1)
+    [img_array_points, img_array_vectors], model, last_conv_layer_name, pred_index=0)
 print(heatmap.shape)  # 19偵
 plt.matshow(heatmap)
 plt.show()

@@ -31,12 +31,19 @@ CSV timeseries files on disk. We demonstrate the workflow on the FordA dataset f
 
 # sign_language_df = pd.read_excel("/content/drive/MyDrive/timeseries/Summary_stuff_zero.xlsx")
 
+
+from sklearn.model_selection import train_test_split
+import old.share_function as share_function
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.model_selection import train_test_split
+evan, edmund, yumi,\
+    friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
+    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
+    = share_function.load_vector_data()
+
 evan = pd.read_csv("split_data_for_each_one/evan.csv", header=None)
 edmund = pd.read_csv("split_data_for_each_one/edmund.csv", header=None)
 yumi = pd.read_csv("split_data_for_each_one/yumi.csv", header=None)
@@ -329,13 +336,21 @@ def share_stream(input_shape):
     return shared_layer
 
 
-def make_model(input_shape):
+def make_model(input_shape_point, input_shape_vector):
+    inputs_point = keras.layers.Input(shape=input_shape_point)
+    inputs_vector = keras.layers.Input(shape=input_shape_vector)
+    point_stream = share_stream(x_shape=input_shape_point)
+    vector_stream = share_stream(x_shape=input_shape_vector)
 
-    input_layer = keras.layers.Input(shape=input_shape)
+    point_feature = point_stream(inputs_point)
+    vector_feature = vector_stream(inputs_vector)
 
-    output_layer = keras.layers.Dense(num_classes, activation="softmax")(gap)
+    feature = keras.layers.concatenate([point_feature, vector_feature])
 
-    return keras.models.Model(inputs=input_layer, outputs=output_layer)
+    output_layer = keras.layers.Dense(
+        num_classes, activation="softmax")(feature)
+
+    return keras.models.Model(inputs=[inputs_point, inputs_vector], outputs=output_layer)
 # print(len(x_train.flatten()))
 # print(x_train.shape[1]//(point_number*2))
 

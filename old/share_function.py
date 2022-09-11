@@ -92,3 +92,28 @@ def load_point_data():
     friend_13 = pd.read_csv(
         "nosplit_data_for_each_one/friend_13.csv", header=None)
     return evan, edmund, yumi, friend_1, friend_2, friend_3, friend_4, friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13
+
+
+def label_to_float(df):
+    for i in range(df.shape[0]):
+        y = df.iloc[i, 0]
+        if y == "salty":
+            df.iloc[i, 0] = 0.0
+        elif y == "snack":
+            df.iloc[i, 0] = 1.0
+        elif y == "bubbletea":
+            df.iloc[i, 0] = 2.0
+        elif y == "dumpling":
+            df.iloc[i, 0] = 3.0
+        elif y == "spicy":
+            df.iloc[i, 0] = 4.0
+        elif y == "sour":
+            df.iloc[i, 0] = 5.0
+        elif y == "sweet":
+            df.iloc[i, 0] = 6.0
+        elif y == "yummy":
+            df.iloc[i, 0] = 7.0
+        else:
+            df.iloc[i, 0] = 999
+
+    return df
