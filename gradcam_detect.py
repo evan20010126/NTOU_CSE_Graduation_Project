@@ -145,6 +145,100 @@ def get_heapmap(model, layer_num, testing_data, class_idx, FTTAB):
     # cv2.imshow("sth", cv_img)
 
 
+def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_class_num, FTTAB):
+    global important_frame
+    last_conv_layer_name = model.layers[layer_num].name
+    # print(model.layers[-3].name)
+
+    img_array = testing_data[tf.newaxis, ...]
+
+    target_heatmap = None
+
+    heatmaps = np.array(list())
+    heatmaps_col_num = 0
+
+    for cas in range(0, 8):
+        heatmap = make_gradcam_heatmap(
+            img_array, model, last_conv_layer_name, pred_index=cas)
+        heatmap = heatmap.flatten()
+        heatmaps_col_num = len(heatmap)
+        if cas == target_class_num:
+            target_heatmap = heatmap
+        else:
+            heatmaps = np.append(heatmaps, heatmap)
+
+    heatmaps = heatmaps.reshape(-1, heatmaps_col_num)
+    heatmap = np.array([])  # new heatmap (錯誤率)
+    for frame_num in range(len(target_heatmap)):
+        if (target_heatmap[frame_num] <= 0.5):
+            col = heatmaps[:, frame_num]
+            col = col[col >= 0.3]
+            col_num = len(col)
+            if col_num != 0:
+                average = 1 - target_heatmap[frame_num]
+            else:
+                # this frame neural network think->not important
+                average = 0.0  # 怎麼比都是對的
+        else:
+            average = 1 - target_heatmap[frame_num]
+        heatmap = np.append(heatmap, average)
+
+    print(heatmap.shape)  # 19偵
+    heatmap = heatmap.reshape(-1, heatmap.shape[0])
+    print(f"len(heatmap):{len(heatmap)}")
+    print('\033[93m')
+    important_frame = []
+    # i = 0
+    for i in range(0, heatmap.shape[-1]):
+        # while (i < heatmap.shape[-1]):
+        ele = heatmap[0][i]
+        print("heatmap")
+        print(heatmap)
+        if (ele >= 0.5 and (FTTAB[i] not in important_frame)):
+            # FTTAB[i]可以對應到正確的偵數
+            important_frame.append(FTTAB[i])
+            print(FTTAB[i])
+    save_frames = list()
+    print(important_frame)
+    cap = cv2.VideoCapture("output_sample_videos/webcam.avi")
+    pre_ele = -2e9
+    for ele in important_frame:
+        # ret, frame = cap.read()
+        # if(frame_idx in important_frame):
+        #     cv2.imwrite(f"wrongPose_img{}")
+
+        cap.set(cv2.CAP_PROP_POS_FRAMES, ele)
+        # 主要為此條指令配合 create 時的 callback function (設定frame_name) 達到 trackbar 拖曳時影片跟著動
+        ret, frame = cap.read()
+        if ret == False:
+            break
+        if (ele-pre_ele) >= 5:
+            # cv2.imwrite(
+            #     f'output_sample_videos/webcam_important/wrongPose_img{ele}.jpg', frame)
+            save_frames.append(frame)
+            pre_ele = ele
+
+    print('\033[0m')
+
+    fig = plt.figure()
+    rows_num = 7
+    gs1 = gridspec.GridSpec(
+        nrows=rows_num, ncols=len(save_frames), wspace=0.05)
+    ax1 = fig.add_subplot(gs1[0, :])
+    ax1.matshow(heatmap)
+
+    for i in range(0, len(save_frames)):
+        ax2 = fig.add_subplot(gs1[1:rows_num-1, i])
+        ax2.imshow(save_frames[i][:, :, [2, 1, 0]])
+        ax2.axis('off')  # on: 顯示坐標軸; off: 不顯示座標軸
+
+    ax3 = fig.add_subplot(gs1[rows_num-1, :])
+    button1 = plt.Button(ax3, 'replay')
+    button1.on_clicked(fn_maker(heatmap=heatmap, FTTAB=FTTAB))
+    plt.subplots_adjust(left=0.03, right=0.98)
+    plt.show()
+
+
 def fn_maker(heatmap, FTTAB):
     def review(event):
         important_frame = []

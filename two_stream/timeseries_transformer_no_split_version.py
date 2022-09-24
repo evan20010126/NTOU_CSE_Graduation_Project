@@ -228,25 +228,25 @@ this example, a `GlobalAveragePooling1D` layer is sufficient.
 
 
 def share_stream(x_shape, num_transformer_blocks, head_size, num_heads, ff_dim, dropout):
-    x = keras.Input(shape=x_shape)
+    first = keras.Input(shape=x_shape)
     # conv
-    conv1 = keras.layers.Conv1D(
-        filters=32, kernel_size=3, padding="same")(x)
-    conv1 = keras.layers.BatchNormalization()(conv1)
-    conv1 = keras.layers.ReLU()(conv1)
-    conv2 = keras.layers.Conv1D(
-        filters=64, kernel_size=3, padding="same")(conv1)
-    conv2 = keras.layers.BatchNormalization()(conv2)
-    conv2 = keras.layers.ReLU()(conv2)
-    xd = layers.Dropout(0.25)(conv2)
+    # conv1 = keras.layers.Conv1D(
+    #     filters=32, kernel_size=3, padding="same")(first)
+    # conv1 = keras.layers.BatchNormalization()(conv1)
+    # conv1 = keras.layers.ReLU()(conv1)
+    # conv2 = keras.layers.Conv1D(
+    #     filters=64, kernel_size=3, padding="same")(conv1)
+    # conv2 = keras.layers.BatchNormalization()(conv2)
+    # conv2 = keras.layers.ReLU()(conv2)
+    # x = layers.Dropout(0.25)(conv2)
     ###########
-
+    x = first  # for no conv
     for _ in range(num_transformer_blocks):
-        xd = transformer_encoder(xd, head_size, num_heads, ff_dim, dropout)
+        x = transformer_encoder(x, head_size, num_heads, ff_dim, dropout)
 
     last = layers.GlobalAveragePooling1D(data_format="channels_first")(
-        xd)  # data_format="channels_first"
-    shared_layer = keras.models.Model(x, last)
+        x)  # data_format="channels_first"
+    shared_layer = keras.models.Model(first, last)
     return shared_layer
 
 

@@ -128,7 +128,7 @@ def start_btn_func(target_class_num):
     x_test = x_test.flatten().reshape(
         x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
     # model = keras.models.load_model('Convolution_best_model.h5')
-    select_model_name = 'Lstm_best_model_leave_yumi.h5'
+    select_model_name = 'Convolution_best_model_leave_evan.h5'
     model = keras.models.load_model(select_model_name)
     model.summary()
     predict_answer = model.predict(x_test)
@@ -154,15 +154,19 @@ def start_btn_func(target_class_num):
     if (target_class_num == idx):
         # correct
         CORRECT = True
-        second_idx = predict_answer.index(sort_predict_answer[-2])
-        gradcam_detect.get_heapmap(
-            model, layer_num, x_test[0], second_idx, FTTAB)
+        # second_idx = predict_answer.index(sort_predict_answer[-2])
+        # gradcam_detect.get_heapmap(
+        #     model, layer_num, x_test[0], second_idx, FTTAB)
+        gradcam_detect.get_heapmap_FOREACH(
+            model, layer_num, x_test[0], target_class_num, len(answer_classlist), FTTAB)
     else:
         # wrong
         CORRECT = False
-        first_idx = predict_answer.index(sort_predict_answer[-1])
-        gradcam_detect.get_heapmap(
-            model, layer_num, x_test[0], first_idx, FTTAB)
+        # first_idx = predict_answer.index(sort_predict_answer[-1])
+        # gradcam_detect.get_heapmap(
+        #     model, layer_num, x_test[0], first_idx, FTTAB)
+        gradcam_detect.get_heapmap_FOREACH(
+            model, layer_num, x_test[0], target_class_num, len(answer_classlist), FTTAB)
 
     createScore(CORRECT)
 
