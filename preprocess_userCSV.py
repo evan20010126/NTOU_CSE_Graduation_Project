@@ -99,7 +99,7 @@ def preprocess(max_column=0, src_csv_file='webcam.csv', dest_csv_file="webcam_st
         summary_trans = list()
         for ele in trans2:
             summary_trans.append(trans1[ele])
-        return summary_trans
+        return summary_trans, frame_cutting
         # stuff 0
         # column_names = [i for i in range(0, largest_column_count)]
 

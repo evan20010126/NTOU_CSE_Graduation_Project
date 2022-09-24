@@ -1,4 +1,3 @@
-
 import tkinter as tk
 import tkinter.messagebox
 import cv2
@@ -50,6 +49,28 @@ pose_sequence = [(0, 12), (0, 11),
                  (11, 13), (13, 15), ]  # 7個向量->6個向量
 
 point_number = len(hand_sequence*2) + len(pose_sequence)
+
+
+def split_target_points(new_data_df):
+    new_data = new_data_df.to_numpy()
+    y = new_data[:, 0]
+    x = new_data[:, 1:]
+
+    y[y == "salty"] = 0.0
+    y[y == "snack"] = 1.0
+    y[y == "bubbletea"] = 2.0
+    y[y == "dumpling"] = 3.0
+    y[y == "spicy"] = 4.0
+    y[y == "sour"] = 5.0
+    y[y == "sweet"] = 6.0
+    y[y == "yummy"] = 7.0
+    y[y == "webcam"] = -999.0
+
+    # y = data[:, 0]
+    # x = data[:, 1:]
+    # y[y == "salty"] = -1
+    # y[y == "snack"] = 1
+    return x, y.astype(int)
 
 
 def split_target(df):
@@ -114,24 +135,34 @@ def split_target(df):
 def start_btn_func(target_class_num):
     # generate webcam.csv
     mediapipe_webcam.open_cam(SAVE_REC=False, SAVE_EXCEL=False,
-                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=1)
+                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=0)
     # generate webcam_stuff_zero.csv
-    FTTAB = preprocess_userCSV.preprocess(max_column=27301)
+    FTTAB, frame_cutting = preprocess_userCSV.preprocess(max_column=27301)
 
-    webcam_df = pd.read_csv("webcam_stuff_zero.csv",
-                            header=None)
-    x_test, y_test = split_target(webcam_df)
-    del webcam_df
-    x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
-    x_test = np.asarray(x_test).astype(np.float32)
-    y_test = np.asarray(y_test).astype(np.float32)
-    x_test = x_test.flatten().reshape(
-        x_test.shape[0], (x_test.shape[1]//(point_number*2)), (point_number*2))
+    webcam_df_points = pd.read_csv("webcam_stuff_zero.csv",
+                                   header=None)
+    x_test_points, y_test_points = split_target_points(webcam_df_points)
+
+    webcam_df_vectors = pd.read_csv("webcam_stuff_zero.csv",
+                                    header=None)
+    x_test_vectors, y_test_vectors = split_target(webcam_df_vectors)
+    del webcam_df_points, webcam_df_vectors
+
+    x_test_points = np.asarray(x_test_points).astype(np.float32)
+    x_test_vectors = np.asarray(x_test_vectors).astype(np.float32)
+    y_test_vectors = np.asarray(y_test_vectors).astype(np.float32)
+
+    x_test_points = x_test_points.flatten().reshape(
+        x_test_points.shape[0], x_test_points.shape[1]//130, 130)
+
+    x_test_vectors = x_test_vectors.flatten().reshape(
+        x_test_vectors.shape[0], (x_test_vectors.shape[1]//(point_number*2)), (point_number*2))
+
     # model = keras.models.load_model('Convolution_best_model.h5')
-    select_model_name = 'Convolution_best_model_leave_evan.h5'
+    select_model_name = 'Convolution_best_model.h5'
     model = keras.models.load_model(select_model_name)
     model.summary()
-    predict_answer = model.predict(x_test)
+    predict_answer = model.predict([x_test_points, x_test_vectors])
     print("Predict: ", predict_answer)
 
     predict_answer = predict_answer.flatten().tolist()
@@ -158,7 +189,7 @@ def start_btn_func(target_class_num):
         # gradcam_detect.get_heapmap(
         #     model, layer_num, x_test[0], second_idx, FTTAB)
         gradcam_detect.get_heapmap_FOREACH(
-            model, layer_num, x_test[0], target_class_num, len(answer_classlist), FTTAB)
+            model, layer_num, [x_test_points[0], x_test_vectors[0]], target_class_num, len(answer_classlist), FTTAB, frame_cutting)
     else:
         # wrong
         CORRECT = False
@@ -166,7 +197,7 @@ def start_btn_func(target_class_num):
         # gradcam_detect.get_heapmap(
         #     model, layer_num, x_test[0], first_idx, FTTAB)
         gradcam_detect.get_heapmap_FOREACH(
-            model, layer_num, x_test[0], target_class_num, len(answer_classlist), FTTAB)
+            model, layer_num, [x_test_points[0], x_test_vectors[0]], target_class_num, len(answer_classlist), FTTAB, frame_cutting)
 
     createScore(CORRECT)
 

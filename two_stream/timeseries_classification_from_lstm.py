@@ -23,7 +23,7 @@ This example shows how to do timeseries classification from scratch, starting fr
 CSV timeseries files on disk. We demonstrate the workflow on the FordA dataset from the
 [UCR/UEA archive](https://www.cs.ucr.edu/%7Eeamonn/time_series_data_2018/).
 
-## Setup
+# Setup
 """
 
 
@@ -31,7 +31,8 @@ CSV timeseries files on disk. We demonstrate the workflow on the FordA dataset f
 
 # sign_language_df = pd.read_excel("/content/drive/MyDrive/timeseries/Summary_stuff_zero.xlsx")
 
-
+import seaborn as sn
+import pyscreenshot as ImageGrab
 import sys
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
@@ -138,31 +139,51 @@ def split_target(df):
 # edmund = sign_language_df.iloc[406:814, :]
 # yumi = sign_language_df.iloc[814:, :]
 
-train_vectors = pd.concat(
-    [evan, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
-     friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
+leave_idx = int(sys.argv[1])  # 0 ~ 15
 
-#!改這裡
-test_vectors = yumi
+# -- vector --
+evan, edmund, yumi,\
+    friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
+    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
+    = share_function.load_vector_data()
 
+all_person_pd_vector = [evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
+                        friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13]
+# -- point --
 evan, edmund, yumi,\
     friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
     friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
     = share_function.load_point_data()
 
-train_points = pd.concat([evan, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
-                          friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
-
-train_points = share_function.label_to_float(train_points)
-
-#!改這裡
-test_points = yumi
-test_points = share_function.label_to_float(test_points)
-
+all_person_pd_points = [evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
+                        friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13]
 
 del evan, edmund, yumi, friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
     friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13
 
+IS_EMPTY = True
+train_vectors = -999
+test_vectors = -999
+train_points = -999
+test_points = -999
+for i in range(16):
+    if (i != leave_idx):
+        if not IS_EMPTY:
+            train_vectors = pd.concat([train_vectors, all_person_pd_vector[i]])
+            train_points = pd.concat([train_points, all_person_pd_points[i]])
+        else:
+            train_vectors = all_person_pd_vector[i]
+            train_points = all_person_pd_points[i]
+            IS_EMPTY = False
+    else:
+        test_vectors = all_person_pd_vector[i]
+        test_points = all_person_pd_points[i]
+
+train_points = share_function.label_to_float(train_points)
+
+test_points = share_function.label_to_float(test_points)
+
+del all_person_pd_vector, all_person_pd_points
 #! shuffle
 train_points, train_vectors = share_function.two_stream_shuffle(
     points=train_points, vectors=train_vectors)
@@ -222,7 +243,7 @@ x_test_vectors = x_test_vectors.flatten().reshape(
 
 """## Load the data: the FordA dataset
 
-### Dataset description
+# Dataset description
 
 The dataset we are using here is called FordA.
 The data comes from the UCR archive.
@@ -232,7 +253,7 @@ For this task, the goal is to automatically detect the presence of a specific is
 the engine. The problem is a balanced binary classification task. The full description of
 this dataset can be found [here](http://www.j-wichard.de/publications/FordPaper.pdf).
 
-### Read the TSV data
+# Read the TSV data
 
 We will use the `FordA_TRAIN` file for training and the
 `FordA_TEST` file for testing. The simplicity of this dataset
@@ -455,7 +476,7 @@ history = model.fit(
 """## Evaluate model on test data"""
 
 model = keras.models.load_model("Lstm_best_model.h5")
-
+model.save(f'auto_leave_person/{leave_idx}/Lstm_best_model.h5')  # 另存一份
 
 test_loss, test_acc = model.evaluate(
     [x_test_points, x_test_vectors], y_test_vectors)
@@ -475,7 +496,8 @@ plt.title("model " + metric)
 plt.ylabel(metric, fontsize="large")
 plt.xlabel("epoch", fontsize="large")
 plt.legend(["train", "val"], loc="best")
-plt.show()
+# plt.show()
+plt.savefig(f'auto_leave_person/{leave_idx}/accuracy.png')
 plt.close()
 
 plt.figure()
@@ -485,8 +507,17 @@ plt.title("model loss")
 plt.ylabel("loss", fontsize="large")
 plt.xlabel("epoch", fontsize="large")
 plt.legend(["train", "val"], loc="best")
-plt.show()
+plt.savefig(f'auto_leave_person/{leave_idx}/loss.png')
+
+# plt.show()
 plt.close()
+
+
+# 擷取全螢幕畫面
+fullscreen = ImageGrab.grab()
+
+# 儲存檔案
+fullscreen.save(f'auto_leave_person/{leave_idx}/fullscreen.png')
 """We can see how the training accuracy reaches almost 0.95 after 100 epochs.
 However, by observing the validation accuracy we can see how the network still needs
 training until it reaches almost 0.97 for both the validation and the training accuracy
@@ -547,8 +578,8 @@ img_array_points = x_test_points[1][tf.newaxis, ...]
 heatmap = make_gradcam_heatmap(
     [img_array_points, img_array_vectors], model, last_conv_layer_name, pred_index=0)
 print(heatmap.shape)  # 19偵
-plt.matshow(heatmap)
-plt.show()
+# plt.matshow(heatmap)
+# plt.show()
 
 
 # heatmap = make_gradcam_heatmap(
@@ -557,46 +588,38 @@ plt.show()
 # plt.matshow(heatmap)
 # plt.show()
 
+################################################################################################
+# confusion matrix
+predict_ans = np.argmax(model.predict(
+    [x_test_points, x_test_vectors]), axis=-1)  # *  argmax 找最大值的index
+cm = tf.math.confusion_matrix(
+    y_test_vectors, predict_ans).numpy().astype(np.float32)
+print(cm)
+print(cm.shape[0])
+print(cm.shape[1])
 
-def confusion_matrix():
-    # confusion matrix
-    predict_ans = np.argmax(model.predict(
-        x_test), axis=-1)  # *  argmax 找最大值的index
-    cm = tf.math.confusion_matrix(
-        y_test, predict_ans).numpy().astype(np.float32)
-    print(cm)
-    print(cm.shape[0])
-    print(cm.shape[1])
+for i in range(cm.shape[0]):
+    total_num = 0.0
+    for j in range(cm.shape[1]):
+        total_num += cm[i][j]
+    for j in range(cm.shape[1]):
+        cm[i][j] = float(cm[i][j]) / float(total_num)
+print(type(cm[0][0]))
+# if avg_first:
+#     Average = cm
+#     avg_first = False
+# else:
+#     Average = Average + cm
 
-    for i in range(cm.shape[0]):
-        total_num = 0.0
-        for j in range(cm.shape[1]):
-            total_num += cm[i][j]
-        for j in range(cm.shape[1]):
-            cm[i][j] = float(cm[i][j]) / float(total_num)
-    print(type(cm[0][0]))
-    if avg_first:
-        Average = cm
-        avg_first = False
-    else:
-        Average = Average + cm
+df_cm = pd.DataFrame(cm, index=['Salty', 'Snack', 'Bubble Tea',
+                                'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'],
+                     columns=['Salty', 'Snack', 'Bubble Tea',
+                              'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'])
+fig = plt.figure(figsize=(10, 7))
 
-    df_cm = pd.DataFrame(cm, index=['Salty', 'Snack', 'Bubble Tea',
-                                    'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'],
-                         columns=['Salty', 'Snack', 'Bubble Tea',
-                                  'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'])
-    fig = plt.figure(figsize=(10, 7))
-
-    print(f"df: {df_cm}")
-    sn.heatmap(df_cm, annot=True, fmt='.3f')
-    # plt.show()
-    # fig.savefig(f'{model_name}_confusion_matrix.png')
-    fig.savefig(
-        f'C:/Users/User/Desktop/evan_16person_leaveOneOut/{model_name}_confusion_matrix_leave_{leave_person_name}.png')
-
-    Average = Average / 16
-    print("*"*100)
-    print(Average)
-    print("*"*100)
-    # "C:\Users\yumi\Desktop\16person"
-    # C:\Users\User\Desktop\evan_16person_leaveOneOut
+print(f"df: {df_cm}")
+sn.heatmap(df_cm, annot=True, fmt='.3f')
+# plt.show()
+# fig.savefig(f'{model_name}_confusion_matrix.png')
+fig.savefig(
+    f'auto_leave_person/{leave_idx}/confusion_matrix.png')
