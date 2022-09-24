@@ -76,19 +76,19 @@ evan, edmund, yumi,\
     friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
     = share_function.load_vector_data()
 
-train_vectors = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3,
+train_vectors = pd.concat([evan, yumi, edmund, friend_1, friend_3, friend_4,
                            friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
-test_vectors = friend_4
+test_vectors = friend_2
 
 evan, edmund, yumi,\
     friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
     friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
     = share_function.load_point_data()
 
-train_points = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3,
+train_points = pd.concat([evan, yumi, edmund, friend_1, friend_3, friend_4,
                           friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
 train_points = share_function.label_to_float(train_points)
-test_points = friend_4
+test_points = friend_2
 test_points = share_function.label_to_float(test_points)
 
 del evan, edmund, yumi, friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
@@ -266,8 +266,10 @@ def build_model(
     inputs_vector = keras.layers.Input(shape=input_shape_vector)
     # x = inputs
 
-    point_stream = share_stream(x_shape=input_shape_point)
-    vector_stream = share_stream(x_shape=input_shape_vector)
+    point_stream = share_stream(
+        input_shape_point, num_transformer_blocks, head_size, num_heads, ff_dim, dropout)
+    vector_stream = share_stream(
+        input_shape_vector, num_transformer_blocks, head_size, num_heads, ff_dim, dropout)
 
     point_feature = point_stream(inputs_point)
     vector_feature = vector_stream(inputs_vector)
