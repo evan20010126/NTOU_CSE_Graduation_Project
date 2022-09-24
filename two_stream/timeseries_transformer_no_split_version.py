@@ -65,42 +65,25 @@ from tensorflow.keras import layers
 from tensorflow import keras
 import numpy as np
 import pandas as pd
+import pyscreenshot as ImageGrab
 abcdefg = True
 sys.path.append(".")
 # sys.path.append("..")
 if abcdefg:
     import old.share_function as share_function
 
-evan, edmund, yumi,\
-    friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
-    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
-    = share_function.load_vector_data()
+# myself
+hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
+                 (0, 5), (5, 6), (6, 7), (7, 8),
+                 (0, 9), (9, 10), (10, 11), (11, 12),
+                 (0, 13), (13, 14), (14, 15), (15, 16),
+                 (0, 17), (17, 18), (18, 19), (19, 20)]  # 20個向量
 
-train_vectors = pd.concat([evan, yumi, edmund, friend_1, friend_3, friend_4,
-                           friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
-test_vectors = friend_2
+pose_sequence = [(0, 12), (0, 11),
+                 (12, 14), (14, 16),
+                 (11, 13), (13, 15), ]  # 7個向量->6個向量
 
-evan, edmund, yumi,\
-    friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
-    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
-    = share_function.load_point_data()
-
-train_points = pd.concat([evan, yumi, edmund, friend_1, friend_3, friend_4,
-                          friend_5, friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
-train_points = share_function.label_to_float(train_points)
-test_points = friend_2
-test_points = share_function.label_to_float(test_points)
-
-del evan, edmund, yumi, friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
-    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13
-
-#! <do shuffle> -> train
-train_points, train_vectors = share_function.two_stream_shuffle(
-    points=train_points, vectors=train_vectors)
-
-# share_function.two_stream_shuffle(points=train_points, vectors=train_vectors)
-# train = train.sample(frac=1).reset_index(drop=True)
-# test = test.sample(frac=1).reset_index(drop=True)
+point_number = len(hand_sequence*2) + len(pose_sequence)
 
 
 def split_target_evanVersion(new_data_df):
@@ -113,6 +96,61 @@ def split_target_evanVersion(new_data_df):
     # y[y == "snack"] = 1
     return x, y.astype(int)
 
+
+leave_idx = int(sys.argv[1])  # 0 ~ 15
+
+
+# -- vector --
+evan, edmund, yumi,\
+    friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
+    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
+    = share_function.load_vector_data()
+
+all_person_pd_vector = [evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
+                        friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13]
+# -- point --
+evan, edmund, yumi,\
+    friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
+    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
+    = share_function.load_point_data()
+
+all_person_pd_points = [evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
+                        friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13]
+
+del evan, edmund, yumi, friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
+    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13
+
+IS_EMPTY = True
+train_vectors = -999
+test_vectors = -999
+train_points = -999
+test_points = -999
+for i in range(16):
+    if (i != leave_idx):
+        if not IS_EMPTY:
+            train_vectors = pd.concat([train_vectors, all_person_pd_vector[i]])
+            train_points = pd.concat([train_points, all_person_pd_points[i]])
+        else:
+            train_vectors = all_person_pd_vector[i]
+            train_points = all_person_pd_points[i]
+            IS_EMPTY = False
+    else:
+        test_vectors = all_person_pd_vector[i]
+        test_points = all_person_pd_points[i]
+
+train_points = share_function.label_to_float(train_points)
+
+test_points = share_function.label_to_float(test_points)
+
+del all_person_pd_vector, all_person_pd_points
+
+#! <do shuffle> -> train
+train_points, train_vectors = share_function.two_stream_shuffle(
+    points=train_points, vectors=train_vectors)
+
+# share_function.two_stream_shuffle(points=train_points, vectors=train_vectors)
+# train = train.sample(frac=1).reset_index(drop=True)
+# test = test.sample(frac=1).reset_index(drop=True)
 
 x_train_points, y_train_points = \
     split_target_evanVersion(
@@ -129,19 +167,6 @@ x_test_points, y_test_points = \
 x_test_vectors, y_test_vectors = \
     split_target_evanVersion(
         test_vectors)  # origin: x_train, y_train = split_target(train)
-# myself
-hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
-                 (0, 5), (5, 6), (6, 7), (7, 8),
-                 (0, 9), (9, 10), (10, 11), (11, 12),
-                 (0, 13), (13, 14), (14, 15), (15, 16),
-                 (0, 17), (17, 18), (18, 19), (19, 20)]  # 20個向量
-
-pose_sequence = [(0, 12), (0, 11),
-                 (12, 14), (14, 16),
-                 (11, 13), (13, 15), ]  # 7個向量->6個向量
-
-point_number = len(hand_sequence*2) + len(pose_sequence)
-
 
 x_train_points = np.asarray(x_train_points).astype(np.float32)
 y_train_points = np.asarray(y_train_points).astype(np.float32)
@@ -156,6 +181,8 @@ x_test_vectors = np.asarray(x_test_vectors).astype(np.float32)
 y_test_vectors = np.asarray(y_test_vectors).astype(np.float32)
 
 
+n_classes = len(np.unique(y_train_vectors))
+
 x_train_points = x_train_points.flatten().reshape(
     x_train_points.shape[0], x_train_points.shape[1]//130, 130)
 
@@ -168,7 +195,6 @@ x_train_vectors = x_train_vectors.flatten().reshape(
 x_test_vectors = x_test_vectors.flatten().reshape(
     x_test_vectors.shape[0], (x_test_vectors.shape[1]//(point_number*2)), (point_number*2))
 
-n_classes = len(np.unique(y_train_vectors))
 
 # idx = np.random.permutation(len(x_train))
 # idx_y = np.random.permutation(len(y_train))
@@ -243,9 +269,9 @@ def share_stream(x_shape, num_transformer_blocks, head_size, num_heads, ff_dim, 
     x = first  # for no conv
     for _ in range(num_transformer_blocks):
         x = transformer_encoder(x, head_size, num_heads, ff_dim, dropout)
-
-    last = layers.GlobalAveragePooling1D(data_format="channels_first")(
-        x)  # data_format="channels_first"
+    last = x
+    # last = layers.GlobalAveragePooling1D(data_format="channels_first")(
+    #     x)  # data_format="channels_first"
     shared_layer = keras.models.Model(first, last)
     return shared_layer
 
@@ -276,6 +302,12 @@ def build_model(
 
     feature = keras.layers.concatenate([point_feature, vector_feature])
     x = feature
+    x = keras.layers.Conv1D(
+        filters=64, kernel_size=3, padding="same")(x)
+    x = keras.layers.BatchNormalization()(x)
+    x = keras.layers.ReLU()(x)
+    x = layers.GlobalAveragePooling1D(data_format="channels_first")(
+        x)  # data_format="channels_first"
     # # conv
     # conv1 = keras.layers.Conv1D(
     #     filters=32, kernel_size=3, padding="same")(x)
@@ -366,6 +398,7 @@ history = model.fit(
 # model.save('transformer_model.h5')
 print("Training finish!")
 model = keras.models.load_model("Transformer_vector_best_model.h5")
+model.save(f'auto_leave_person/{leave_idx}/Transformer_best_model.h5')
 
 test_loss, test_acc = model.evaluate(
     [x_test_points, x_test_vectors], y_test_vectors, verbose=1)
@@ -380,8 +413,10 @@ plt.title("model " + metric)
 plt.ylabel(metric, fontsize="large")
 plt.xlabel("epoch", fontsize="large")
 plt.legend(["train", "val"], loc="best")
-plt.show()
+plt.savefig(f'auto_leave_person/{leave_idx}/accuracy.png')
+# plt.show()
 plt.close()
+
 
 plt.figure()
 plt.plot(history.history["loss"])
@@ -390,8 +425,16 @@ plt.title("model loss")
 plt.ylabel("loss", fontsize="large")
 plt.xlabel("epoch", fontsize="large")
 plt.legend(["train", "val"], loc="best")
-plt.show()
+plt.savefig(f'auto_leave_person/{leave_idx}/loss.png')
+# plt.show()
 plt.close()
+
+# 擷取全螢幕畫面
+fullscreen = ImageGrab.grab()
+
+# 儲存檔案
+fullscreen.save(f'auto_leave_person/{leave_idx}/fullscreen.png')
+
 """## Conclusions
 
 In about 110-120 epochs (25s each on Colab), the model reaches a training
@@ -428,8 +471,9 @@ df_cm = pd.DataFrame(cm, index=['Salty', 'Snack', 'Bubble Tea',
                               'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'])
 fig = plt.figure(figsize=(10, 7))
 sn.heatmap(df_cm, annot=True)
-plt.show()
-fig.savefig(f'Transformer_confusion_matrix.png')
+fig.savefig(
+    f'auto_leave_person/{leave_idx}/confusion_matrix.png')
+# plt.show()
 
 
 def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None):
@@ -485,5 +529,6 @@ img_array = [img_array_points, img_array_vectors]
 heatmap = make_gradcam_heatmap(
     img_array, model, last_conv_layer_name, pred_index=0)
 print(heatmap.shape)  # 19偵
-plt.matshow(heatmap)
-plt.show()
+# plt.matshow(heatmap)
+# plt.show()
+plt.close()
