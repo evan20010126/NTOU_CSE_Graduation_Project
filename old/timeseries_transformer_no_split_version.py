@@ -341,7 +341,7 @@ def build_model(
     #     filters=64, kernel_size=3, padding="same")(conv1)
     # conv2 = keras.layers.BatchNormalization()(conv2)
     # x = keras.layers.ReLU()(conv2)
-    x = layers.Dropout(mlp_dropout)(conv1)
+    x = layers.Dropout(0.25)(conv1)
     ###########
 
     for _ in range(num_transformer_blocks):
@@ -431,6 +431,16 @@ plt.plot(history.history[metric])
 plt.plot(history.history["val_" + metric])
 plt.title("model " + metric)
 plt.ylabel(metric, fontsize="large")
+plt.xlabel("epoch", fontsize="large")
+plt.legend(["train", "val"], loc="best")
+plt.show()
+plt.close()
+
+plt.figure()
+plt.plot(history.history["loss"])
+plt.plot(history.history["val_" + "loss"])
+plt.title("model loss")
+plt.ylabel("loss", fontsize="large")
 plt.xlabel("epoch", fontsize="large")
 plt.legend(["train", "val"], loc="best")
 plt.show()
