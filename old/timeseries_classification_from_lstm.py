@@ -401,7 +401,7 @@ model = keras.models.load_model("Lstm_best_model.h5")
 test_loss, test_acc = model.evaluate(x_test, y_test)
 
 
-history.loss_plot('epoch')
+# history.loss_plot('epoch')
 print("Test accuracy", test_acc)
 print("Test loss", test_loss)
 
@@ -418,6 +418,15 @@ plt.legend(["train", "val"], loc="best")
 plt.show()
 plt.close()
 
+plt.figure()
+plt.plot(history.history["loss"])
+plt.plot(history.history["val_" + "loss"])
+plt.title("model loss")
+plt.ylabel("loss", fontsize="large")
+plt.xlabel("epoch", fontsize="large")
+plt.legend(["train", "val"], loc="best")
+plt.show()
+plt.close()
 """We can see how the training accuracy reaches almost 0.95 after 100 epochs.
 However, by observing the validation accuracy we can see how the network still needs
 training until it reaches almost 0.97 for both the validation and the training accuracy
@@ -470,7 +479,7 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None
 
 
 last_conv_layer_name = model.layers[-3].name
-# print(model.layers[-3].name)
+print(model.layers[-3].name)
 
 img_array = x_test[50][tf.newaxis, ...]
 

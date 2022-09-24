@@ -139,22 +139,24 @@ def split_target(df):
 # yumi = sign_language_df.iloc[814:, :]
 
 train_vectors = pd.concat(
-    [evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
+    [evan, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
      friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
 
-test_vectors = friend_4
+#!改這裡
+test_vectors = yumi
 
 evan, edmund, yumi,\
     friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
     friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
     = share_function.load_point_data()
 
-train_points = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
+train_points = pd.concat([evan, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
                           friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
 
 train_points = share_function.label_to_float(train_points)
 
-test_points = friend_4
+#!改這裡
+test_points = yumi
 test_points = share_function.label_to_float(test_points)
 
 
@@ -353,11 +355,11 @@ def share_stream(input_shape):
     conv3 = keras.layers.ReLU()(conv3)
 
     # ? 500 有沒有必要 # 到第三層 500x64 shape -> 1x64 可以改變輸入大小
-    gap = keras.layers.GlobalAveragePooling1D()(conv3)
+    # gap = keras.layers.GlobalAveragePooling1D()(conv3)
     # ? globalaveragepooling不用寫啦，最後一個LSTM return sequence為false就好了
     # gap = conv3
 
-    shared_layer = keras.models.Model(input_layer, gap)
+    shared_layer = keras.models.Model(input_layer, conv3)
 
     return shared_layer
 
@@ -373,8 +375,20 @@ def make_model(input_shape_point, input_shape_vector):
 
     feature = keras.layers.concatenate([point_feature, vector_feature])
 
+    # conv3 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv2)
+    # ? 最後一個LSTM再吐出最後的結果就好
+    # conv3 = keras.layers.BatchNormalization()(conv3)
+    conv3 = keras.layers.LSTM(units=64, return_sequences=True)(
+        feature)  # 原本為false，為了gradcam的資料結構改為true
+    conv3 = keras.layers.ReLU()(conv3)
+
+    # ? 500 有沒有必要 # 到第三層 500x64 shape -> 1x64 可以改變輸入大小
+    gap = keras.layers.GlobalAveragePooling1D()(conv3)
+    # ? globalaveragepooling不用寫啦，最後一個LSTM return sequence為false就好了
+    # gap = conv3
+
     output_layer = keras.layers.Dense(
-        num_classes, activation="softmax")(feature)
+        num_classes, activation="softmax")(gap)
 
     return keras.models.Model(inputs=[inputs_point, inputs_vector], outputs=output_layer)
 # print(len(x_train.flatten()))
@@ -464,6 +478,15 @@ plt.legend(["train", "val"], loc="best")
 plt.show()
 plt.close()
 
+plt.figure()
+plt.plot(history.history["loss"])
+plt.plot(history.history["val_" + "loss"])
+plt.title("model loss")
+plt.ylabel("loss", fontsize="large")
+plt.xlabel("epoch", fontsize="large")
+plt.legend(["train", "val"], loc="best")
+plt.show()
+plt.close()
 """We can see how the training accuracy reaches almost 0.95 after 100 epochs.
 However, by observing the validation accuracy we can see how the network still needs
 training until it reaches almost 0.97 for both the validation and the training accuracy
@@ -528,8 +551,52 @@ plt.matshow(heatmap)
 plt.show()
 
 
-heatmap = make_gradcam_heatmap(
-    [img_array_points, img_array_vectors], model, last_conv_layer_name, pred_index=1)
-print(heatmap.shape)  # 19偵
-plt.matshow(heatmap)
-plt.show()
+# heatmap = make_gradcam_heatmap(
+#     [img_array_points, img_array_vectors], model, last_conv_layer_name, pred_index=1)
+# print(heatmap.shape)  # 19偵
+# plt.matshow(heatmap)
+# plt.show()
+
+
+def confusion_matrix():
+    # confusion matrix
+    predict_ans = np.argmax(model.predict(
+        x_test), axis=-1)  # *  argmax 找最大值的index
+    cm = tf.math.confusion_matrix(
+        y_test, predict_ans).numpy().astype(np.float32)
+    print(cm)
+    print(cm.shape[0])
+    print(cm.shape[1])
+
+    for i in range(cm.shape[0]):
+        total_num = 0.0
+        for j in range(cm.shape[1]):
+            total_num += cm[i][j]
+        for j in range(cm.shape[1]):
+            cm[i][j] = float(cm[i][j]) / float(total_num)
+    print(type(cm[0][0]))
+    if avg_first:
+        Average = cm
+        avg_first = False
+    else:
+        Average = Average + cm
+
+    df_cm = pd.DataFrame(cm, index=['Salty', 'Snack', 'Bubble Tea',
+                                    'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'],
+                         columns=['Salty', 'Snack', 'Bubble Tea',
+                                  'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy'])
+    fig = plt.figure(figsize=(10, 7))
+
+    print(f"df: {df_cm}")
+    sn.heatmap(df_cm, annot=True, fmt='.3f')
+    # plt.show()
+    # fig.savefig(f'{model_name}_confusion_matrix.png')
+    fig.savefig(
+        f'C:/Users/User/Desktop/evan_16person_leaveOneOut/{model_name}_confusion_matrix_leave_{leave_person_name}.png')
+
+    Average = Average / 16
+    print("*"*100)
+    print(Average)
+    print("*"*100)
+    # "C:\Users\yumi\Desktop\16person"
+    # C:\Users\User\Desktop\evan_16person_leaveOneOut
