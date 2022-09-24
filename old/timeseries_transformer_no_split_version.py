@@ -334,11 +334,11 @@ def build_model(
 
     # conv
     conv1 = keras.layers.Conv1D(
-        filters=32, kernel_size=3, padding="same")(x)
+        filters=64, kernel_size=3, padding="same")(x)
     conv1 = keras.layers.BatchNormalization()(conv1)
-    conv1 = keras.layers.ReLU()(conv1)
+    x = keras.layers.ReLU()(conv1)
     # conv2 = keras.layers.Conv1D(
-    #     filters=64, kernel_size=3, padding="same")(conv1)
+    #     filters=64, kernel_size=3, padding="same")(x)
     # conv2 = keras.layers.BatchNormalization()(conv2)
     # x = keras.layers.ReLU()(conv2)
     x = layers.Dropout(0.25)(conv1)
