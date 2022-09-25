@@ -196,9 +196,9 @@ edmund = sign_language_df.iloc[406:814, :]
 yumi = sign_language_df.iloc[814:, :]
 
 
-train = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3, friend_5,
-                  friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
-test = friend_4
+train = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
+                   friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
+test = friend_6
 
 #! <do shuffle> -> train
 # print("before")
@@ -327,7 +327,7 @@ def build_model(
     for _ in range(num_transformer_blocks):
         x = transformer_encoder(x, head_size, num_heads, ff_dim, dropout)
 
-    x = layers.GlobalAveragePooling1D(data_format="channels_first")(
+    x = layers.GlobalAveragePooling1D()(
         x)  # data_format="channels_first"
     for dim in mlp_units:
         x = layers.Dense(dim, activation="relu")(x)

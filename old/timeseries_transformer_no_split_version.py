@@ -213,8 +213,8 @@ def split_target(df):
 
 
 train = pd.concat([evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
-                  friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
-test = friend_4
+                  friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13])
+test = friend_6
 
 #! <do shuffle> -> train
 # print("before")
@@ -333,21 +333,21 @@ def build_model(
     x = inputs
 
     # conv
-    conv1 = keras.layers.Conv1D(
-        filters=64, kernel_size=3, padding="same")(x)
-    conv1 = keras.layers.BatchNormalization()(conv1)
-    x = keras.layers.ReLU()(conv1)
+    # conv1 = keras.layers.Conv1D(
+    #     filters=64, kernel_size=3, padding="same")(x)
+    # conv1 = keras.layers.BatchNormalization()(conv1)
+    # x = keras.layers.ReLU()(conv1)
     # conv2 = keras.layers.Conv1D(
     #     filters=64, kernel_size=3, padding="same")(x)
     # conv2 = keras.layers.BatchNormalization()(conv2)
     # x = keras.layers.ReLU()(conv2)
-    x = layers.Dropout(0.25)(conv1)
+    # x = layers.Dropout(0.25)(conv1)
     ###########
 
     for _ in range(num_transformer_blocks):
         x = transformer_encoder(x, head_size, num_heads, ff_dim, dropout)
 
-    x = layers.GlobalAveragePooling1D(data_format="channels_first")(
+    x = layers.GlobalAveragePooling1D()(
         x)  # data_format="channels_first"
     for dim in mlp_units:
         x = layers.Dense(dim, activation="relu")(x)
