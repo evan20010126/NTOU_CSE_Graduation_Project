@@ -467,7 +467,8 @@ def make_model(input_shape_point, input_shape_vector):
     # conv3 = keras.layers.LSTM(units = 64, return_sequences = False)(conv2)
     conv3 = keras.layers.ReLU()(conv3)
     # ? 500 有沒有必要 # 到第三層 500x64 shape -> 1x64 可以改變輸入大小
-    gap = keras.layers.GlobalAveragePooling1D()(conv3)
+    gap = keras.layers.GlobalAveragePooling1D(
+        data_format="channels_last")(conv3)
     # ? globalaveragepooling不用寫啦，最後一個LSTM return sequence為false就好了
     # gap = conv3
 

@@ -159,7 +159,7 @@ def start_btn_func(target_class_num):
         x_test_vectors.shape[0], (x_test_vectors.shape[1]//(point_number*2)), (point_number*2))
 
     # model = keras.models.load_model('Convolution_best_model.h5')
-    select_model_name = 'Transformer_best_model.h5'
+    select_model_name = 'Convolution_best_model.h5'
     model = keras.models.load_model(select_model_name)
     model.summary()
     predict_answer = model.predict([x_test_points, x_test_vectors])
@@ -199,7 +199,7 @@ def start_btn_func(target_class_num):
         gradcam_detect.get_heapmap_FOREACH(
             model, layer_num, [x_test_points[0], x_test_vectors[0]], target_class_num, len(answer_classlist), FTTAB, frame_cutting)
 
-    createScore(CORRECT)
+    createScore(CORRECT, idx)
 
 # -----確認退出-----
 
@@ -294,28 +294,29 @@ def createTutorialVideo():
 
 def createPractice():
     global w, h, x, y
+    global answer_classlist
     Practice = tk.Toplevel(menu)
     Practice.title('Practice')
     Practice.geometry('%dx%d+%d+%d' % (w, h, x, y))
     Practice.geometry("800x500")
     Practice['background'] = '#F4F1DE'
 
-    btn1 = tk.Button(Practice, bg='#F2CC8F',
-                     width=25, height=3,).grid(row=0, column=0, padx=7, pady=35)
-    btn2 = tk.Button(Practice, bg='#F2CC8F',
-                     width=25, height=3).grid(row=0, column=1, padx=7, pady=35)
-    btn3 = tk.Button(Practice, bg='#F2CC8F',
-                     width=25, height=3).grid(row=0, column=2, padx=7, pady=35)
-    btn4 = tk.Button(Practice, bg='#F2CC8F',
-                     width=25, height=3).grid(row=0, column=3, padx=7, pady=35)
-    btn5 = tk.Button(Practice, bg='#F2CC8F',
-                     width=25, height=3).grid(row=1, column=0, padx=7, pady=35)
-    btn6 = tk.Button(Practice, bg='#F2CC8F',
-                     width=25, height=3) .grid(row=1, column=1, padx=7, pady=35)
-    btn7 = tk.Button(Practice, bg='#F2CC8F',
-                     width=25, height=3).grid(row=1, column=2, padx=7, pady=35)
-    btn8 = tk.Button(Practice, bg='#F2CC8F',
-                     width=25, height=3).grid(row=1, column=3, padx=7, pady=35)
+    btn1 = tk.Button(Practice, text=answer_classlist[0], bg='#F2CC8F',
+                     width=25, height=3,  command=partial(start_btn_func, 0)).grid(row=0, column=0, padx=7, pady=35)
+    btn2 = tk.Button(Practice, text=answer_classlist[1], bg='#F2CC8F',
+                     width=25, height=3, command=partial(start_btn_func, 1)).grid(row=0, column=1, padx=7, pady=35)
+    btn3 = tk.Button(Practice, text=answer_classlist[2], bg='#F2CC8F',
+                     width=25, height=3, command=partial(start_btn_func, 2)).grid(row=0, column=2, padx=7, pady=35)
+    btn4 = tk.Button(Practice, text=answer_classlist[3], bg='#F2CC8F',
+                     width=25, height=3, command=partial(start_btn_func, 3)).grid(row=0, column=3, padx=7, pady=35)
+    btn5 = tk.Button(Practice, text=answer_classlist[4], bg='#F2CC8F',
+                     width=25, height=3, command=partial(start_btn_func, 4)).grid(row=1, column=0, padx=7, pady=35)
+    btn6 = tk.Button(Practice, text=answer_classlist[5], bg='#F2CC8F',
+                     width=25, height=3, command=partial(start_btn_func, 5)).grid(row=1, column=1, padx=7, pady=35)
+    btn7 = tk.Button(Practice, text=answer_classlist[6], bg='#F2CC8F',
+                     width=25, height=3, command=partial(start_btn_func, 6)).grid(row=1, column=2, padx=7, pady=35)
+    btn8 = tk.Button(Practice, text=answer_classlist[7], bg='#F2CC8F',
+                     width=25, height=3, command=partial(start_btn_func, 7)).grid(row=1, column=3, padx=7, pady=35)
 
 # -----創Quiz視窗-----
 
@@ -345,8 +346,10 @@ def createQuiz():
 # -----創Score視窗-----
 
 
-def createScore(CORRECT):
+def createScore(CORRECT, idx):
     global w, h, x, y
+    global answer_classlist
+
     Score = tk.Toplevel(menu)
     Score.title('My Score')
     Score.geometry('%dx%d+%d+%d' % (w, h, x, y))
@@ -361,7 +364,7 @@ def createScore(CORRECT):
 
     else:
         label = tk.Label(
-            Score, text="跨謀", font=fontStyle)
+            Score, text=f"跨謀\n我猜這是{answer_classlist[idx]}", font=fontStyle)
         label.place(relx=0.45, rely=0.15)
 
     replay_btn = tk.Button(Score, text='Repaly', bg='#F2CC8F', width=40,

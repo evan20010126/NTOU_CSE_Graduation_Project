@@ -238,6 +238,8 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
     global record_leftHand
     global record_rightHand
     cap = cv2.VideoCapture(cam_num)
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     writer = cv2.VideoWriter('./output_sample_videos/webcam.avi', cv2.VideoWriter_fourcc(*'XVID'), 20.0,
                              (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
     all_keypoints = list()
@@ -382,11 +384,12 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
                         all_keypoints.append(
                             (frame_keypoints_hands[i][1] - normalize_original_point[1])/normalize_distance)
                 if record_leftHand:
-                    cv2.putText(image, "REC Left Hand", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                                1, (0, 0, 255), 3, cv2.LINE_AA)
+                    cv2.putText(image, "REC Left Hand", (10, 30), cv2.FONT_HERSHEY_PLAIN,
+                                2, (0, 0, 255), 2, cv2.LINE_AA)
                 if record_rightHand:
-                    cv2.putText(image, "REC Right Hand", (10, 60), cv2.FONT_HERSHEY_SIMPLEX,
-                                1, (0, 0, 255), 3, cv2.LINE_AA)
+                    cv2.putText(image, "REC Right Hand", (10, 60), cv2.FONT_HERSHEY_PLAIN,
+                                2, (0, 0, 255), 2, cv2.LINE_AA)
+
                 # cv2.putText(image, "REC", (10, 40), cv2.FONT_HERSHEY_SIMPLEX,
                 #             1, (0, 0, 255), 3, cv2.LINE_AA)
                 writer.write(image)
@@ -399,9 +402,9 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
 
             # Flip the image horizontally for a selfie-view display.
             # cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
-
+            cv2.putText(image, "Close: ESC", (width-180, 30), cv2.FONT_HERSHEY_PLAIN,
+                        2, (205, 250, 255), 2, cv2.LINE_AA)
             cv2.imshow('MediaPipe Hands', image)
-
             if cv2.waitKey(5) & 0xFF == 27:
                 break_processing = True
                 break
@@ -418,4 +421,6 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
 # f = open("te", mode="w")
 # f.write(all_keypoints.__str__())
 # f.close()
-# open_cam(SAVE_CSV=False)
+
+# open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=False,
+#          PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=1)
