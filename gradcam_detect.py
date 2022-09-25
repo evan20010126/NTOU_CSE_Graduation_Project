@@ -1,4 +1,5 @@
 from random import randrange
+
 from tkinter import Button
 from turtle import color
 import tensorflow as tf
@@ -74,9 +75,9 @@ def get_heapmap(model, layer_num, testing_data, class_idx, FTTAB):
         if (ele >= 0.3 and (FTTAB[i] not in important_frame)):
             # FTTAB[i]可以對應到正確的偵數
             important_frame.append(FTTAB[i])
-            print(FTTAB[i])
+            # print(FTTAB[i])
     save_frames = list()
-    print(important_frame)
+    # print(important_frame)
     cap = cv2.VideoCapture("output_sample_videos/webcam.avi")
     pre_ele = -2e9
     for ele in important_frame:
@@ -194,13 +195,13 @@ def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_
         # while (i < heatmap.shape[-1]):
         ele = heatmap[0][i]
         print("heatmap")
-        print(heatmap)
+        # print(heatmap)
         if (ele >= 0.5 and (FTTAB[i] not in important_frame)):
             # FTTAB[i]可以對應到正確的偵數
             important_frame.append(FTTAB[i])
-            print(FTTAB[i])
+            # print(FTTAB[i])
     save_frames = list()
-    print(important_frame)
+    # print(important_frame)
     cap = cv2.VideoCapture("output_sample_videos/webcam.avi")
     pre_ele = -2e9
     for ele in important_frame:
@@ -230,7 +231,10 @@ def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_
         gs1 = gridspec.GridSpec(
             nrows=rows_num, ncols=len(save_frames), wspace=0.05)
     ax1 = fig.add_subplot(gs1[0, :])
-    ax1.matshow(heatmap)
+    print(f"heatmap{heatmap}")
+    # plt.matshow(heatmap)
+    # plt.show()
+    ax1.matshow(heatmap, vmax=1.0, vmin=0.0)
 
     for i in range(0, len(save_frames)):
         ax2 = fig.add_subplot(gs1[1:rows_num-1, i])
@@ -250,6 +254,7 @@ def fn_maker(heatmap, FTTAB, frame_cutting):
                   (94, 153, 224), (92, 92, 199)]
 
     def review(event):
+        plt.close()
         important_frame = []
         # i = 0
         # 取平均 0 -> 0 -> 0 -> 1 -> 1 -> 1 -> 2 -> 2 -> 2
@@ -278,6 +283,8 @@ def fn_maker(heatmap, FTTAB, frame_cutting):
         # ---依照heatmap數值填色---
         cap = cv2.VideoCapture('output_sample_videos/webcam.avi')
 
+        print("-"*100)
+        print(f"score list{score_list}")
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         print('height:{} width:{}'.format(height, width))
