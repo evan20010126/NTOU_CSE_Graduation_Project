@@ -223,6 +223,8 @@ def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_
     print('\033[0m')
 
     fig = plt.figure()
+    fig.suptitle(
+        "Heatmap for error rate\n(yellow: wrong, purple: correct)")
     rows_num = 7
     if len(save_frames) == 0:
         gs1 = gridspec.GridSpec(
@@ -361,8 +363,11 @@ def fn_maker(heatmap, FTTAB, frame_cutting):
                 cv2.rectangle(frame, (int(width-unit*19), int(height-unit*19-unit*10-n*unit*9)),
                               (int(width-unit*6), int(height-unit*11-unit*10-n*unit*9)), this_color, -1)
 
-            cv2.putText(frame, "Error Rate", (int(width-unit*40), int(height-unit*9)), cv2.FONT_HERSHEY_SIMPLEX,
-                        1, (0, 0, 255), 1, cv2.LINE_AA)
+            cv2.rectangle(frame, (int(width-unit*60),
+                          int(height-unit*15)), (width, height), (115, 93, 79), -1)
+
+            cv2.putText(frame, "Error Rate", (int(width-unit*58), int(height-unit*5)), cv2.FONT_HERSHEY_PLAIN,
+                        2, color_list[0], 2, cv2.LINE_AA)
             # cv2.rectangle(frame, (125, 20), (175, 40), (255, 0, 255), -1)
             # cv2.rectangle(img, left_up, right_down, color, thickness)
 

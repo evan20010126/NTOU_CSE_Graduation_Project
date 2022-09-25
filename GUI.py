@@ -176,9 +176,9 @@ def start_btn_func(target_class_num):
     print("\033[0m")
     CORRECT = False
 
-    if select_model_name == 'Transformer_best_model_vector.h5':
+    if select_model_name == 'Transformer_best_model.h5':
         layer_num = -5
-    elif select_model_name == 'Transformer_best_model_points.h5':
+    elif select_model_name == 'Transformer_best_model.h5':
         layer_num = -5
     else:
         layer_num = -3
@@ -211,6 +211,7 @@ def confirm_to_quit(page):
             page.destroy()
     else:
         page.destroy()
+
 
 # -----開影片-----
 
