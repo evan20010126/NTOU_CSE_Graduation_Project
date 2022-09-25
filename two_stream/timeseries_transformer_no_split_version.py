@@ -134,6 +134,9 @@ for i in range(16):
             train_vectors = all_person_pd_vector[i]
             train_points = all_person_pd_points[i]
             IS_EMPTY = False
+        if (leave_idx == -1):
+            test_vectors = all_person_pd_vector[i]
+            test_points = all_person_pd_points[i]
     else:
         test_vectors = all_person_pd_vector[i]
         test_points = all_person_pd_points[i]
