@@ -147,6 +147,7 @@ def get_heapmap(model, layer_num, testing_data, class_idx, FTTAB):
 
 
 def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_class_num, FTTAB, frame_cutting):
+    print("target:" + str(target_class_num))
     global important_frame
     last_conv_layer_name = model.layers[layer_num].name
     # print(model.layers[-3].name)
@@ -194,7 +195,7 @@ def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_
     for i in range(0, heatmap.shape[-1]):
         # while (i < heatmap.shape[-1]):
         ele = heatmap[0][i]
-        print("heatmap")
+        # print("heatmap")
         # print(heatmap)
         if (ele >= 0.5 and (FTTAB[i] not in important_frame)):
             # FTTAB[i]可以對應到正確的偵數
