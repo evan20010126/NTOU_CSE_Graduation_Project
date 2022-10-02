@@ -336,6 +336,9 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
             # * 左手有高過水平線
             if(frame_keypoints_pose[15][1] < normalize_original_point[1]+face_width and frame_keypoints_pose[15][1] != 0):
                 record_leftHand = True
+            # record line
+            cv2.line(image, (0, int(normalize_original_point[1]+face_width)), (width, int(
+                normalize_original_point[1]+face_width)), (0, 0, 255), 3)
 
             if results.multi_hand_landmarks:
                 # len(results.multi_hand_landmarks)代表有抓到幾隻手
