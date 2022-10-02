@@ -8,18 +8,19 @@ from sklearn.feature_extraction import img_to_graph
 import csv
 #-------------------------------------------------------------#
 # Switch
-SAVE_REC = False  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
+SAVE_REC = True  # 是否將有姿態辨識過後的影片存檔在output_sample_videos
 SAVE_EXCEL = False  # 是否儲存特徵點到output.xlsx
-SAVE_CSV = False
+SAVE_CSV = True
 PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT = True  # 是否預覽帶有姿態辨識過後的完整(無裁切)影片
 #-------------------------------------------------------------#
 # Input argument
 
 
 # 鹹:salty 小吃:snack 水餃: dumpling 辣: spicy 甜: sweet 酸: sour 好吃: yummy 珍珠奶茶: bubbletea
-signLanguageLabel = ""
+signLanguageLabel = "sour"
 # Input video的資料夾路徑
-rootdirPath = r"..\media_test"
+rootdirPath = r"..\hand_label_test"
+# rootdirPath = r"C:\Users\yumi\Desktop\openpose\build\examples\hand_label_test"
 # dirPath = r'..\media\bubbletea'
 
 #-------------------------------------------------------------#

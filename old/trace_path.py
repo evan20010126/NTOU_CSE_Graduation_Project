@@ -4,7 +4,8 @@ import cv2
 
 picture_path = "../path_img/"
 
-sign_language_df = pd.read_csv("draw_img_test.csv", header=None)
+# sign_language_df = pd.read_csv("draw_img_test.csv", header=None)
+sign_language_df = pd.read_csv("output_h2_stuff_zero.csv", header=None)
 
 hand_sequence = [(0, 1), (1, 2), (2, 3), (3, 4),
                  (0, 5), (5, 6), (6, 7), (7, 8),

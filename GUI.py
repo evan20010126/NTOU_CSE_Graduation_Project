@@ -5,7 +5,6 @@ import time
 from functools import partial
 import random
 import tkinter.font as tkFont
-
 from cv2 import sort
 import mediapipe_webcam
 import preprocess_userCSV
@@ -13,6 +12,9 @@ from tensorflow import keras
 import numpy as np
 import pandas as pd
 import gradcam_detect
+from PIL import Image, ImageTk, ImageSequence
+import time
+
 # def onOK():
 #     # 取得輸入文字
 #     print("Hello, {}確診.".format(entry.get()))
@@ -27,7 +29,7 @@ answer_classlist = ['Salty', 'Snack', 'Bubble Tea',
 
 menu = tk.Tk()
 menu.title('Sign Language Interaction Tutorial System')
-menu['background'] = '#F4F1DE'
+menu['background'] = '#FAF2E9'
 
 w = 800  # width for the Tk root
 h = 500  # height for the Tk root
@@ -157,7 +159,7 @@ def start_btn_func(target_class_num):
 
     x_test_vectors = x_test_vectors.flatten().reshape(
         x_test_vectors.shape[0], (x_test_vectors.shape[1]//(point_number*2)), (point_number*2))
-
+    #!change model
     # model = keras.models.load_model('Convolution_best_model.h5')
     select_model_name = 'Convolution_best_model.h5'
     model = keras.models.load_model(select_model_name)
@@ -270,7 +272,7 @@ def createTutorialVideo():
     global w, h, x, y
     TutorialVideo.geometry('%dx%d+%d+%d' % (w, h, x, y))
     # TutorialVideo.geometry("800x500")
-    TutorialVideo['background'] = '#F4F1DE'
+    TutorialVideo['background'] = '#FAF2E9'
 
     btn1 = tk.Button(TutorialVideo, bg='#F2CC8F',
                      width=25, height=3, text='Bubble Tea', command=partial(openVideo, 1)).grid(row=0, column=0, padx=7, pady=35)
@@ -299,7 +301,7 @@ def createPractice():
     Practice.title('Practice')
     Practice.geometry('%dx%d+%d+%d' % (w, h, x, y))
     Practice.geometry("800x500")
-    Practice['background'] = '#F4F1DE'
+    Practice['background'] = '#FAF2E9'
 
     btn1 = tk.Button(Practice, text=answer_classlist[0], bg='#F2CC8F',
                      width=25, height=3,  command=partial(start_btn_func, 0)).grid(row=0, column=0, padx=7, pady=35)
@@ -327,25 +329,56 @@ def createQuiz():
     Quiz.title('Quiz')
     Quiz.geometry('%dx%d+%d+%d' % (w, h, x, y))
     # Quiz.geometry("800x500")
-    Quiz['background'] = '#F4F1DE'
+    Quiz['background'] = '#FAF2E9'
 
     # 隨機標示文字
     # tt = random.choice(['Bubble Tea', 'Dumpling', 'Hot', 'Salty',
     #                     'Snack', 'Sour', 'Sweet', 'Taste Good'])
     answer_number = random.randint(0, 7)
+    # -----------
+    global topic_img
+    topic_img = Image.open(('GUI_img\Bubble_tea_topic.png'))
+    topic_img = topic_img.resize((400, 200))
+    topic = ImageTk.PhotoImage(topic_img)
+    canvas = tk.Canvas(Quiz, width=400, height=400, bg="#FAF2E9")
+    # 在 Canvas 中放入圖片
+    canvas.create_image(0, 0, anchor='nw', image=topic)
+    # ------------
+    canvas = tk.Canvas(Quiz, width=300, height=300, bg='#FAF2E9')
+    canvas.pack()
     fontStyle = tkFont.Font(family="Lucida Grande", size=35)
     label = tk.Label(
         Quiz, text=answer_classlist[answer_number], font=fontStyle)
-    label.place(relx=0.4, rely=0.25)
+    label.place(relx=0.4, rely=0.5)
     start_btn = tk.Button(Quiz, text='Start', bg='#F2CC8F', width=40, command=partial(start_btn_func, answer_number),
-                          height=3, cursor='star').place(relx=0.35, rely=0.5)
-    quit_btn = tk.Button(
-        Quiz, text='上一頁', command=partial(confirm_to_quit, Quiz)).place(relx=0.02, rely=0.92)
+                          height=3, cursor='star').place(relx=0.35, rely=0.75)
+    # -----------
+    # img = []
+    # global a, flag
+    # while 1:
+    #     im = Image.open('GUI_img\please-begging.gif')
+    #     im = im.resize((300, 300))
+    #     # GIF图片流的迭代器
+    #     iter = ImageSequence.Iterator(im)
+    #     # frame就是gif的每一帧，转换一下格式就能显示了
+    #     for frame in iter:
+    #         pic = ImageTk.PhotoImage(frame)
+    #         # pic = pic.resize((100, 100))
+    #         canvas.create_image((0, 0), image=pic)
+    #         time.sleep(0.1)
+    #         Quiz.update_idletasks()  # 刷新
+    #         Quiz.update()
+
+    #     quit_btn = tk.Button(
+    #         Quiz, text='上一頁', command=partial(confirm_to_quit, Quiz)).place(relx=0.02, rely=0.92)
+    # ---------------
+    # quit_btn = tk.Button(
+    #     Quiz, text='上一頁', command=partial(confirm_to_quit, Quiz)).place(relx=0.02, rely=0.92)
+
+# -----GIF-----
 
 
 # -----創Score視窗-----
-
-
 def createScore(CORRECT, idx):
     global w, h, x, y
     global answer_classlist
@@ -354,21 +387,82 @@ def createScore(CORRECT, idx):
     Score.title('My Score')
     Score.geometry('%dx%d+%d+%d' % (w, h, x, y))
     # Score.geometry("800x500")
-    Score['background'] = '#F4F1DE'
+    Score['background'] = '#FAF2E9'
     fontStyle = tkFont.Font(family="Lucida Grande", size=35)
 
+    img = []
+
     if CORRECT:
-        label = tk.Label(
-            Score, text="You are right!!", font=fontStyle)
-        label.place(relx=0.45, rely=0.15)
+        # label = tk.Label(
+        #     Score, text="You are right!!", font=fontStyle)
+        # label.place(relx=0.45, rely=0.15)
+        # 開圖片
+        img333 = Image.open(('GUI_img\Bingo.png'))
+        img333 = img333.resize((400, 200))
+        global tk_img333
+        tk_img333 = ImageTk.PhotoImage(img333)
+        img_tea = Image.open(('GUI_img\Bubble.png'))
+        img_tea = img_tea.resize((200, 200))
+        global tea
+        tea = ImageTk.PhotoImage(img_tea)
+        canvas = tk.Canvas(Score, width=400, height=400, bg="#FAF2E9")
+        # 在 Canvas 中放入圖片
+        canvas.create_image(0, 0, anchor='nw', image=tk_img333)
+        canvas.create_image(130, 200, anchor='nw', image=tea)
+        canvas.pack()
+        # -----------
+        # global a, flag
+        # while 1:
+        #     im = Image.open('GUI_img\giphy.gif')
+        #     # GIF图片流的迭代器
+        #     iter = ImageSequence.Iterator(im)
+        #     # frame就是gif的每一帧，转换一下格式就能显示了
+        #     for frame in iter:
+        #         pic = ImageTk.PhotoImage(frame)
+        #         pic = pic.resize((100, 100))
+        #         canvas.create_image((100, 200), image=pic)
+        #         time.sleep(0.1)
+        #         Score.update_idletasks()  # 刷新
+        #         Score.update()
 
+        #     quit_btn = tk.Button(
+        #         Score, text='上一頁', command=partial(confirm_to_quit, Score)).place(relx=0.02, rely=0.92)
+        # ---------------
+      # # correct_img = tk.PhotoImage(file='GUI_img\correct_img.gif')
+      # label_img = tk.Label(Score, image=correct_img)
+      # label_img.pack()
     else:
-        label = tk.Label(
-            Score, text=f"跨謀\n我猜這是{answer_classlist[idx]}", font=fontStyle)
-        label.place(relx=0.45, rely=0.15)
+        # label = tk.Label(
+        #     Score, text=f"跨謀\n我猜這是{answer_classlist[idx]}", font=fontStyle)
+        # label.place(relx=0.45, rely=0.15)
+        unknow_img = Image.open(('GUI_img\wrong_answer.png'))
+        unknow_img = unknow_img.resize((400, 250))
+        global tk_unknow_img
+        tk_unknow_img = ImageTk.PhotoImage(unknow_img)
 
-    replay_btn = tk.Button(Score, text='Repaly', bg='#F2CC8F', width=40,
-                           height=3, cursor='star').place(relx=0.35, rely=0.5)
+        canvas = tk.Canvas(Score, width=400, height=250, bg="#FAF2E9")
+        # 在 Canvas 中放入圖片
+        canvas.create_image(0, 0, anchor='nw', image=tk_unknow_img)
+        canvas.pack()
+
+        # Gif_canvas = tk.Canvas(Score, width=300, height=300, bg='red')
+
+        # while 1:
+        #     im = Image.open('GUI_img\crying_cat.gif')
+        #     # GIF图片流的迭代器
+        #     iter = ImageSequence.Iterator(im)
+        #     # frame就是gif的每一帧，转换一下格式就能显示了
+        #     for frame in iter:
+        #         pic = ImageTk.PhotoImage(frame)
+        #         Gif_canvas.create_image((300, 300), image=pic)
+        #         time.sleep(0.1)
+        #         Score.update_idletasks()  # 刷新
+        #         Score.update()
+
+        #     quit_btn = tk.Button(
+        #         Score, text='上一頁', command=partial(confirm_to_quit, Score)).place(relx=0.02, rely=0.92)
+    replay_btn = tk.Button(Score, text='Repaly', bg='#F2CC8F', width=15,
+                           height=3, cursor='star').place(relx=0.82, rely=0.85)
     quit_btn = tk.Button(
         Score, text='上一頁', command=partial(confirm_to_quit, Score)).place(relx=0.02, rely=0.92)
 
