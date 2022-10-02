@@ -311,18 +311,18 @@ def build_model(
     # x = keras.layers.ReLU()(x)
     # x = layers.GlobalAveragePooling1D()(x)  # data_format="channels_first"
     # # conv
-    x = input_points
-    conv1 = keras.layers.Conv1D(
-        filters=32, kernel_size=3, padding="same")(x)
-    conv1 = keras.layers.BatchNormalization()(conv1)
-    conv1 = keras.layers.ReLU()(conv1)
-    conv2 = keras.layers.Conv1D(
-        filters=64, kernel_size=3, padding="same")(conv1)
-    conv2 = keras.layers.BatchNormalization()(conv2)
-    x = keras.layers.ReLU()(conv2)
-    x = layers.Dropout(0.25)(x)
+    # x = input_points
+    # conv1 = keras.layers.Conv1D(
+    #     filters=32, kernel_size=3, padding="same")(x)
+    # conv1 = keras.layers.BatchNormalization()(conv1)
+    # conv1 = keras.layers.ReLU()(conv1)
+    # conv2 = keras.layers.Conv1D(
+    #     filters=64, kernel_size=3, padding="same")(conv1)
+    # conv2 = keras.layers.BatchNormalization()(conv2)
+    # x = keras.layers.ReLU()(conv2)
+    # x = layers.Dropout(0.25)(x)
     # ###########
-
+    x = input_points
     for _ in range(num_transformer_blocks):
         x = transformer_encoder(x, head_size, num_heads, ff_dim, dropout)
 
@@ -349,7 +349,7 @@ def build_model(
 #     dropout=0.25,
 # )
 model = build_model(
-    input_shape_point=x_train_points.shape[1:],
+    input_shape=x_train_points.shape[1:],
     head_size=256,
     num_heads=4,
     ff_dim=4,
