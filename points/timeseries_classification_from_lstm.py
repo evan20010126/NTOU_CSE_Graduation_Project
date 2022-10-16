@@ -142,13 +142,13 @@ def split_target(df):
 leave_idx = int(sys.argv[1])  # 0 ~ 15
 
 # -- vector --
-evan, edmund, yumi,\
-    friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
-    friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
-    = share_function.load_vector_data()
+# evan, edmund, yumi,\
+#     friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
+#     friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
+#     = share_function.load_vector_data()
+# all_person_pd_vector = [evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
+#                         friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13]
 
-all_person_pd_vector = [evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
-                        friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13]
 # -- point --
 evan, edmund, yumi,\
     friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
@@ -162,34 +162,35 @@ del evan, edmund, yumi, friend_1, friend_2, friend_3, friend_4, friend_5, friend
     friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13
 
 IS_EMPTY = True
-train_vectors = -999
-test_vectors = -999
+# train_vectors = -999
+# test_vectors = -999
 train_points = -999
 test_points = -999
 for i in range(16):
     if (i != leave_idx):
         if not IS_EMPTY:
-            train_vectors = pd.concat([train_vectors, all_person_pd_vector[i]])
+            # train_vectors = pd.concat([train_vectors, all_person_pd_vector[i]])
             train_points = pd.concat([train_points, all_person_pd_points[i]])
         else:
-            train_vectors = all_person_pd_vector[i]
+            # train_vectors = all_person_pd_vector[i]
             train_points = all_person_pd_points[i]
             IS_EMPTY = False
         if (leave_idx == -1):
-            test_vectors = all_person_pd_vector[i]
+            # test_vectors = all_person_pd_vector[i]
             test_points = all_person_pd_points[i]
     else:
-        test_vectors = all_person_pd_vector[i]
+        # test_vectors = all_person_pd_vector[i]
         test_points = all_person_pd_points[i]
 
 train_points = share_function.label_to_float(train_points)
 
 test_points = share_function.label_to_float(test_points)
 
-del all_person_pd_vector, all_person_pd_points
+# del all_person_pd_vector
+del all_person_pd_points
+
 #! shuffle
-train_points, train_vectors = share_function.two_stream_shuffle(
-    points=train_points, vectors=train_vectors)
+train_points = share_function.shuffle(points=train_points)
 # train = train.sample(frac=1).reset_index(drop=True)
 # test = test.sample(frac=1).reset_index(drop=True)
 
@@ -198,17 +199,17 @@ x_train_points, y_train_points = \
     split_target_evanVersion(
         train_points)  # origin: x_train, y_train = split_target(train)
 
-x_train_vectors, y_train_vectors = \
-    split_target_evanVersion(
-        train_vectors)  # origin: x_train, y_train = split_target(train)
+# x_train_vectors, y_train_vectors = \
+#     split_target_evanVersion(
+#         train_vectors)  # origin: x_train, y_train = split_target(train)
 
 x_test_points, y_test_points = \
     split_target_evanVersion(
         test_points)  # origin: x_train, y_train = split_target(train)
 
-x_test_vectors, y_test_vectors = \
-    split_target_evanVersion(
-        test_vectors)  # origin: x_train, y_train = split_target(train)
+# x_test_vectors, y_test_vectors = \
+#     split_target_evanVersion(
+#         test_vectors)  # origin: x_train, y_train = split_target(train)
 # .
 # x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
 # x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
@@ -219,17 +220,17 @@ x_test_vectors, y_test_vectors = \
 x_train_points = np.asarray(x_train_points).astype(np.float32)
 y_train_points = np.asarray(y_train_points).astype(np.float32)
 
-x_train_vectors = np.asarray(x_train_vectors).astype(np.float32)
-y_train_vectors = np.asarray(y_train_vectors).astype(np.float32)
+# x_train_vectors = np.asarray(x_train_vectors).astype(np.float32)
+# y_train_vectors = np.asarray(y_train_vectors).astype(np.float32)
 
 x_test_points = np.asarray(x_test_points).astype(np.float32)
 y_test_points = np.asarray(y_test_points).astype(np.float32)
 
-x_test_vectors = np.asarray(x_test_vectors).astype(np.float32)
-y_test_vectors = np.asarray(y_test_vectors).astype(np.float32)
+# x_test_vectors = np.asarray(x_test_vectors).astype(np.float32)
+# y_test_vectors = np.asarray(y_test_vectors).astype(np.float32)
 
 
-num_classes = len(np.unique(y_train_vectors))
+num_classes = len(np.unique(y_train_points))
 
 
 x_train_points = x_train_points.flatten().reshape(
@@ -238,11 +239,11 @@ x_train_points = x_train_points.flatten().reshape(
 x_test_points = x_test_points.flatten().reshape(
     x_test_points.shape[0], x_test_points.shape[1]//130, 130)
 
-x_train_vectors = x_train_vectors.flatten().reshape(
-    x_train_vectors.shape[0], (x_train_vectors.shape[1]//(point_number*2)), (point_number*2))
+# x_train_vectors = x_train_vectors.flatten().reshape(
+#     x_train_vectors.shape[0], (x_train_vectors.shape[1]//(point_number*2)), (point_number*2))
 
-x_test_vectors = x_test_vectors.flatten().reshape(
-    x_test_vectors.shape[0], (x_test_vectors.shape[1]//(point_number*2)), (point_number*2))
+# x_test_vectors = x_test_vectors.flatten().reshape(
+#     x_test_vectors.shape[0], (x_test_vectors.shape[1]//(point_number*2)), (point_number*2))
 
 """## Load the data: the FordA dataset
 
@@ -350,9 +351,16 @@ via random search using [KerasTuner](https://github.com/keras-team/keras-tuner).
 is_Reshape = False
 
 
-def share_stream(input_shape):
+# def share_stream(input_shape):
+
+#     shared_layer = keras.models.Model(input_layer, conv3)
+
+#     return shared_layer
+
+
+def make_model(input_shape_point, input_shape_vector=0):
     # ? 跟大小無關 None 甚麼大小都可以 因為globalAveragepooling的設計
-    input_layer = keras.layers.Input(shape=input_shape)
+    input_layer = keras.layers.Input(shape=input_shape_point)
     # ? (None, 1)
     # conv1 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(input_layer)
     # conv1 = keras.layers.BatchNormalization()(conv1)
@@ -379,34 +387,6 @@ def share_stream(input_shape):
     conv3 = keras.layers.ReLU()(conv3)
 
     # ? 500 有沒有必要 # 到第三層 500x64 shape -> 1x64 可以改變輸入大小
-    # gap = keras.layers.GlobalAveragePooling1D()(conv3)
-    # ? globalaveragepooling不用寫啦，最後一個LSTM return sequence為false就好了
-    # gap = conv3
-
-    shared_layer = keras.models.Model(input_layer, conv3)
-
-    return shared_layer
-
-
-def make_model(input_shape_point, input_shape_vector):
-    inputs_point = keras.layers.Input(shape=input_shape_point)
-    inputs_vector = keras.layers.Input(shape=input_shape_vector)
-    point_stream = share_stream(input_shape_point)
-    vector_stream = share_stream(input_shape_vector)
-
-    point_feature = point_stream(inputs_point)
-    vector_feature = vector_stream(inputs_vector)
-
-    feature = keras.layers.concatenate([point_feature, vector_feature])
-
-    # conv3 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv2)
-    # ? 最後一個LSTM再吐出最後的結果就好
-    # conv3 = keras.layers.BatchNormalization()(conv3)
-    conv3 = keras.layers.LSTM(units=64, return_sequences=True)(
-        feature)  # 原本為false，為了gradcam的資料結構改為true
-    conv3 = keras.layers.ReLU()(conv3)
-
-    # ? 500 有沒有必要 # 到第三層 500x64 shape -> 1x64 可以改變輸入大小
     gap = keras.layers.GlobalAveragePooling1D()(conv3)
     # ? globalaveragepooling不用寫啦，最後一個LSTM return sequence為false就好了
     # gap = conv3
@@ -414,13 +394,13 @@ def make_model(input_shape_point, input_shape_vector):
     output_layer = keras.layers.Dense(
         num_classes, activation="softmax")(gap)
 
-    return keras.models.Model(inputs=[inputs_point, inputs_vector], outputs=output_layer)
+    return keras.models.Model(inputs=input_layer, outputs=output_layer)
 # print(len(x_train.flatten()))
 # print(x_train.shape[1]//(point_number*2))
 
 
 model = make_model(
-    input_shape_point=x_train_points.shape[1:], input_shape_vector=x_train_vectors.shape[1:])
+    input_shape_point=x_train_points.shape[1:])
 keras.utils.plot_model(model, show_shapes=True)
 
 # 1. 錄影怎麼錄影
@@ -467,7 +447,7 @@ model.compile(
 )
 
 history = model.fit(
-    [x_train_points, x_train_vectors],
+    x_train_points,
     y_train_points,
     batch_size=batch_size,
     epochs=epochs,
@@ -482,7 +462,7 @@ model = keras.models.load_model("Lstm_best_model.h5")
 model.save(f'auto_leave_person/{leave_idx}/Lstm_best_model.h5')  # 另存一份
 
 test_loss, test_acc = model.evaluate(
-    [x_test_points, x_test_vectors], y_test_vectors)
+    x_test_points, y_test_points)
 
 
 # history.loss_plot('epoch')
@@ -575,11 +555,11 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None
 last_conv_layer_name = model.layers[-3].name
 # print(model.layers[-3].name)
 
-img_array_vectors = x_test_vectors[1][tf.newaxis, ...]
+# img_array_vectors = x_test_vectors[1][tf.newaxis, ...]
 img_array_points = x_test_points[1][tf.newaxis, ...]
 
 heatmap = make_gradcam_heatmap(
-    [img_array_points, img_array_vectors], model, last_conv_layer_name, pred_index=0)
+    img_array_points, model, last_conv_layer_name, pred_index=0)
 print(heatmap.shape)  # 19偵
 # plt.matshow(heatmap)
 # plt.show()
@@ -594,9 +574,9 @@ print(heatmap.shape)  # 19偵
 ################################################################################################
 # confusion matrix
 predict_ans = np.argmax(model.predict(
-    [x_test_points, x_test_vectors]), axis=-1)  # *  argmax 找最大值的index
+    x_test_points), axis=-1)  # *  argmax 找最大值的index
 cm = tf.math.confusion_matrix(
-    y_test_vectors, predict_ans).numpy().astype(np.float32)
+    y_test_points, predict_ans).numpy().astype(np.float32)
 print(cm)
 print(cm.shape[0])
 print(cm.shape[1])
