@@ -108,6 +108,7 @@ leave_idx = int(sys.argv[1])  # 0 ~ 15
 
 # all_person_pd_vector = [evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
 #                         friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13]
+
 # -- point --
 evan, edmund, yumi,\
     friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\

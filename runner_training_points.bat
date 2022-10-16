@@ -1,0 +1,31 @@
+python points/timeseries_classification_from_scratch.py 0
+
+python points/timeseries_classification_from_scratch.py 1
+
+python points/timeseries_classification_from_scratch.py 2
+
+python points/timeseries_classification_from_scratch.py 3
+
+python points/timeseries_classification_from_scratch.py 4
+
+python points/timeseries_classification_from_scratch.py 5
+
+python points/timeseries_classification_from_scratch.py 6
+
+python points/timeseries_classification_from_scratch.py 7
+
+python points/timeseries_classification_from_scratch.py 8
+
+python points/timeseries_classification_from_scratch.py 9
+
+python points/timeseries_classification_from_scratch.py 10
+
+python points/timeseries_classification_from_scratch.py 11
+
+python points/timeseries_classification_from_scratch.py 12
+
+python points/timeseries_classification_from_scratch.py 13
+
+python points/timeseries_classification_from_scratch.py 14
+
+python points/timeseries_classification_from_scratch.py 15
