@@ -29,29 +29,29 @@ point_number = len(hand_sequence*2) + len(pose_sequence)
 
 
 model_list = [
-    "auto_leave_person/points_conv/0/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/1/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/2/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/3/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/4/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/5/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/6/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/7/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/8/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/9/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/10/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/11/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/12/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/13/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/14/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/15/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/0/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/1/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/2/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/3/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/4/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/5/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/6/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/7/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/8/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/9/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/10/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/11/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/12/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/13/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/14/Convolution_best_model.h5",
+    "auto_leave_person/vector_conv/15/Convolution_best_model.h5",
 ]
 
 # -- point --
 evan, edmund, yumi,\
     friend_1, friend_2, friend_3, friend_4, friend_5, friend_6,\
     friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13\
-    = share_function.load_point_data()
+    = share_function.load_vector_data()
 
 all_person_pd_points = [evan, yumi, edmund, friend_1, friend_2, friend_3, friend_4, friend_5,
                         friend_6, friend_7, friend_8, friend_9, friend_10, friend_11, friend_12, friend_13]
@@ -81,15 +81,18 @@ avg_first = True
 for leave_idx in range(16):
     model = model_list[leave_idx]
     test_points = all_person_pd_points[leave_idx]
-    test_points = share_function.label_to_float(test_points)
+    # test_points = share_function.label_to_float(test_points)
 
     x_test_points, y_test_points = split_target_evanVersion(test_points)
 
     x_test_points = np.asarray(x_test_points).astype(np.float32)
     y_test_points = np.asarray(y_test_points).astype(np.float32)
 
+    # x_test_points = x_test_points.flatten().reshape(
+    #     x_test_points.shape[0], x_test_points.shape[1]//130, 130)
+
     x_test_points = x_test_points.flatten().reshape(
-        x_test_points.shape[0], x_test_points.shape[1]//130, 130)
+        x_test_points.shape[0], (x_test_points.shape[1]//(point_number*2)), (point_number*2))
 
     model = keras.models.load_model(model)
 
@@ -134,4 +137,4 @@ fig = plt.figure(figsize=(10, 7))
 # print(f"df: {df_avg}")
 sn.heatmap(df_avg, annot=True, fmt='.3f')
 plt.show()
-fig.savefig("auto_leave_person/points_conv/avg_confusion_matrix.png")
+fig.savefig("auto_leave_person/vector_conv/avg_confusion_matrix.png")
