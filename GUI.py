@@ -23,7 +23,7 @@ import time
 #                  width=20)  # 輸入欄位的寬度
 # entry.pack()
 
-answer_classlist = ['Salty', 'Snack', 'Bubble Tea',
+answer_classlist = ['Salty', 'Snack', 'Bubble_Tea',
                     'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy']
 
 
@@ -334,24 +334,26 @@ def createQuiz():
     # 隨機標示文字
     # tt = random.choice(['Bubble Tea', 'Dumpling', 'Hot', 'Salty',
     #                     'Snack', 'Sour', 'Sweet', 'Taste Good'])
-    answer_number = random.randint(0, 7)
-    # -----------
     global topic_img
-    topic_img = Image.open(('GUI_img\Bubble_tea_topic.png'))
-    topic_img = topic_img.resize((400, 200))
+    global topic
+    answer_number = random.randint(0, 7)
+    question_heading = answer_classlist[answer_number]
+    topic_img = Image.open((f'GUI_img\{question_heading}_topic.png'))
+    # -----------
+    # topic_img = Image.open(('GUI_img\Bubble_Tea_topic.png'))
+    topic_img = topic_img.resize((300, 150))
     topic = ImageTk.PhotoImage(topic_img)
-    canvas = tk.Canvas(Quiz, width=400, height=400, bg="#FAF2E9")
+    canvas = tk.Canvas(Quiz, width=300, height=300, bg="#FAF2E9")
     # 在 Canvas 中放入圖片
-    canvas.create_image(0, 0, anchor='nw', image=topic)
+    canvas.create_image(150, 150, anchor='center', image=topic)
     # ------------
-    canvas = tk.Canvas(Quiz, width=300, height=300, bg='#FAF2E9')
     canvas.pack()
-    fontStyle = tkFont.Font(family="Lucida Grande", size=35)
-    label = tk.Label(
-        Quiz, text=answer_classlist[answer_number], font=fontStyle)
-    label.place(relx=0.4, rely=0.5)
+    # fontStyle = tkFont.Font(family="Lucida Grande", size=35)
+    # label = tk.Label(
+    #     Quiz, text=answer_classlist[answer_number], font=fontStyle)
+    # label.place(relx=0.4, rely=0.5)
     start_btn = tk.Button(Quiz, text='Start', bg='#F2CC8F', width=40, command=partial(start_btn_func, answer_number),
-                          height=3, cursor='star').place(relx=0.35, rely=0.75)
+                          height=5, cursor='star').place(relx=0.33, rely=0.6)
     # -----------
     # img = []
     # global a, flag
@@ -397,18 +399,20 @@ def createScore(CORRECT, idx):
         #     Score, text="You are right!!", font=fontStyle)
         # label.place(relx=0.45, rely=0.15)
         # 開圖片
+        global answer_classlist
         img333 = Image.open(('GUI_img\Bingo.png'))
         img333 = img333.resize((400, 200))
         global tk_img333
         tk_img333 = ImageTk.PhotoImage(img333)
-        img_tea = Image.open(('GUI_img\Bubble.png'))
-        img_tea = img_tea.resize((200, 200))
+        cute_pic_name = answer_classlist[idx]
+        img_cute = Image.open((f'GUI_img\cute_{cute_pic_name}.png'))
+        img_cute = img_cute.resize((200, 200))
         global tea
-        tea = ImageTk.PhotoImage(img_tea)
+        tea = ImageTk.PhotoImage(img_cute)
         canvas = tk.Canvas(Score, width=400, height=400, bg="#FAF2E9")
         # 在 Canvas 中放入圖片
-        canvas.create_image(0, 0, anchor='nw', image=tk_img333)
-        canvas.create_image(130, 200, anchor='nw', image=tea)
+        canvas.create_image(200, 100, anchor='center', image=tk_img333)
+        canvas.create_image(200, 200, anchor='center', image=tea)
         canvas.pack()
         # -----------
         # global a, flag
@@ -439,28 +443,34 @@ def createScore(CORRECT, idx):
         unknow_img = unknow_img.resize((400, 250))
         global tk_unknow_img
         tk_unknow_img = ImageTk.PhotoImage(unknow_img)
-
-        canvas = tk.Canvas(Score, width=400, height=250, bg="#FAF2E9")
+        heading = answer_classlist[idx]
+        unknown_topic_img = Image.open((f'GUI_img\{heading}_topic.png'))
+        unknown_topic_img = unknown_topic_img.resize((200, 250))
+        global tk_unknown_topic_img
+        tk_unknown_topic_img = ImageTk.PhotoImage(unknown_topic_img)
+        canvas = tk.Canvas(Score, width=400, height=400, bg="#FAF2E9")
         # 在 Canvas 中放入圖片
-        canvas.create_image(0, 0, anchor='nw', image=tk_unknow_img)
+        canvas.create_image(200, 150, anchor='center', image=tk_unknow_img)
+        canvas.create_image(200, 300, anchor='center',
+                            image=tk_unknown_topic_img)
         canvas.pack()
 
-        # Gif_canvas = tk.Canvas(Score, width=300, height=300, bg='red')
+    # Gif_canvas = tk.Canvas(Score, width=300, height=300, bg='red')
 
-        # while 1:
-        #     im = Image.open('GUI_img\crying_cat.gif')
-        #     # GIF图片流的迭代器
-        #     iter = ImageSequence.Iterator(im)
-        #     # frame就是gif的每一帧，转换一下格式就能显示了
-        #     for frame in iter:
-        #         pic = ImageTk.PhotoImage(frame)
-        #         Gif_canvas.create_image((300, 300), image=pic)
-        #         time.sleep(0.1)
-        #         Score.update_idletasks()  # 刷新
-        #         Score.update()
+    # while 1:
+    #     im = Image.open('GUI_img\crying_cat.gif')
+    #     # GIF图片流的迭代器
+    #     iter = ImageSequence.Iterator(im)
+    #     # frame就是gif的每一帧，转换一下格式就能显示了
+    #     for frame in iter:
+    #         pic = ImageTk.PhotoImage(frame)
+    #         Gif_canvas.create_image((300, 300), image=pic)
+    #         time.sleep(0.1)
+    #         Score.update_idletasks()  # 刷新
+    #         Score.update()
 
-        #     quit_btn = tk.Button(
-        #         Score, text='上一頁', command=partial(confirm_to_quit, Score)).place(relx=0.02, rely=0.92)
+    #     quit_btn = tk.Button(
+    #         Score, text='上一頁', command=partial(confirm_to_quit, Score)).place(relx=0.02, rely=0.92)
     replay_btn = tk.Button(Score, text='Repaly', bg='#F2CC8F', width=15,
                            height=3, cursor='star').place(relx=0.82, rely=0.85)
     quit_btn = tk.Button(
