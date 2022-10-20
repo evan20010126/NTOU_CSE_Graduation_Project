@@ -121,66 +121,129 @@ def computeDistance(p1, p2):
     return ((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2) ** 0.5
 
 
+my_counter = 0
+counter_forLeft = 0
+counter_forRight = 0
+
+temp_left = np.array(list())
+temp_right = np.array(list())
+catch_error = False
+
+
 def get_label_and_points(index, hand, results, hand_num):
-    global previous_hand, first
     global all_keypoints
     global frame_keypoints_hands
     global image
     global catch_error
     global record_leftHand
     global record_rightHand
+    global my_counter
+    global temp_left
+    global temp_right
+    global frame_keypoints_pose
+
+    global counter_forLeft
+    global counter_forRight
+
     # result.multi_handedness放此手的label跟score
     for idx, classification in enumerate(results.multi_handedness):
         # print(idx)
         # # print(classification.classification)
         # print(f"index: {index}")
-        # if classification.classification[0].index == index:
-        if idx == index:    #
 
-            # Process results
-            label = classification.classification[0].label
-            score = classification.classification[0].score
-            # text = '{} {}'.format(label, round(score, 2))
+        # if idx == index:    #
 
-            # Extract Coordinates
-            # coords = tuple(np.multiply(
-            #     np.array((hand.landmark[mp_hands.HandLandmark.WRIST].x,
-            #              hand.landmark[mp_hands.HandLandmark.WRIST].y)),
-            #     [640, 480]).astype(int))
-            # print("label: ", label)
+        # Process results
+        label = classification.classification[0].label
+        score = classification.classification[0].score
+        # text = '{} {}'.format(label, round(score, 2))
+        # print(label)
+        # Extract Coordinates
+        # coords = tuple(np.multiply(
+        #     np.array((hand.landmark[mp_hands.HandLandmark.WRIST].x,
+        #              hand.landmark[mp_hands.HandLandmark.WRIST].y)),
+        #     [640, 480]).astype(int))
+        # print("label: ", label)
+        wrist_point = list()
+        wrist_point.append(hand.landmark[0].x*image.shape[1])
+        wrist_point.append(hand.landmark[0].y * image.shape[0])
+        dist_to_leftWrist = computeDistance(
+            frame_keypoints_pose[15], wrist_point)
+        dist_to_rightWrist = computeDistance(
+            frame_keypoints_pose[16], wrist_point)
+        # print("dist to lefthand: ", dist_to_leftWrist)
+        # print("dist to righthand: ", dist_to_rightWrist)
+        if abs(dist_to_leftWrist-dist_to_rightWrist) <= 25:
+            # print("catch error")
+            catch_error = True
+        if dist_to_leftWrist <= dist_to_rightWrist:
+            label = "Left"
+            counter_forLeft += 1
+        else:
+            label = "Right"
+            counter_forRight += 1
 
-            if(hand_num == 2):
-                if label == "Left":
-                    if record_leftHand:
-                        for i in range(21):
-                            temp_xy = np.array(list())
-                            temp_xy = np.append(
-                                temp_xy, hand.landmark[i].x * image.shape[1])
-                            temp_xy = np.append(
-                                temp_xy, hand.landmark[i].y * image.shape[0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
-                    else:
-                        for i in range(21):
-                            temp_xy = np.array([0, 0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
-                if label == "Right":
-                    if record_rightHand:
-                        for i in range(21):
-                            temp_xy = np.array(list())
-                            temp_xy = np.append(
-                                temp_xy, hand.landmark[i].x * image.shape[1])
-                            temp_xy = np.append(
-                                temp_xy, hand.landmark[i].y * image.shape[0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
-                    else:
-                        for i in range(21):
-                            temp_xy = np.array([0, 0])
-                            frame_keypoints_hands = np.append(
-                                frame_keypoints_hands, temp_xy)
-            elif(hand_num == 1):
+        # print("hand" + str(hand_num))
+        if (hand_num == 2):
+            if (counter_forLeft > 1 or counter_forRight > 1):
+                my_counter = 999
+                catch_error = True
+
+        if(hand_num == 2):
+            my_counter += 1
+
+            if label == "Left":
+                if not catch_error:
+                    cv2.circle(image, (int(hand.landmark[0].x*image.shape[1]), int(
+                        hand.landmark[0].y * image.shape[0])), radius=30, color=(255, 0, 255), thickness=2)
+                if record_leftHand:
+                    for i in range(21):
+                        temp_xy = np.array(list())
+                        temp_xy = np.append(
+                            temp_xy, hand.landmark[i].x * image.shape[1])
+                        temp_xy = np.append(
+                            temp_xy, hand.landmark[i].y * image.shape[0])
+                        temp_left = np.append(
+                            temp_left, temp_xy)
+                else:
+                    for i in range(21):
+                        temp_xy = np.array([0, 0])
+                        temp_left = np.append(
+                            temp_left, temp_xy)
+            if label == "Right":
+                if not catch_error:
+                    cv2.circle(image, (int(hand.landmark[0].x * image.shape[1]), int(
+                        hand.landmark[0].y * image.shape[0])), radius=30, color=(255, 255, 0), thickness=2)
+                if record_rightHand:
+                    for i in range(21):
+                        temp_xy = np.array(list())
+                        temp_xy = np.append(
+                            temp_xy, hand.landmark[i].x * image.shape[1])
+                        temp_xy = np.append(
+                            temp_xy, hand.landmark[i].y * image.shape[0])
+                        temp_right = np.append(
+                            temp_right, temp_xy)
+                else:
+                    for i in range(21):
+                        temp_xy = np.array([0, 0])
+                        temp_right = np.append(
+                            temp_right, temp_xy)
+            if my_counter >= 2:
+                # 此frame所有暫存的東西都清空
+                my_counter = 0
+                counter_forLeft = 0
+                counter_forRight = 0
+                frame_keypoints_hands = np.append(
+                    frame_keypoints_hands, temp_left)
+                frame_keypoints_hands = np.append(
+                    frame_keypoints_hands, temp_right)
+                temp_left = np.array(list())
+                temp_right = np.array(list())
+        elif(hand_num == 1):
+            if label == "Left":
+                if not catch_error:
+                    cv2.circle(image, (int(hand.landmark[0].x*image.shape[1]), int(
+                        hand.landmark[0].y * image.shape[0])), radius=30, color=(255, 0, 255), thickness=2)
                 if record_leftHand:
                     for i in range(21):
                         temp_xy = np.array(list())
@@ -194,7 +257,11 @@ def get_label_and_points(index, hand, results, hand_num):
                         temp_xy = np.array([0, 0])
                         frame_keypoints_hands = np.append(
                             frame_keypoints_hands, temp_xy)
-                elif record_rightHand:
+            elif label == "Right":
+                if not catch_error:
+                    cv2.circle(image, (int(hand.landmark[0].x * image.shape[1]), int(
+                        hand.landmark[0].y * image.shape[0])), radius=30, color=(255, 255, 0), thickness=2)
+                if record_rightHand:
                     for i in range(21):
                         temp_xy = np.array([0, 0])
                         frame_keypoints_hands = np.append(
@@ -207,13 +274,13 @@ def get_label_and_points(index, hand, results, hand_num):
                             temp_xy, hand.landmark[i].y * image.shape[0])
                         frame_keypoints_hands = np.append(
                             frame_keypoints_hands, temp_xy)
-                else:
-                    for i in range(42):
-                        temp_xy = np.array([0, 0])
-                        frame_keypoints_hands = np.append(
-                            frame_keypoints_hands, temp_xy)
-            else:  # 有第三隻手
-                catch_error = True
+            else:
+                for i in range(42):
+                    temp_xy = np.array([0, 0])
+                    frame_keypoints_hands = np.append(
+                        frame_keypoints_hands, temp_xy)
+        else:  # 有第三隻手
+            catch_error = True
         # print("hand.landmark.size: ", len(hand.landmark)) # = 21
     # print(f"handnum{hand_num}")
     # print(frame_keypoints_hands)
@@ -237,6 +304,8 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
     global frame_keypoints_pose
     global record_leftHand
     global record_rightHand
+    global catch_error
+
     cap = cv2.VideoCapture(cam_num)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -387,11 +456,11 @@ def open_cam(SAVE_REC=False, SAVE_EXCEL=False, SAVE_CSV=True, PREVIEW_INPUT_VIDE
                         all_keypoints.append(
                             (frame_keypoints_hands[i][1] - normalize_original_point[1])/normalize_distance)
                 if record_leftHand:
-                    cv2.putText(image, "REC Left Hand", (10, 30), cv2.FONT_HERSHEY_PLAIN,
-                                2, (0, 0, 255), 2, cv2.LINE_AA)
+                    cv2.putText(image, "REC Left Hand", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                                1, (0, 0, 255), 3, cv2.LINE_AA)
                 if record_rightHand:
-                    cv2.putText(image, "REC Right Hand", (10, 60), cv2.FONT_HERSHEY_PLAIN,
-                                2, (0, 0, 255), 2, cv2.LINE_AA)
+                    cv2.putText(image, "REC Right Hand", (10, 60), cv2.FONT_HERSHEY_SIMPLEX,
+                                1, (0, 0, 255), 3, cv2.LINE_AA)
 
                 # cv2.putText(image, "REC", (10, 40), cv2.FONT_HERSHEY_SIMPLEX,
                 #             1, (0, 0, 255), 3, cv2.LINE_AA)
