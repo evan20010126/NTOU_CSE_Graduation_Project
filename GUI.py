@@ -137,7 +137,7 @@ def split_target(df):
 def start_btn_func(target_class_num):
     # generate webcam.csv
     mediapipe_webcam.open_cam(SAVE_REC=False, SAVE_EXCEL=False,
-                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=1)
+                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=0)
     # generate webcam_stuff_zero.csv
     FTTAB, frame_cutting = preprocess_userCSV.preprocess(max_column=27301)
 
@@ -406,13 +406,13 @@ def createScore(CORRECT, idx):
         tk_img333 = ImageTk.PhotoImage(img333)
         cute_pic_name = answer_classlist[idx]
         img_cute = Image.open((f'GUI_img\cute_{cute_pic_name}.png'))
-        img_cute = img_cute.resize((200, 200))
+        img_cute = img_cute.resize((200, 100))
         global tea
         tea = ImageTk.PhotoImage(img_cute)
         canvas = tk.Canvas(Score, width=400, height=400, bg="#FAF2E9")
         # 在 Canvas 中放入圖片
         canvas.create_image(200, 100, anchor='center', image=tk_img333)
-        canvas.create_image(200, 200, anchor='center', image=tea)
+        canvas.create_image(200, 250, anchor='center', image=tea)
         canvas.pack()
         # -----------
         # global a, flag
@@ -445,7 +445,7 @@ def createScore(CORRECT, idx):
         tk_unknow_img = ImageTk.PhotoImage(unknow_img)
         heading = answer_classlist[idx]
         unknown_topic_img = Image.open((f'GUI_img\{heading}_topic.png'))
-        unknown_topic_img = unknown_topic_img.resize((200, 250))
+        unknown_topic_img = unknown_topic_img.resize((200, 100))
         global tk_unknown_topic_img
         tk_unknown_topic_img = ImageTk.PhotoImage(unknown_topic_img)
         canvas = tk.Canvas(Score, width=400, height=400, bg="#FAF2E9")
