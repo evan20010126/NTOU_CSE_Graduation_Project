@@ -37,13 +37,13 @@ while(True):
             is_break = True
             break
         elif key == 88:
-            frame_highlight_list.append(0)
-            break
-            # X
-        elif key == 86:
             frame_highlight_list.append(1)
             break
-            # V
+            # "X" 這偵比錯
+        elif key == 86:
+            frame_highlight_list.append(0)
+            break
+            # "V" 這偵比對
     if is_break:
         break
 write_csv(

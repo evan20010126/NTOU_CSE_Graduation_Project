@@ -146,9 +146,10 @@ def get_heapmap(model, layer_num, testing_data, class_idx, FTTAB):
     # cv2.imshow("sth", cv_img)
 
 
-def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_class_num, FTTAB, frame_cutting):
+def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_class_num, FTTAB, frame_cutting, VIEWER_GATE=True):
     print("target:" + str(target_class_num))
     global important_frame
+
     last_conv_layer_name = model.layers[layer_num].name
     # print(model.layers[-3].name)
 
@@ -197,7 +198,7 @@ def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_
         ele = heatmap[0][i]
         # print("heatmap")
         # print(heatmap)
-        if (ele >= 0.5 and (FTTAB[i] not in important_frame)):
+        if (ele > 0.5 and (FTTAB[i] not in important_frame)):
             # FTTAB[i]可以對應到正確的偵數
             important_frame.append(FTTAB[i])
             # print(FTTAB[i])
@@ -223,33 +224,61 @@ def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_
 
     print('\033[0m')
 
-    fig = plt.figure()
-    fig.suptitle(
-        "Heatmap for error rate\n(yellow: wrong, purple: correct)")
-    rows_num = 7
-    if len(save_frames) == 0:
-        gs1 = gridspec.GridSpec(
-            nrows=rows_num, ncols=1, wspace=0.05)
+    if (VIEWER_GATE):
+        fig = plt.figure()
+        fig.suptitle(
+            "Heatmap for error rate\n(yellow: wrong, purple: correct)")
+        rows_num = 7
+        if len(save_frames) == 0:
+            gs1 = gridspec.GridSpec(
+                nrows=rows_num, ncols=1, wspace=0.05)
+        else:
+            gs1 = gridspec.GridSpec(
+                nrows=rows_num, ncols=len(save_frames), wspace=0.05)
+        ax1 = fig.add_subplot(gs1[0, :])
+        print(f"heatmap{heatmap}")
+        # plt.matshow(heatmap)
+        # plt.show()
+        ax1.matshow(heatmap, vmax=1.0, vmin=0.0)
+
+        for i in range(0, len(save_frames)):
+            ax2 = fig.add_subplot(gs1[1:rows_num-1, i])
+            ax2.imshow(save_frames[i][:, :, [2, 1, 0]])
+            ax2.axis('off')  # on: 顯示坐標軸; off: 不顯示座標軸
+
+        ax3 = fig.add_subplot(gs1[rows_num-1, :])
+        button1 = plt.Button(ax3, 'replay')
+        button1.on_clicked(
+            fn_maker(heatmap=heatmap, FTTAB=FTTAB, frame_cutting=frame_cutting))
+        plt.subplots_adjust(left=0.03, right=0.98)
+        plt.show()
+        return None
     else:
-        gs1 = gridspec.GridSpec(
-            nrows=rows_num, ncols=len(save_frames), wspace=0.05)
-    ax1 = fig.add_subplot(gs1[0, :])
-    print(f"heatmap{heatmap}")
-    # plt.matshow(heatmap)
-    # plt.show()
-    ax1.matshow(heatmap, vmax=1.0, vmin=0.0)
-
-    for i in range(0, len(save_frames)):
-        ax2 = fig.add_subplot(gs1[1:rows_num-1, i])
-        ax2.imshow(save_frames[i][:, :, [2, 1, 0]])
-        ax2.axis('off')  # on: 顯示坐標軸; off: 不顯示座標軸
-
-    ax3 = fig.add_subplot(gs1[rows_num-1, :])
-    button1 = plt.Button(ax3, 'replay')
-    button1.on_clicked(
-        fn_maker(heatmap=heatmap, FTTAB=FTTAB, frame_cutting=frame_cutting))
-    plt.subplots_adjust(left=0.03, right=0.98)
-    plt.show()
+        important_frame = []
+        # i = 0
+        # 取平均 0 -> 0 -> 0 -> 1 -> 1 -> 1 -> 2 -> 2 -> 2
+        score_list = []
+        counter = 0
+        for i in range(0, heatmap.shape[-1]):
+            # FTTAB[i]可以對應到正確的偵數
+            ele = heatmap[0][i]
+            if (FTTAB[i] not in important_frame):
+                if (i != 0):
+                    score_list[-1] /= counter  # 結算上一偵
+                counter = 1
+                important_frame.append(FTTAB[i])
+                score_list.append(ele)
+            else:
+                score_list[-1] += ele
+                counter += 1
+        score_list[-1] /= counter  # 最後一偵結算掉
+        temp_score_list = []
+        if frame_cutting > 1:
+            for i in range(0, len(score_list)):
+                for j in range(frame_cutting):
+                    temp_score_list.append(score_list[i])
+            score_list = temp_score_list
+        return np.array(score_list).astype(np.float32)
 
 
 def fn_maker(heatmap, FTTAB, frame_cutting):

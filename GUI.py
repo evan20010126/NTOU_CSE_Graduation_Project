@@ -190,7 +190,7 @@ def start_btn_func(target_class_num):
         # second_idx = predict_answer.index(sort_predict_answer[-2])
         # gradcam_detect.get_heapmap(
         #     model, layer_num, x_test[0], second_idx, FTTAB)
-        gradcam_detect.get_heapmap_FOREACH(
+        evan0963908096 = gradcam_detect.get_heapmap_FOREACH(
             model, layer_num, [x_test_points[0], x_test_vectors[0]], target_class_num, len(answer_classlist), FTTAB, frame_cutting)
     else:
         # wrong
@@ -198,7 +198,7 @@ def start_btn_func(target_class_num):
         # first_idx = predict_answer.index(sort_predict_answer[-1])
         # gradcam_detect.get_heapmap(
         #     model, layer_num, x_test[0], first_idx, FTTAB)
-        gradcam_detect.get_heapmap_FOREACH(
+        evan0963908096 = gradcam_detect.get_heapmap_FOREACH(
             model, layer_num, [x_test_points[0], x_test_vectors[0]], target_class_num, len(answer_classlist), FTTAB, frame_cutting)
 
     createScore(CORRECT, idx)
