@@ -272,12 +272,14 @@ def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_
                 score_list[-1] += ele
                 counter += 1
         score_list[-1] /= counter  # 最後一偵結算掉
+        # print(f"☆scorelist★before: {score_list.__len__()}")
         temp_score_list = []
         if frame_cutting > 1:
             for i in range(0, len(score_list)):
                 for j in range(frame_cutting):
                     temp_score_list.append(score_list[i])
             score_list = temp_score_list
+        # print(f"☆scorelist★after: {score_list.__len__()}")
         return np.array(score_list).astype(np.float32)
 
 

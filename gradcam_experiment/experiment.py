@@ -122,6 +122,8 @@ file_counter = 1
 
 
 for label_name in all_class_name:
+    if(label_name == "experiment.py" or label_name == "highlight_target.py"):
+        continue
     signLanguageLabel = label_name
     target_class_num = answer_classlist.index(signLanguageLabel.capitalize())
     print("\033[92m")
@@ -145,6 +147,8 @@ for label_name in all_class_name:
 
         FTTAB, frame_cutting = preprocess_userCSV.preprocess(
             max_column=27301, src_csv_file='webcam.csv', dest_csv_file='webcam_stuff_zero.csv')
+
+        # print(f"frame_cutting :{frame_cutting}")
 
         webcam_df_points = pd.read_csv("webcam_stuff_zero.csv",
                                        header=None)
@@ -181,6 +185,7 @@ for label_name in all_class_name:
 
             score_list = gradcam_detect.get_heapmap_FOREACH(
                 model, layer_num, [x_test_points[0], x_test_vectors[0]], target_class_num, len(answer_classlist), FTTAB, frame_cutting, VIEWER_GATE=False)
+
             score_list[score_list > 0.5] = 1.0  # "有比錯"
             score_list[score_list <= 0.5] = 0.0  # "沒錯"
 
