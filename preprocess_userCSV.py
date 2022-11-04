@@ -5,7 +5,7 @@ import csv
 import numpy as np
 
 
-def write_csv(file_name, all_data, mode='w'):
+def write_csv(file_name , all_data, mode='w'):
     print("Writing csv...")
 
     # all_data.insert(0, "webcam")

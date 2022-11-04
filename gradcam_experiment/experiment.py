@@ -13,6 +13,22 @@ if abcdefg:
     import gradcam_detect
 
 
+def save_f1summary(csv_data, video_file_name, input_type, select_model_name, signLanguageLabel, answer_frame, precision, recall, F1_score):
+    csv_data.append(video_file_name)
+    csv_data.append(input_type)
+    csv_data.append(select_model_name.split('\\')[-1])
+    csv_data.append(select_model_name.split('\\')[-2])
+    csv_data.append(signLanguageLabel)
+    csv_data.append(answer_frame.shape[0])
+    csv_data.append(precision)
+    csv_data.append(recall)
+    csv_data.append(F1_score)
+
+    # /*end*/
+    preprocess_userCSV.write_csv(
+        './gradcam_experiment/f1_Summary.csv', csv_data, 'a')
+
+
 def split_target_points(new_data_df):
     new_data = new_data_df.to_numpy()
     y = new_data[:, 0]
@@ -111,9 +127,63 @@ point_number = len(hand_sequence*2) + len(pose_sequence)
 
 # /* Input START*/
 models = [
-    [r"D:\openpose1\build\examples\NTOU_CSE_Graduation_Project\auto_leave_person\two_stream_conv\-1\Convolution_best_model.h5"],  # two stream
-    [],  # points
-    []  # vectors
+    [
+        r".\auto_leave_person\two_stream_conv\-1\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\0\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\1\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\2\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\3\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\4\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\5\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\6\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\7\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\8\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\9\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\10\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\11\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\12\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\13\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\14\Convolution_best_model.h5",
+        r".\auto_leave_person\two_stream_conv\15\Convolution_best_model.h5",
+    ],  # two stream
+    [
+        r".\auto_leave_person\points_conv\-1\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\0\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\1\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\2\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\3\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\4\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\5\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\6\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\7\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\8\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\9\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\10\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\11\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\12\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\13\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\14\Convolution_best_model.h5",
+        r".\auto_leave_person\points_conv\15\Convolution_best_model.h5",
+    ],  # points
+    [
+        r".\auto_leave_person\vector_conv\-1\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\0\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\1\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\2\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\3\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\4\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\5\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\6\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\7\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\8\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\9\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\10\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\11\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\12\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\13\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\14\Convolution_best_model.h5",
+        r".\auto_leave_person\vector_conv\15\Convolution_best_model.h5",
+    ]  # vector
 ]
 
 rootdirPath = r".\gradcam_experiment"
@@ -122,7 +192,7 @@ file_counter = 1
 
 
 for label_name in all_class_name:
-    if(label_name == "experiment.py" or label_name == "highlight_target.py"):
+    if(label_name == "experiment.py" or label_name == "highlight_target.py" or label_name == "f1_Summary.csv"):
         continue
     signLanguageLabel = label_name
     target_class_num = answer_classlist.index(signLanguageLabel.capitalize())
@@ -184,7 +254,7 @@ for label_name in all_class_name:
             model.summary()
 
             score_list = gradcam_detect.get_heapmap_FOREACH(
-                model, layer_num, [x_test_points[0], x_test_vectors[0]], target_class_num, len(answer_classlist), FTTAB, frame_cutting, VIEWER_GATE=False)
+                model, layer_num, [x_test_points[0], x_test_vectors[0]], target_class_num, len(answer_classlist), FTTAB, frame_cutting, VIEWER_GATE=False)  # score_list 是恢復後的影片
 
             score_list[score_list > 0.5] = 1.0  # "有比錯"
             score_list[score_list <= 0.5] = 0.0  # "沒錯"
@@ -199,12 +269,87 @@ for label_name in all_class_name:
             # - recall - 命中 / 所有真正錯的
             recall = np.count_nonzero(
                 result == 2.0) / np.count_nonzero(answer_frame == 1.0)
+            # - F1_score - F1-score = 2 * Precision * Recall / (Precision + Recall)
+            F1_score = 2 * (precision * recall / (precision + recall))
 
             print(f"precision: {precision}")
             print(f"recall: {recall}")
+            print(f"F1_score: {F1_score}")
 
+            # /*save data*/
+            csv_data = list()
+            save_f1summary(csv_data, video_file_name, "two_stream", select_model_name,
+                           signLanguageLabel, answer_frame, precision, recall, F1_score)
         for select_model_name in models[1]:  # point
-            pass
+            if (select_model_name.split('\\')[-1][0] == "T"):  # Transformer
+                layer_num = -5
+            else:
+                layer_num = -3
+
+            model = keras.models.load_model(select_model_name)
+            model.summary()
+
+            score_list = gradcam_detect.get_heapmap_FOREACH_oneChennel(
+                model, layer_num, x_test_points[0], target_class_num, len(answer_classlist), FTTAB, frame_cutting, VIEWER_GATE=False)  # score_list 是恢復後的影片
+
+            score_list[score_list > 0.5] = 1.0  # "有比錯"
+            score_list[score_list <= 0.5] = 0.0  # "沒錯"
+
+            # 0: 兩邊都說這偵沒錯 , 1:和正確答案不一樣, 2:兩邊都說他比錯
+            result = (answer_frame + score_list)  # answer_frame & score_list
+
+            # - precision - 命中/所有預測的結果
+            precision = np.count_nonzero(
+                result == 2.0) / np.count_nonzero(score_list == 1.0)
+
+            # - recall - 命中 / 所有真正錯的
+            recall = np.count_nonzero(
+                result == 2.0) / np.count_nonzero(answer_frame == 1.0)
+            # - F1_score - F1-score = 2 * Precision * Recall / (Precision + Recall)
+            F1_score = 2 * (precision * recall / (precision + recall))
+
+            print(f"precision: {precision}")
+            print(f"recall: {recall}")
+            print(f"F1_score: {F1_score}")
+
+            # /*save data*/
+            csv_data = list()
+            save_f1summary(csv_data, video_file_name, "point", select_model_name,
+                           signLanguageLabel, answer_frame, precision, recall, F1_score)
         for select_model_name in models[2]:  # vector
-            pass
+            if (select_model_name.split('\\')[-1][0] == "T"):  # Transformer
+                layer_num = -5
+            else:
+                layer_num = -3
+
+            model = keras.models.load_model(select_model_name)
+            model.summary()
+
+            score_list = gradcam_detect.get_heapmap_FOREACH_oneChennel(
+                model, layer_num, x_test_vectors[0], target_class_num, len(answer_classlist), FTTAB, frame_cutting, VIEWER_GATE=False)  # score_list 是恢復後的影片
+
+            score_list[score_list > 0.5] = 1.0  # "有比錯"
+            score_list[score_list <= 0.5] = 0.0  # "沒錯"
+
+            # 0: 兩邊都說這偵沒錯 , 1:和正確答案不一樣, 2:兩邊都說他比錯
+            result = (answer_frame + score_list)  # answer_frame & score_list
+
+            # - precision - 命中/所有預測的結果
+            precision = np.count_nonzero(
+                result == 2.0) / np.count_nonzero(score_list == 1.0)
+
+            # - recall - 命中 / 所有真正錯的
+            recall = np.count_nonzero(
+                result == 2.0) / np.count_nonzero(answer_frame == 1.0)
+            # - F1_score - F1-score = 2 * Precision * Recall / (Precision + Recall)
+            F1_score = 2 * (precision * recall / (precision + recall))
+
+            print(f"precision: {precision}")
+            print(f"recall: {recall}")
+            print(f"F1_score: {F1_score}")
+
+            # /*save data*/
+            csv_data = list()
+            save_f1summary(csv_data, video_file_name, "vector", select_model_name,
+                           signLanguageLabel, answer_frame, precision, recall, F1_score)
     # /* Input END */
