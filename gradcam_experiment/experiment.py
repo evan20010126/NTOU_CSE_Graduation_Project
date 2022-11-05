@@ -128,61 +128,63 @@ point_number = len(hand_sequence*2) + len(pose_sequence)
 # /* Input START*/
 models = [
     [
-        r".\auto_leave_person\two_stream_conv\-1\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\0\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\1\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\2\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\3\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\4\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\5\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\6\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\7\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\8\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\9\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\10\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\11\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\12\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\13\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\14\Convolution_best_model.h5",
-        r".\auto_leave_person\two_stream_conv\15\Convolution_best_model.h5",
+        r".\auto_leave_person\-1\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\-1\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\0\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\1\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\2\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\3\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\4\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\5\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\6\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\7\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\8\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\9\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\10\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\11\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\12\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\13\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\14\Convolution_best_model.h5",
+        # r".\auto_leave_person\two_stream_conv\15\Convolution_best_model.h5",
+
     ],  # two stream
     [
-        r".\auto_leave_person\points_conv\-1\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\0\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\1\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\2\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\3\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\4\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\5\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\6\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\7\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\8\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\9\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\10\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\11\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\12\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\13\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\14\Convolution_best_model.h5",
-        r".\auto_leave_person\points_conv\15\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\-1\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\0\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\1\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\2\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\3\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\4\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\5\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\6\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\7\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\8\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\9\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\10\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\11\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\12\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\13\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\14\Convolution_best_model.h5",
+        # r".\auto_leave_person\points_conv\15\Convolution_best_model.h5",
     ],  # points
     [
-        r".\auto_leave_person\vector_conv\-1\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\0\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\1\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\2\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\3\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\4\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\5\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\6\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\7\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\8\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\9\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\10\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\11\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\12\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\13\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\14\Convolution_best_model.h5",
-        r".\auto_leave_person\vector_conv\15\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\-1\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\0\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\1\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\2\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\3\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\4\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\5\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\6\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\7\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\8\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\9\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\10\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\11\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\12\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\13\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\14\Convolution_best_model.h5",
+        # r".\auto_leave_person\vector_conv\15\Convolution_best_model.h5",
     ]  # vector
 ]
 
@@ -265,14 +267,23 @@ for label_name in all_class_name:
             result = (answer_frame + score_list)  # answer_frame & score_list
 
             # - precision - 命中/所有預測的結果
-            precision = np.count_nonzero(
-                result == 2.0) / np.count_nonzero(score_list == 1.0)
+            if(np.count_nonzero(score_list == 1.0) == 0):
+                precision = 1.0
+            else:
+                precision = np.count_nonzero(
+                    result == 2.0) / np.count_nonzero(score_list == 1.0)
 
             # - recall - 命中 / 所有真正錯的
-            recall = np.count_nonzero(
-                result == 2.0) / np.count_nonzero(answer_frame == 1.0)
+            if(np.count_nonzero(answer_frame == 1.0) == 0):
+                recall = 1.0
+            else:
+                recall = np.count_nonzero(
+                    result == 2.0) / np.count_nonzero(answer_frame == 1.0)
             # - F1_score - F1-score = 2 * Precision * Recall / (Precision + Recall)
-            F1_score = 2 * (precision * recall / (precision + recall))
+            if (precision + recall) == 0:
+                F1_score = 0
+            else:
+                F1_score = 2 * (precision * recall / (precision + recall))
 
             print(f"precision: {precision}")
             print(f"recall: {recall}")
@@ -303,14 +314,23 @@ for label_name in all_class_name:
             result = (answer_frame + score_list)  # answer_frame & score_list
 
             # - precision - 命中/所有預測的結果
-            precision = np.count_nonzero(
-                result == 2.0) / np.count_nonzero(score_list == 1.0)
+            if(np.count_nonzero(score_list == 1.0) == 0):
+                precision = 1.0
+            else:
+                precision = np.count_nonzero(
+                    result == 2.0) / np.count_nonzero(score_list == 1.0)
 
             # - recall - 命中 / 所有真正錯的
-            recall = np.count_nonzero(
-                result == 2.0) / np.count_nonzero(answer_frame == 1.0)
+            if(np.count_nonzero(answer_frame == 1.0) == 0):
+                recall = 1.0
+            else:
+                recall = np.count_nonzero(
+                    result == 2.0) / np.count_nonzero(answer_frame == 1.0)
             # - F1_score - F1-score = 2 * Precision * Recall / (Precision + Recall)
-            F1_score = 2 * (precision * recall / (precision + recall))
+            if (precision + recall) == 0:
+                F1_score = 0
+            else:
+                F1_score = 2 * (precision * recall / (precision + recall))
 
             print(f"precision: {precision}")
             print(f"recall: {recall}")
@@ -341,14 +361,23 @@ for label_name in all_class_name:
             result = (answer_frame + score_list)  # answer_frame & score_list
 
             # - precision - 命中/所有預測的結果
-            precision = np.count_nonzero(
-                result == 2.0) / np.count_nonzero(score_list == 1.0)
+            if(np.count_nonzero(score_list == 1.0) == 0):
+                precision = 1.0
+            else:
+                precision = np.count_nonzero(
+                    result == 2.0) / np.count_nonzero(score_list == 1.0)
 
             # - recall - 命中 / 所有真正錯的
-            recall = np.count_nonzero(
-                result == 2.0) / np.count_nonzero(answer_frame == 1.0)
+            if(np.count_nonzero(answer_frame == 1.0) == 0):
+                recall = 1.0
+            else:
+                recall = np.count_nonzero(
+                    result == 2.0) / np.count_nonzero(answer_frame == 1.0)
             # - F1_score - F1-score = 2 * Precision * Recall / (Precision + Recall)
-            F1_score = 2 * (precision * recall / (precision + recall))
+            if (precision + recall) == 0:
+                F1_score = 0
+            else:
+                F1_score = 2 * (precision * recall / (precision + recall))
 
             print(f"precision: {precision}")
             print(f"recall: {recall}")
