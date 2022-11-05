@@ -190,7 +190,7 @@ test_points = share_function.label_to_float(test_points)
 del all_person_pd_points
 
 #! shuffle
-train_points = share_function.shuffle(points=train_points)
+train_points = share_function.shuffle(train_points)
 # train = train.sample(frac=1).reset_index(drop=True)
 # test = test.sample(frac=1).reset_index(drop=True)
 
