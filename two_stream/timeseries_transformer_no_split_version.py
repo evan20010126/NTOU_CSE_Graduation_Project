@@ -264,7 +264,7 @@ def share_stream(x_shape, num_transformer_blocks, head_size, num_heads, ff_dim, 
     conv1 = keras.layers.BatchNormalization()(conv1)
     conv1 = keras.layers.ReLU()(conv1)
     conv2 = keras.layers.Conv1D(
-        filters=64, kernel_size=3, padding="same")(conv1)
+        filters=32, kernel_size=3, padding="same")(conv1)
     conv2 = keras.layers.BatchNormalization()(conv2)
     conv2 = keras.layers.ReLU()(conv2)
     x = layers.Dropout(0.25)(conv2)
@@ -307,10 +307,12 @@ def build_model(
     feature = keras.layers.concatenate([point_feature, vector_feature])
     x = feature
     x = keras.layers.Conv1D(
-        filters=32, kernel_size=3, padding="same")(x)
+        filters=64, kernel_size=1, padding="same")(x)
     x = keras.layers.BatchNormalization()(x)
-    x = keras.layers.ReLU()(x)
-    x = layers.GlobalAveragePooling1D()(x)  # data_format="channels_first"
+    x = keras.layers.ReLU()(x)  # gradcam 11/6
+    # x = layers.Dropout(0.4)(x)
+    x = layers.GlobalMaxPooling1D(data_format="channels_first")(
+        x)  # data_format="channels_first"
     # # conv
     # conv1 = keras.layers.Conv1D(
     #     filters=32, kernel_size=3, padding="same")(x)
