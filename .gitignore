@@ -1,5 +1,3 @@
-
-
 CSV_old_data/Summary_7st.csv
 CSV_old_data/Summary_stuff_zero_7st.csv
 output.csv
@@ -31,4 +29,4 @@ model.png
 old/tempCodeRunnerFile.py
 *.h5
 *.mp4
-*.pyc
+__pycache__/gradcam_detect.cpython-37.pyc
