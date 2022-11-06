@@ -7,6 +7,7 @@ from tensorflow import keras
 import numpy as np
 import numpy
 import matplotlib.pyplot as plt
+from matplotlib import image as mpimg
 import matplotlib.gridspec as gridspec
 import cv2
 
@@ -362,7 +363,7 @@ def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_
     print('\033[0m')
 
     if (VIEWER_GATE):
-        fig = plt.figure()
+        fig = plt.figure(0)
         fig.suptitle(
             "Heatmap for error rate\n(yellow: wrong, purple: correct)")
         rows_num = 7
@@ -376,10 +377,15 @@ def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_
         print(f"heatmap{heatmap}")
         # plt.matshow(heatmap)
         # plt.show()
-        heatmap_show = heatmap_show.tolist()
-        heatmap_show = heatmap_show.append(heatmap_show)
-        heatmap_show = heatmap_show.append(heatmap_show)
-        heatmap_show = heatmap_show.append(heatmap_show)
+        heatmap_show = heatmap
+        heatmap_show = np.append(heatmap_show, heatmap)
+        heatmap_show = np.append(heatmap_show, heatmap)
+        heatmap_show = np.append(heatmap_show, heatmap)
+        heatmap_show = np.append(heatmap_show, heatmap)
+        heatmap_show = np.append(heatmap_show, heatmap)
+        heatmap_show = np.append(heatmap_show, heatmap)
+        heatmap_show = heatmap_show.reshape(-1, heatmap.shape[-1])
+        ax1.axes.get_yaxis().set_visible(False)
         ax1.matshow(heatmap_show, vmax=1.0, vmin=0.0)
 
         for i in range(0, len(save_frames)):
@@ -392,7 +398,17 @@ def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_
         button1.on_clicked(
             fn_maker(heatmap=heatmap, FTTAB=FTTAB, frame_cutting=frame_cutting))
         plt.subplots_adjust(left=0.03, right=0.98)
+
+        fig2 = plt.figure(1, figsize=(1, 2))
+        image = mpimg.imread("color.png")
+        mngr = plt.get_current_fig_manager()
+        mngr.window.setGeometry(0, 0, 150, 800)
+
+        # fig2.set_size_inches(1, 5)
+        plt.imshow(image)
+
         plt.show()
+
         return None
     else:
         important_frame = []
