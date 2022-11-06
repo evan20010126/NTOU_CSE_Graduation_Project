@@ -376,7 +376,8 @@ def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_
         print(f"heatmap{heatmap}")
         # plt.matshow(heatmap)
         # plt.show()
-        ax1.matshow(heatmap, vmax=1.0, vmin=0.0)
+        heatmap_show = [heatmap, heatmap, heatmap]
+        ax1.matshow(heatmap_show, vmax=1.0, vmin=0.0)
 
         for i in range(0, len(save_frames)):
             ax2 = fig.add_subplot(gs1[1:rows_num-1, i])

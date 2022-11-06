@@ -308,8 +308,8 @@ def build_model(
     x = feature
     x = keras.layers.Conv1D(
         filters=64, kernel_size=1, padding="same")(x)
-    x = keras.layers.BatchNormalization()(x)
-    x = keras.layers.ReLU()(x)  # gradcam 11/6
+    # x = keras.layers.BatchNormalization()(x)
+    # x = keras.layers.ReLU()(x)  # gradcam 11/6
     # x = layers.Dropout(0.4)(x)
     x = layers.GlobalMaxPooling1D(data_format="channels_first")(
         x)  # data_format="channels_first"
@@ -358,7 +358,7 @@ model = build_model(
     head_size=256,
     num_heads=4,
     ff_dim=4,
-    num_transformer_blocks=2,
+    num_transformer_blocks=2,  # orig:4 11/6 change to 2
     mlp_units=[128],
     mlp_dropout=0.4,
     dropout=0.25,
