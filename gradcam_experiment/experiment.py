@@ -128,7 +128,7 @@ point_number = len(hand_sequence*2) + len(pose_sequence)
 # /* Input START*/
 models = [
     [
-        r".\auto_leave_person\two_stream_lstm\-1\Lstm_best_model.h5",
+        r".\auto_leave_person\two_stream_encoder2\-1\Transformer_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\0\Lstm_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\1\Lstm_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\2\Lstm_best_model.h5",
