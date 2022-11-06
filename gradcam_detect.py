@@ -376,7 +376,10 @@ def get_heapmap_FOREACH(model, layer_num, testing_data, target_class_num, total_
         print(f"heatmap{heatmap}")
         # plt.matshow(heatmap)
         # plt.show()
-        heatmap_show = [heatmap, heatmap, heatmap]
+        heatmap_show = heatmap
+        heatmap_show = heatmap_show.append(heatmap_show)
+        heatmap_show = heatmap_show.append(heatmap_show)
+        heatmap_show = heatmap_show.append(heatmap_show)
         ax1.matshow(heatmap_show, vmax=1.0, vmin=0.0)
 
         for i in range(0, len(save_frames)):
