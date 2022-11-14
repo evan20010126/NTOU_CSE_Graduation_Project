@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.messagebox
+from tkinter.ttk import *
 import cv2
 import time
 from functools import partial
@@ -137,7 +138,7 @@ def split_target(df):
 def start_btn_func(target_class_num):
     # generate webcam.csv
     mediapipe_webcam.open_cam(SAVE_REC=False, SAVE_EXCEL=False,
-                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=0)
+                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=1)
     # generate webcam_stuff_zero.csv
     FTTAB, frame_cutting = preprocess_userCSV.preprocess(max_column=27301)
 
@@ -161,7 +162,7 @@ def start_btn_func(target_class_num):
         x_test_vectors.shape[0], (x_test_vectors.shape[1]//(point_number*2)), (point_number*2))
     #!change model
     # model = keras.models.load_model('Convolution_best_model.h5')
-    select_model_name = 'Convolution_best_model.h5'
+    select_model_name = 'Lstm_best_model.h5'
     model = keras.models.load_model(select_model_name)
     model.summary()
     predict_answer = model.predict([x_test_points, x_test_vectors])
@@ -235,21 +236,21 @@ def openVideo(num):
         'C:\\Users\\yumi\\Desktop\\good\\smaplevideo\\snack\\sweet.avi')
     v8 = cv2.VideoCapture(
         'C:\\Users\\yumi\\Desktop\\good\\smaplevideo\\snack\\taste.avi')
-    if num == 1:
+    if num == 0:
         cap = v1
-    if num == 2:
+    if num == 1:
         cap = v2
-    if num == 3:
+    if num == 2:
         cap = v3
-    if num == 4:
+    if num == 3:
         cap = v4
-    if num == 5:
+    if num == 4:
         cap = v5
-    if num == 6:
+    if num == 5:
         cap = v6
-    if num == 7:
+    if num == 6:
         cap = v7
-    if num == 8:
+    if num == 7:
         cap = v8
 
     # 以迴圈從影片檔案讀取影格，並顯示出來
@@ -266,30 +267,31 @@ def openVideo(num):
 # -----創TutorialVideo視窗-----
 
 
-def createTutorialVideo():
-    TutorialVideo = tk.Toplevel(menu)
-    TutorialVideo.title('Tutorial Video')
-    global w, h, x, y
-    TutorialVideo.geometry('%dx%d+%d+%d' % (w, h, x, y))
-    # TutorialVideo.geometry("800x500")
-    TutorialVideo['background'] = '#FAF2E9'
+# def createTutorialVideo():
+#     TutorialVideo = tk.Toplevel(menu)
+#     TutorialVideo.title('Tutorial Video')
+#     global w, h, x, y
+#     TutorialVideo.geometry('%dx%d+%d+%d' % (w, h, x, y))
+#     # TutorialVideo.geometry("800x500")
+#     TutorialVideo['background'] = '#FAF2E9'
 
-    btn1 = tk.Button(TutorialVideo, bg='#F2CC8F',
-                     width=25, height=3, text='Bubble Tea', command=partial(openVideo, 1)).grid(row=0, column=0, padx=7, pady=35)
-    btn2 = tk.Button(TutorialVideo, bg='#F2CC8F',
-                     width=25, height=3, text='Dumpling', command=partial(openVideo, 2)).grid(row=0, column=1, padx=7, pady=35)
-    btn3 = tk.Button(TutorialVideo, bg='#F2CC8F',
-                     width=25, height=3, text='Hot', command=partial(openVideo, 3)).grid(row=0, column=2, padx=7, pady=35)
-    btn4 = tk.Button(TutorialVideo, bg='#F2CC8F',
-                     width=25, height=3, text='Salty', command=partial(openVideo, 4)).grid(row=0, column=3, padx=7, pady=35)
-    btn5 = tk.Button(TutorialVideo, bg='#F2CC8F',
-                     width=25, height=3, text='Snack', command=partial(openVideo, 5)).grid(row=1, column=0, padx=7, pady=35)
-    btn6 = tk.Button(TutorialVideo, bg='#F2CC8F',
-                     width=25, height=3, text='Sour', command=partial(openVideo, 6)).grid(row=1, column=1, padx=7, pady=35)
-    btn7 = tk.Button(TutorialVideo, bg='#F2CC8F',
-                     width=25, height=3, text='Sweet', command=partial(openVideo, 7)).grid(row=1, column=2, padx=7, pady=35)
-    btn8 = tk.Button(TutorialVideo, bg='#F2CC8F',
-                     width=25, height=3, text='Taste Good', command=partial(openVideo, 8)).grid(row=1, column=3, padx=7, pady=35)
+#     btn1 = tk.Button(TutorialVideo, bg='#F2CC8F',
+#                      width=25, height=3, text='Bubble Tea', command=partial(openVideo, 0)).grid(row=0, column=0, padx=7, pady=35)
+#     btn2 = tk.Button(TutorialVideo, bg='#F2CC8F',
+#                      width=25, height=3, text='Dumpling', command=partial(openVideo, 1)).grid(row=0, column=1, padx=7, pady=35)
+#     btn3 = tk.Button(TutorialVideo, bg='#F2CC8F',
+#                      width=25, height=3, text='Hot', command=partial(openVideo, 2)).grid(row=0, column=2, padx=7, pady=35)
+#     btn4 = tk.Button(TutorialVideo, bg='#F2CC8F',
+#                      width=25, height=3, text='Salty', command=partial(openVideo, 3)).grid(row=0, column=3, padx=7, pady=35)
+#     btn5 = tk.Button(TutorialVideo, bg='#F2CC8F',
+#                      width=25, height=3, text='Snack', command=partial(openVideo, 4)).grid(row=1, column=0, padx=7, pady=35)
+#     btn6 = tk.Button(TutorialVideo, bg='#F2CC8F',
+#                      width=25, height=3, text='Sour', command=partial(openVideo, 5)).grid(row=1, column=1, padx=7, pady=35)
+#     btn7 = tk.Button(TutorialVideo, bg='#F2CC8F',
+#                      width=25, height=3, text='Sweet', command=partial(openVideo, 6)).grid(row=1, column=2, padx=7, pady=35)
+#     btn8 = tk.Button(TutorialVideo, bg='#F2CC8F',
+#                      width=25, height=3, text='Taste Good', command=partial(openVideo, 7)).grid(row=1, column=3, padx=7, pady=35)
+
 
 # -----創Practice視窗-----
 
@@ -297,28 +299,142 @@ def createTutorialVideo():
 def createPractice():
     global w, h, x, y
     global answer_classlist
+    global Practice
     Practice = tk.Toplevel(menu)
     Practice.title('Practice')
     Practice.geometry('%dx%d+%d+%d' % (w, h, x, y))
     Practice.geometry("800x500")
     Practice['background'] = '#FAF2E9'
 
-    btn1 = tk.Button(Practice, text=answer_classlist[0], bg='#F2CC8F',
-                     width=25, height=3,  command=partial(start_btn_func, 0)).grid(row=0, column=0, padx=7, pady=35)
-    btn2 = tk.Button(Practice, text=answer_classlist[1], bg='#F2CC8F',
-                     width=25, height=3, command=partial(start_btn_func, 1)).grid(row=0, column=1, padx=7, pady=35)
-    btn3 = tk.Button(Practice, text=answer_classlist[2], bg='#F2CC8F',
-                     width=25, height=3, command=partial(start_btn_func, 2)).grid(row=0, column=2, padx=7, pady=35)
-    btn4 = tk.Button(Practice, text=answer_classlist[3], bg='#F2CC8F',
-                     width=25, height=3, command=partial(start_btn_func, 3)).grid(row=0, column=3, padx=7, pady=35)
-    btn5 = tk.Button(Practice, text=answer_classlist[4], bg='#F2CC8F',
-                     width=25, height=3, command=partial(start_btn_func, 4)).grid(row=1, column=0, padx=7, pady=35)
-    btn6 = tk.Button(Practice, text=answer_classlist[5], bg='#F2CC8F',
-                     width=25, height=3, command=partial(start_btn_func, 5)).grid(row=1, column=1, padx=7, pady=35)
-    btn7 = tk.Button(Practice, text=answer_classlist[6], bg='#F2CC8F',
-                     width=25, height=3, command=partial(start_btn_func, 6)).grid(row=1, column=2, padx=7, pady=35)
-    btn8 = tk.Button(Practice, text=answer_classlist[7], bg='#F2CC8F',
-                     width=25, height=3, command=partial(start_btn_func, 7)).grid(row=1, column=3, padx=7, pady=35)
+    global photo_salty
+    global photo_snack
+    global photo_sour
+    global photo_spicy
+    global photo_sweet
+    global photo_bubbletea
+    global photo_dumpling
+    global photo_yummy
+
+    global isPractice
+
+    global btn_mode
+    global btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8
+
+    global label_choice
+
+    photo_salty = ImageTk.PhotoImage(
+        Image.open('GUI_img\Salty_topic.png').resize((200, 90)))
+    photo_snack = ImageTk.PhotoImage(Image.open(
+        'GUI_img\Snack_topic.png').resize((200, 90)))
+    photo_sour = ImageTk.PhotoImage(Image.open(
+        'GUI_img\Sour_topic.png').resize((200, 90)))
+    photo_spicy = ImageTk.PhotoImage(Image.open(
+        'GUI_img\Spicy_topic.png').resize((200, 90)))
+    photo_sweet = ImageTk.PhotoImage(Image.open(
+        'GUI_img\Sweet_topic.png').resize((200, 90)))
+    photo_bubbletea = ImageTk.PhotoImage(
+        Image.open('GUI_img\Bubble_Tea_topic.png').resize((200, 90)))
+    photo_dumpling = ImageTk.PhotoImage(
+        Image.open('GUI_img\Dumpling_topic.png').resize((200, 90)))
+    photo_yummy = ImageTk.PhotoImage(Image.open(
+        'GUI_img\Yummy_topic.png').resize((200, 90)))
+
+    # 圖片label
+    global tk_imgLabel
+    global photo, photo1
+    global vlabel
+    photo = 'GUI_img\demo_video.png'
+    photo1 = "GUI_img\practice_gui.png"
+
+    Practice.photo = ImageTk.PhotoImage(Image.open(photo))
+    Practice.photo1 = ImageTk.PhotoImage(Image.open(photo1))
+
+    vlabel = tk.Label(Practice, image=Practice.photo, width=270, height=80)
+
+    vlabel.grid(row=0, column=2, columnspan=4)
+    # canvas = tk.Canvas(Practice, width=200, height=80, bg="#FAF2E9")
+    # 在 Canvas 中放入圖片
+    # canvas.create_image(100, 40, anchor='center', image=tk_imgLabel)
+    # canvas.grid(row=0, column=2, columnspan=4)
+
+    btn_mode = tk.Button(Practice, text="change\nmode",
+                         bg='#FDB79A', relief='groove', command=partial(mode_choice, 0))
+    btn_mode.grid(row=5, column=0, columnspan=1, padx=30)
+
+    btn1 = tk.Button(Practice, image=photo_salty, bg='#FAF2E9',
+                     width=250, height=85,  command=partial(start_btn_func, 0), relief='groove')
+    btn1.grid(row=2, column=1, columnspan=2, pady=10)
+
+    btn2 = tk.Button(Practice, image=photo_snack, bg='#FAF2E9',
+                     width=250, height=85, command=partial(start_btn_func, 1), relief='groove')
+    btn2.grid(row=3, column=1, columnspan=2, padx=20)
+
+    btn3 = tk.Button(Practice, image=photo_sour, bg='#FAF2E9',
+                     width=250, height=85, command=partial(start_btn_func, 2), relief='groove')
+    btn3.grid(row=4, column=1, columnspan=2, pady=10)
+
+    btn4 = tk.Button(Practice, image=photo_spicy, bg='#FAF2E9',
+                     width=250, height=85, command=partial(start_btn_func, 3), relief='groove')
+    btn4.grid(row=5, column=1, columnspan=2)
+
+    btn5 = tk.Button(Practice, image=photo_sweet, bg='#FAF2E9',
+                     width=250, height=85, command=partial(start_btn_func, 4), relief='groove')
+    btn5.grid(row=2, column=5, columnspan=2, pady=10)
+
+    btn6 = tk.Button(Practice, image=photo_bubbletea, bg='#FAF2E9',
+                     width=250, height=85, command=partial(start_btn_func, 5), relief='groove')
+    btn6.grid(row=3, column=5, columnspan=2)
+
+    btn7 = tk.Button(Practice, image=photo_dumpling, bg='#FAF2E9',
+                     width=250, height=85, command=partial(start_btn_func, 6), relief='groove')
+    btn7.grid(row=4, column=5, columnspan=2, pady=10)
+
+    btn8 = tk.Button(Practice, image=photo_yummy, bg='#FAF2E9',
+                     width=250, height=85, command=partial(start_btn_func, 7), relief='groove')
+    btn8.grid(row=5, column=5, columnspan=2)
+
+    btnQuiz = tk.Button(
+        Practice, text='上一頁', command=partial(confirm_to_quit, Practice), bg='#FDB79A', relief='groove').grid(row=5, column=8, columnspan=1, padx=30)
+
+
+global isPractice
+isPractice = False
+
+
+def mode_choice(num):
+    global isPractice
+    global btn_mode
+    global btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8
+    global label_choice
+    global vlabel
+    if isPractice:
+        btn_mode['text'] = 'change\nmode'
+        btn1['command'] = partial(start_btn_func, 0)
+        btn2['command'] = partial(start_btn_func, 1)
+        btn3['command'] = partial(start_btn_func, 2)
+        btn4['command'] = partial(start_btn_func, 3)
+        btn5['command'] = partial(start_btn_func, 4)
+        btn6['command'] = partial(start_btn_func, 5)
+        btn7['command'] = partial(start_btn_func, 6)
+        btn8['command'] = partial(start_btn_func, 7)
+        label_choice = 'GUI_img\practice_gui.png'
+        vlabel.configure(image=Practice.photo1)
+        # print(" isPractice")
+        isPractice = False
+    else:
+        btn_mode['text'] = 'change\nmode'
+        btn1['command'] = partial(openVideo, 0)
+        btn2['command'] = partial(openVideo, 1)
+        btn3['command'] = partial(openVideo, 2)
+        btn4['command'] = partial(openVideo, 3)
+        btn5['command'] = partial(openVideo, 4)
+        btn6['command'] = partial(openVideo, 5)
+        btn7['command'] = partial(openVideo, 6)
+        btn8['command'] = partial(openVideo, 7)
+        label_choice = 'GUI_img\demo_video.png'
+        # print(" nonononoPractice")
+        isPractice = True
+        vlabel.configure(image=Practice.photo)
 
 # -----創Quiz視窗-----
 
@@ -352,8 +468,13 @@ def createQuiz():
     # label = tk.Label(
     #     Quiz, text=answer_classlist[answer_number], font=fontStyle)
     # label.place(relx=0.4, rely=0.5)
-    start_btn = tk.Button(Quiz, text='Start', bg='#F2CC8F', width=40, command=partial(start_btn_func, answer_number),
-                          height=5, cursor='star').place(relx=0.33, rely=0.6)
+    global photo_start
+    photo_start = ImageTk.PhotoImage(
+        Image.open('GUI_img\start.png').resize((200, 90)))
+
+    start_btn = tk.Button(Quiz, image=photo_start, bg="#FAF2E9", relief='groove', width=250, height=85, command=partial(start_btn_func, answer_number),
+                          cursor='star')
+    start_btn.place(relx=0.33, rely=0.6)
     # -----------
     # img = []
     # global a, flag
@@ -471,25 +592,36 @@ def createScore(CORRECT, idx):
 
     #     quit_btn = tk.Button(
     #         Score, text='上一頁', command=partial(confirm_to_quit, Score)).place(relx=0.02, rely=0.92)
-    replay_btn = tk.Button(Score, text='Repaly', bg='#F2CC8F', width=15,
-                           height=3, cursor='star').place(relx=0.82, rely=0.85)
+
+    global photo_replay
+    photo_replay = ImageTk.PhotoImage(
+        Image.open('GUI_img\eplay.png').resize((250, 85)))
+
+    replay_btn = tk.Button(Score, image=photo_replay, bg="#FAF2E9", relief='groove',
+                           width=250, height=85, cursor='star').place(relx=0.35, rely=0.75)
     quit_btn = tk.Button(
-        Score, text='上一頁', command=partial(confirm_to_quit, Score)).place(relx=0.02, rely=0.92)
+        Score, bg='#FDB79A', text='上一頁', command=partial(confirm_to_quit, Score)).place(relx=0.9, rely=0.9)
 
 
 # <Main>
 # ------menu-----
-Tutorial_btn = tk.Button(
-    menu, text="Tutorial Videos", bg='#F2CC8F', width=600, height=3, cursor='heart', command=createTutorialVideo).pack(padx=30, pady=20)
+# Tutorial_btn = tk.Button(
+#     menu, text="Tutorial Videos", bg='#F2CC8F', width=600, height=3, cursor='heart', command=createTutorialVideo).pack(padx=30, pady=20)
+
+# Creating a photoimage object to use image
+photo_practice = ImageTk.PhotoImage(Image.open('GUI_img\practice_gui.png'))
+photo_quiz = ImageTk.PhotoImage(Image.open('GUI_img\quiz_gui.png'))
+
 
 Practice_btn = tk.Button(
-    menu, text="Practice", bg='#F2CC8F', width=600, height=3, cursor='heart', command=createPractice).pack(padx=30, pady=20)
+    menu, image=photo_practice, bg='#FAF2E9', width=300, height=400, cursor='heart', command=createPractice, relief='groove').grid(row=1, column=1, padx=45, pady=35)
+
 
 Quiz_btn = tk.Button(
-    menu, text="Start A Quiz", bg='#F2CC8F', width=600, height=3, cursor='heart', command=createQuiz).pack(padx=30, pady=20)
+    menu, bg='#FAF2E9', image=photo_quiz, width=300, height=400, cursor='heart', command=createQuiz, relief='groove').grid(row=1, column=2, padx=40, pady=35)
 
 quit_btn = tk.Button(
-    menu, text='退出', command=partial(confirm_to_quit, menu)).place(relx=0.02, rely=0.92)
+    menu, text='退出', command=partial(confirm_to_quit, menu), bg='#FDB79A', relief='groove').place(relx=0.02, rely=0.92)
 menu.mainloop()
 # ------menu-----
 
