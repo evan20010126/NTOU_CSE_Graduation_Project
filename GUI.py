@@ -161,7 +161,7 @@ def start_btn_func(target_class_num):
         x_test_vectors.shape[0], (x_test_vectors.shape[1]//(point_number*2)), (point_number*2))
     #!change model
     # model = keras.models.load_model('Convolution_best_model.h5')
-    select_model_name = 'Convolution_best_model.h5'
+    select_model_name = r'D:\openpose1\build\examples\NTOU_CSE_Graduation_Project\auto_leave_person\two_stream_conv\-1\Convolution_best_model.h5'
     model = keras.models.load_model(select_model_name)
     model.summary()
     predict_answer = model.predict([x_test_points, x_test_vectors])
