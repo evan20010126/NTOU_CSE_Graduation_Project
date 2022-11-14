@@ -25,7 +25,7 @@ Summary_stuff_zero_10st.csv
 model.png
 *.h5
 *.csv
-*.png
+# *.png
 old/tempCodeRunnerFile.py
 *.h5
 *.mp4
