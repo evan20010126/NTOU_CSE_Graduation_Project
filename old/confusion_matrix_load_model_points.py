@@ -23,11 +23,37 @@ def split_target_evanVersion(new_data_df):
     return x, y.astype(int)
 
 
+def label_to_float(df):
+    for i in range(df.shape[0]):
+        y = df.iloc[i, 0]
+        if y == "salty":
+            df.iloc[i, 0] = 0.0
+        elif y == "snack":
+            df.iloc[i, 0] = 1.0
+        elif y == "bubbletea":
+            df.iloc[i, 0] = 2.0
+        elif y == "dumpling":
+            df.iloc[i, 0] = 3.0
+        elif y == "spicy":
+            df.iloc[i, 0] = 4.0
+        elif y == "sour":
+            df.iloc[i, 0] = 5.0
+        elif y == "sweet":
+            df.iloc[i, 0] = 6.0
+        elif y == "yummy":
+            df.iloc[i, 0] = 7.0
+        else:
+            df.iloc[i, 0] = 999
+
+    return df
+
+
 test = evan
 # origin: x_test, y_test = split_target(test)
 
 test = test.sample(frac=1).reset_index(drop=True)
 # test = test.sample(frac=1).reset_index(drop=True)
+test = label_to_float(test)
 x_test, y_test = split_target_evanVersion(test)
 x_test = np.asarray(x_test).astype(np.float32)
 y_test = np.asarray(y_test).astype(np.float32)
