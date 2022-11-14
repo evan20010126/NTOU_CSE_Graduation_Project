@@ -1,7 +1,7 @@
 import cv2
 import csv
 
-path = r"./output_sample_videos/689260319776571.mp4"
+path = r"./output_sample_videos/11.mp4"
 filename = path.split('/')[-1]
 
 
