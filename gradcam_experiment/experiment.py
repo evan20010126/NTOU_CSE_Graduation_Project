@@ -128,7 +128,10 @@ point_number = len(hand_sequence*2) + len(pose_sequence)
 # /* Input START*/
 models = [
     [
-        r".\auto_leave_person\two_stream_encoder2\-1\Transformer_best_model.h5",
+        r".\auto_leave_person\lstm1_concate_lstm2\-1\Lstm_best_model.h5",
+        # r".\auto_leave_person\two_stream_maxpooling\-1\Lstm_best_model.h5",
+        # r".\auto_leave_person\-1\Lstm_best_model.h5",
+        # r".\auto_leave_person\two_stream_lstm\-1\Lstm_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\0\Lstm_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\1\Lstm_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\2\Lstm_best_model.h5",
@@ -166,6 +169,7 @@ models = [
         # r".\auto_leave_person\points_lstm\15\Lstm_best_model.h5",
     ],  # points
     [
+        # r".\auto_leave_person\vector_lstm\-1\Lstm_best_model.h5",
         # r".\auto_leave_person\vector_lstm\-1\Lstm_best_model.h5",
         # r".\auto_leave_person\vector_lstm\0\Lstm_best_model.h5",
         # r".\auto_leave_person\vector_lstm\1\Lstm_best_model.h5",
@@ -249,7 +253,8 @@ for label_name in all_class_name:
             if (select_model_name.split('\\')[-1][0] == "T"):
                 layer_num = -5
             else:
-                layer_num = -3
+                layer_num = -7
+                # layer_num = -7
 
             model = keras.models.load_model(select_model_name)
             model.summary()
