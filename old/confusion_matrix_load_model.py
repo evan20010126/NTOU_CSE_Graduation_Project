@@ -7,7 +7,11 @@ import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
 
+<< << << < Updated upstream
 evan = pd.read_csv("nosplit_data_for_each_one/evan.csv", header=None)
+== == == =
+evan = pd.read_csv("split_data_for_each_one/evan.csv", header=None)
+>>>>>> > Stashed changes
 print(evan)
 
 
@@ -24,7 +28,9 @@ def split_target_evanVersion(new_data_df):
 
 test = evan
 # origin: x_test, y_test = split_target(test)
+
 test = test.sample(frac=1).reset_index(drop=True)
+# test = test.sample(frac=1).reset_index(drop=True)
 x_test, y_test = split_target_evanVersion(test)
 x_test = np.asarray(x_test).astype(np.float32)
 y_test = np.asarray(y_test).astype(np.float32)
