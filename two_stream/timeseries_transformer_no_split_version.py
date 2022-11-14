@@ -308,6 +308,8 @@ def build_model(
     x = feature
     x = keras.layers.Conv1D(
         filters=64, kernel_size=1, padding="same")(x)
+    for _ in range(num_transformer_blocks):
+        x = transformer_encoder(x, head_size, num_heads, ff_dim, dropout)
     # x = keras.layers.BatchNormalization()(x)
     # x = keras.layers.ReLU()(x)  # gradcam 11/6
     # x = layers.Dropout(0.4)(x)
@@ -358,7 +360,7 @@ model = build_model(
     head_size=256,
     num_heads=4,
     ff_dim=4,
-    num_transformer_blocks=2,  # orig:4 11/6 change to 2
+    num_transformer_blocks=1,  # orig:4 11/6 change to 2
     mlp_units=[128],
     mlp_dropout=0.4,
     dropout=0.25,

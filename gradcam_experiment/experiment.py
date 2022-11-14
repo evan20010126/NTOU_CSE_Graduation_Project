@@ -127,7 +127,7 @@ point_number = len(hand_sequence*2) + len(pose_sequence)
 # /* Input START*/
 models = [
     [
-        r".\auto_leave_person\two_stream_encoder2_nobatchRELU\-1\Transformer_best_model.h5",
+        r".\auto_leave_person\encoder_in1_out1\-1\Transformer_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\0\Lstm_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\1\Lstm_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\2\Lstm_best_model.h5",
@@ -146,7 +146,7 @@ models = [
         # r".\auto_leave_person\two_stream_lstm\15\Lstm_best_model.h5",
     ],  # two stream
     [
-        # r".\auto_leave_person\points_lstm\-1\Lstm_best_model.h5",
+        # r".\auto_leave_person\points\-1\Transformer_best_model.h5",
         # r".\auto_leave_person\points_lstm\0\Lstm_best_model.h5",
         # r".\auto_leave_person\points_lstm\1\Lstm_best_model.h5",
         # r".\auto_leave_person\points_lstm\2\Lstm_best_model.h5",
@@ -293,7 +293,7 @@ for label_name in all_class_name:
                            signLanguageLabel, answer_frame, precision, recall)
         for select_model_name in models[1]:  # point
             if (select_model_name.split('\\')[-1][0] == "T"):  # Transformer
-                layer_num = -5
+                layer_num = -25
             else:
                 layer_num = -3
 
