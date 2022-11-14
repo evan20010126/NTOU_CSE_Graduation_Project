@@ -127,7 +127,7 @@ point_number = len(hand_sequence*2) + len(pose_sequence)
 # /* Input START*/
 models = [
     [
-        r".\auto_leave_person\encoder_in1_out1\-1\Transformer_best_model.h5",
+        r"D:\openpose1\build\examples\NTOU_CSE_Graduation_Project\auto_leave_person\-1\Convolution_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\0\Lstm_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\1\Lstm_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\2\Lstm_best_model.h5",
@@ -258,6 +258,8 @@ for label_name in all_class_name:
 
             score_list[score_list > 0.5] = 1.0  # "有比錯"
             score_list[score_list <= 0.5] = 0.0  # "沒錯"
+            print(f"score_list: {score_list}")
+            print(f"answer_frame: {answer_frame}")
 
             if answer_frame.shape[0] < score_list.shape[0]:
                 score_list = np.resize(score_list, answer_frame.shape)
