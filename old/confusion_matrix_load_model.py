@@ -7,11 +7,8 @@ import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
 
-<< << << < Updated upstream
+
 evan = pd.read_csv("nosplit_data_for_each_one/evan.csv", header=None)
-== == == =
-evan = pd.read_csv("split_data_for_each_one/evan.csv", header=None)
->>>>>> > Stashed changes
 print(evan)
 
 
