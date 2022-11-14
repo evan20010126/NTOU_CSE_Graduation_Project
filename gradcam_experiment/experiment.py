@@ -13,7 +13,7 @@ if abcdefg:
     import gradcam_detect
 
 
-def save_f1summary(csv_data, video_file_name, input_type, select_model_name, signLanguageLabel, answer_frame, precision, recall, F1_score):
+def save_f1summary(csv_data, video_file_name, input_type, select_model_name, signLanguageLabel, answer_frame, precision, recall):
     csv_data.append(video_file_name)
     csv_data.append(input_type)
     csv_data.append(select_model_name.split('\\')[-1])
@@ -22,7 +22,6 @@ def save_f1summary(csv_data, video_file_name, input_type, select_model_name, sig
     csv_data.append(answer_frame.shape[0])
     csv_data.append(precision)
     csv_data.append(recall)
-    csv_data.append(F1_score)
 
     # /*end*/
     preprocess_userCSV.write_csv(
@@ -128,10 +127,8 @@ point_number = len(hand_sequence*2) + len(pose_sequence)
 # /* Input START*/
 models = [
     [
-        r".\auto_leave_person\lstm1_concate_lstm2\-1\Lstm_best_model.h5",
-        # r".\auto_leave_person\two_stream_maxpooling\-1\Lstm_best_model.h5",
-        # r".\auto_leave_person\-1\Lstm_best_model.h5",
-        # r".\auto_leave_person\two_stream_lstm\-1\Lstm_best_model.h5",
+
+        r"D:\openpose1\build\examples\NTOU_CSE_Graduation_Project\auto_leave_person\-1\Convolution_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\0\Lstm_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\1\Lstm_best_model.h5",
         # r".\auto_leave_person\two_stream_lstm\2\Lstm_best_model.h5",
@@ -150,7 +147,7 @@ models = [
         # r".\auto_leave_person\two_stream_lstm\15\Lstm_best_model.h5",
     ],  # two stream
     [
-        # r".\auto_leave_person\points_lstm\-1\Lstm_best_model.h5",
+        # r".\auto_leave_person\points\-1\Transformer_best_model.h5",
         # r".\auto_leave_person\points_lstm\0\Lstm_best_model.h5",
         # r".\auto_leave_person\points_lstm\1\Lstm_best_model.h5",
         # r".\auto_leave_person\points_lstm\2\Lstm_best_model.h5",
@@ -264,6 +261,8 @@ for label_name in all_class_name:
 
             score_list[score_list > 0.5] = 1.0  # "有比錯"
             score_list[score_list <= 0.5] = 0.0  # "沒錯"
+            print(f"score_list: {score_list}")
+            print(f"answer_frame: {answer_frame}")
 
             if answer_frame.shape[0] < score_list.shape[0]:
                 score_list = np.resize(score_list, answer_frame.shape)
@@ -272,34 +271,34 @@ for label_name in all_class_name:
 
             # - precision - 命中/所有預測的結果
             if(np.count_nonzero(score_list == 1.0) == 0):
-                precision = 1.0
+                precision = "N/A"
             else:
                 precision = np.count_nonzero(
                     result == 2.0) / np.count_nonzero(score_list == 1.0)
 
             # - recall - 命中 / 所有真正錯的
             if(np.count_nonzero(answer_frame == 1.0) == 0):
-                recall = 1.0
+                recall = "N/A"
             else:
                 recall = np.count_nonzero(
                     result == 2.0) / np.count_nonzero(answer_frame == 1.0)
             # - F1_score - F1-score = 2 * Precision * Recall / (Precision + Recall)
-            if (precision + recall) == 0:
-                F1_score = 0
-            else:
-                F1_score = 2 * (precision * recall / (precision + recall))
+            # if (precision + recall) == 0:
+            #     F1_score = 0
+            # else:
+            #     F1_score = 2 * (precision * recall / (precision + recall))
 
             print(f"precision: {precision}")
             print(f"recall: {recall}")
-            print(f"F1_score: {F1_score}")
+            # print(f"F1_score: {F1_score}")
 
             # /*save data*/
             csv_data = list()
             save_f1summary(csv_data, video_file_name, "two_stream", select_model_name,
-                           signLanguageLabel, answer_frame, precision, recall, F1_score)
+                           signLanguageLabel, answer_frame, precision, recall)
         for select_model_name in models[1]:  # point
             if (select_model_name.split('\\')[-1][0] == "T"):  # Transformer
-                layer_num = -5
+                layer_num = -25
             else:
                 layer_num = -3
 
@@ -319,31 +318,31 @@ for label_name in all_class_name:
 
             # - precision - 命中/所有預測的結果
             if(np.count_nonzero(score_list == 1.0) == 0):
-                precision = 1.0
+                precision = "N/A"
             else:
                 precision = np.count_nonzero(
                     result == 2.0) / np.count_nonzero(score_list == 1.0)
 
             # - recall - 命中 / 所有真正錯的
             if(np.count_nonzero(answer_frame == 1.0) == 0):
-                recall = 1.0
+                recall = "N/A"
             else:
                 recall = np.count_nonzero(
                     result == 2.0) / np.count_nonzero(answer_frame == 1.0)
             # - F1_score - F1-score = 2 * Precision * Recall / (Precision + Recall)
-            if (precision + recall) == 0:
-                F1_score = 0
-            else:
-                F1_score = 2 * (precision * recall / (precision + recall))
+            # if (precision + recall) == 0:
+            #     F1_score = 0
+            # else:
+            #     F1_score = 2 * (precision * recall / (precision + recall))
 
             print(f"precision: {precision}")
             print(f"recall: {recall}")
-            print(f"F1_score: {F1_score}")
+            # print(f"F1_score: {F1_score}")
 
             # /*save data*/
             csv_data = list()
             save_f1summary(csv_data, video_file_name, "point", select_model_name,
-                           signLanguageLabel, answer_frame, precision, recall, F1_score)
+                           signLanguageLabel, answer_frame, precision, recall)
         for select_model_name in models[2]:  # vector
             if (select_model_name.split('\\')[-1][0] == "T"):  # Transformer
                 layer_num = -5
@@ -366,29 +365,29 @@ for label_name in all_class_name:
 
             # - precision - 命中/所有預測的結果
             if(np.count_nonzero(score_list == 1.0) == 0):
-                precision = 1.0
+                precision = "N/A"
             else:
                 precision = np.count_nonzero(
                     result == 2.0) / np.count_nonzero(score_list == 1.0)
 
             # - recall - 命中 / 所有真正錯的
             if(np.count_nonzero(answer_frame == 1.0) == 0):
-                recall = 1.0
+                recall = "N/A"
             else:
                 recall = np.count_nonzero(
                     result == 2.0) / np.count_nonzero(answer_frame == 1.0)
             # - F1_score - F1-score = 2 * Precision * Recall / (Precision + Recall)
-            if (precision + recall) == 0:
-                F1_score = 0
-            else:
-                F1_score = 2 * (precision * recall / (precision + recall))
+            # if (precision + recall) == 0:
+            #     F1_score = 0
+            # else:
+            #     F1_score = 2 * (precision * recall / (precision + recall))
 
             print(f"precision: {precision}")
             print(f"recall: {recall}")
-            print(f"F1_score: {F1_score}")
+            # print(f"F1_score: {F1_score}")
 
             # /*save data*/
             csv_data = list()
             save_f1summary(csv_data, video_file_name, "vector", select_model_name,
-                           signLanguageLabel, answer_frame, precision, recall, F1_score)
+                           signLanguageLabel, answer_frame, precision, recall)
     # /* Input END */
