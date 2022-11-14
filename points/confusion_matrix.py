@@ -29,22 +29,22 @@ point_number = len(hand_sequence*2) + len(pose_sequence)
 
 
 model_list = [
-    "auto_leave_person/points_conv/0/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/1/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/2/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/3/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/4/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/5/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/6/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/7/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/8/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/9/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/10/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/11/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/12/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/13/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/14/Convolution_best_model.h5",
-    "auto_leave_person/points_conv/15/Convolution_best_model.h5",
+    "auto_leave_person/0/Lstm_best_model.h5",
+    "auto_leave_person/1/Lstm_best_model.h5",
+    "auto_leave_person/2/Lstm_best_model.h5",
+    "auto_leave_person/3/Lstm_best_model.h5",
+    "auto_leave_person/4/Lstm_best_model.h5",
+    "auto_leave_person/5/Lstm_best_model.h5",
+    "auto_leave_person/6/Lstm_best_model.h5",
+    "auto_leave_person/7/Lstm_best_model.h5",
+    "auto_leave_person/8/Lstm_best_model.h5",
+    "auto_leave_person/9/Lstm_best_model.h5",
+    "auto_leave_person/10/Lstm_best_model.h5",
+    "auto_leave_person/11/Lstm_best_model.h5",
+    "auto_leave_person/12/Lstm_best_model.h5",
+    "auto_leave_person/13/Lstm_best_model.h5",
+    "auto_leave_person/14/Lstm_best_model.h5",
+    "auto_leave_person/15/Lstm_best_model.h5",
 ]
 
 # -- point --
@@ -134,4 +134,4 @@ fig = plt.figure(figsize=(10, 7))
 # print(f"df: {df_avg}")
 sn.heatmap(df_avg, annot=True, fmt='.3f')
 plt.show()
-fig.savefig("auto_leave_person/points_conv/avg_confusion_matrix.png")
+fig.savefig("auto_leave_person/avg_confusion_matrix.png")
