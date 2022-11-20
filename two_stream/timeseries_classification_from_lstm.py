@@ -362,28 +362,28 @@ def share_stream(input_shape):
     # ? 若沒有return squence不是ture 假設輸入是10個時刻點，只會輸出最後一個時刻點的輸出，
     # ? 因為你這個filter是64個，也就是這整個LSTM跑完之後等於輸出一個向量他是64個軸(維度)
     # ?　若return sequence為true的話 也就是把input sequence 翻譯成另一個 output sequence 最後做決策的方法可以仿造目前卷基的寫法
-    conv1 = keras.layers.LSTM(units=32, return_sequences=True)(input_layer)
-    conv1 = keras.layers.ReLU()(conv1)
+    lstm1 = keras.layers.LSTM(units=64, return_sequences=True)(input_layer)
+    lstm1 = keras.layers.ReLU()(lstm1)
 
     # conv2 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv1)
     # conv2 = keras.layers.BatchNormalization()(conv2)
-    # conv2 = keras.layers.LSTM(units=64, return_sequences=True)(conv1)
     # # ? 剩下也都這麼做
-    # conv2 = keras.layers.ReLU()(conv2)
+    # lstm2 = keras.layers.LSTM(units=64, return_sequences=True)(lstm1)
+    # lstm2 = keras.layers.ReLU()(lstm2)
 
     # # conv3 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv2)
     # # ? 最後一個LSTM再吐出最後的結果就好
     # # conv3 = keras.layers.BatchNormalization()(conv3)
-    # conv3 = keras.layers.LSTM(units=32, return_sequences=True)(
-    #     conv2)  # 原本為false，為了gradcam的資料結構改為true
-    # conv3 = keras.layers.ReLU()(conv3)
+    # lstm3 = keras.layers.LSTM(units=64, return_sequences=True)(lstm2)
+    # 原本為false，為了gradcam的資料結構改為true
+    # lstm3 = keras.layers.ReLU()(lstm3)
 
     # ? 500 有沒有必要 # 到第三層 500x64 shape -> 1x64 可以改變輸入大小
     # gap = keras.layers.GlobalAveragePooling1D()(conv3)
     # ? globalaveragepooling不用寫啦，最後一個LSTM return sequence為false就好了
     # gap = conv3
 
-    shared_layer = keras.models.Model(input_layer, conv1)
+    shared_layer = keras.models.Model(input_layer, lstm1)
 
     return shared_layer
 
@@ -391,27 +391,35 @@ def share_stream(input_shape):
 def make_model(input_shape_point, input_shape_vector):
     inputs_point = keras.layers.Input(shape=input_shape_point)
     inputs_vector = keras.layers.Input(shape=input_shape_vector)
+
     point_stream = share_stream(input_shape_point)
     vector_stream = share_stream(input_shape_vector)
-
     point_feature = point_stream(inputs_point)
     vector_feature = vector_stream(inputs_vector)
 
     feature = keras.layers.concatenate([point_feature, vector_feature])
 
-    conv3 = keras.layers.Conv1D(
-        filters=64, kernel_size=1, padding="same")(feature)
+    conv = keras.layers.Conv1D(
+        filters=64, kernel_size=3, padding="same")(feature)
+    conv = keras.layers.BatchNormalization()(conv)
+    conv = keras.layers.ReLU()(conv)
 
-    x = keras.layers.LSTM(units=64, return_sequences=True)(conv3)
+    lstm1 = keras.layers.LSTM(units=64, return_sequences=True)(conv)
+    lstm1 = keras.layers.ReLU()(lstm1)
+
+    lstm2 = keras.layers.LSTM(units=64, return_sequences=True)(lstm1)
+    lstm2 = keras.layers.ReLU()(lstm2)
+
+    x = keras.layers.LSTM(units=64, return_sequences=True)(lstm2)
     # ? 剩下也都這麼做
     x = keras.layers.ReLU()(x)
 
     # conv3 = keras.layers.Conv1D(filters=64, kernel_size=3, padding="same")(conv2)
     # ? 最後一個LSTM再吐出最後的結果就好
     # conv3 = keras.layers.BatchNormalization()(conv3)
-    x = keras.layers.LSTM(units=64, return_sequences=True)(
-        x)  # 原本為false，為了gradcam的資料結構改為true
-    conv3 = keras.layers.ReLU()(x)
+    # x = keras.layers.LSTM(units=64, return_sequences=True)(
+    # x)  # 原本為false，為了gradcam的資料結構改為true
+    # conv3 = keras.layers.ReLU()(x)
     # ? 最後一個LSTM再吐出最後的結果就好
     # conv3 = keras.layers.BatchNormalization()(conv3)
     # conv3 = keras.layers.LSTM(units=64, return_sequences=True)(
@@ -420,7 +428,7 @@ def make_model(input_shape_point, input_shape_vector):
 
     # ? 500 有沒有必要 # 到第三層 500x64 shape -> 1x64 可以改變輸入大小
     gap = keras.layers.GlobalAveragePooling1D(
-        data_format="channels_first")(conv3)
+        data_format="channels_first")(x)
     # ? globalaveragepooling不用寫啦，最後一個LSTM return sequence為false就好了
     # gap = conv3
 
