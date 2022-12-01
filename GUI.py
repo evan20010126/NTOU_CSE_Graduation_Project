@@ -137,7 +137,7 @@ def split_target(df):
 
 def start_btn_func(target_class_num):
     # generate webcam.csv
-    mediapipe_webcam.open_cam(SAVE_REC=False, SAVE_EXCEL=False,
+    mediapipe_webcam.open_cam(SAVE_REC=True, SAVE_EXCEL=False,
                               SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=1)
     # generate webcam_stuff_zero.csv
     FTTAB, frame_cutting = preprocess_userCSV.preprocess(max_column=27301)
@@ -163,8 +163,8 @@ def start_btn_func(target_class_num):
     #!change model
     # model = keras.models.load_model('Convolution_best_model.h5')
 
-    select_model_name = 'Lstm_best_model.h5'
-    
+    select_model_name = 'Convolution_best_model.h5'
+
     model = keras.models.load_model(select_model_name)
     model.summary()
     predict_answer = model.predict([x_test_points, x_test_vectors])
@@ -266,6 +266,20 @@ def openVideo(num):
     cap.release()
     cv2.destroyAllWindows()
 
+
+def openREC():
+    # output_sample_videos\webcam.avi
+    rec = cv2.VideoCapture(
+        r'.\output_sample_videos\\webcam.avi')
+    while(rec.isOpened()):
+        ret, frame = rec.read()
+        # time.sleep(0.05)
+        cv2.imshow('frame', frame)
+        if cv2.waitKey(100) & 0xFF == ord('q'):
+            break
+
+    rec.release()
+    cv2.destroyAllWindows()
 # -----創TutorialVideo視窗-----
 
 
@@ -359,6 +373,9 @@ def createPractice():
     # canvas.create_image(100, 40, anchor='center', image=tk_imgLabel)
     # canvas.grid(row=0, column=2, columnspan=4)
 
+    answer_classlist = ['Salty', 'Snack', 'Bubble_Tea',
+                        'Dumpling', 'Spicy', 'Sour', 'Sweet', 'Yummy']
+
     btn_mode = tk.Button(Practice, text="change\nmode",
                          bg='#FDB79A', relief='groove', command=partial(mode_choice, 0))
     btn_mode.grid(row=5, column=0, columnspan=1, padx=30)
@@ -371,23 +388,23 @@ def createPractice():
                      width=250, height=85, command=partial(start_btn_func, 1), relief='groove')
     btn2.grid(row=3, column=1, columnspan=2, padx=20)
 
-    btn3 = tk.Button(Practice, image=photo_sour, bg='#FAF2E9',
+    btn3 = tk.Button(Practice, image=photo_bubbletea, bg='#FAF2E9',
                      width=250, height=85, command=partial(start_btn_func, 2), relief='groove')
     btn3.grid(row=4, column=1, columnspan=2, pady=10)
 
-    btn4 = tk.Button(Practice, image=photo_spicy, bg='#FAF2E9',
+    btn4 = tk.Button(Practice, image=photo_dumpling, bg='#FAF2E9',
                      width=250, height=85, command=partial(start_btn_func, 3), relief='groove')
     btn4.grid(row=5, column=1, columnspan=2)
 
-    btn5 = tk.Button(Practice, image=photo_sweet, bg='#FAF2E9',
+    btn5 = tk.Button(Practice, image=photo_spicy, bg='#FAF2E9',
                      width=250, height=85, command=partial(start_btn_func, 4), relief='groove')
     btn5.grid(row=2, column=5, columnspan=2, pady=10)
 
-    btn6 = tk.Button(Practice, image=photo_bubbletea, bg='#FAF2E9',
+    btn6 = tk.Button(Practice, image=photo_sour, bg='#FAF2E9',
                      width=250, height=85, command=partial(start_btn_func, 5), relief='groove')
     btn6.grid(row=3, column=5, columnspan=2)
 
-    btn7 = tk.Button(Practice, image=photo_dumpling, bg='#FAF2E9',
+    btn7 = tk.Button(Practice, image=photo_sweet, bg='#FAF2E9',
                      width=250, height=85, command=partial(start_btn_func, 6), relief='groove')
     btn7.grid(row=4, column=5, columnspan=2, pady=10)
 
@@ -600,7 +617,7 @@ def createScore(CORRECT, idx):
         Image.open('GUI_img\eplay.png').resize((250, 85)))
 
     replay_btn = tk.Button(Score, image=photo_replay, bg="#FAF2E9", relief='groove',
-                           width=250, height=85, cursor='star').place(relx=0.35, rely=0.75)
+                           width=250, height=85, cursor='star', command=openREC).place(relx=0.35, rely=0.75)
     quit_btn = tk.Button(
         Score, bg='#FDB79A', text='上一頁', command=partial(confirm_to_quit, Score)).place(relx=0.9, rely=0.9)
 
