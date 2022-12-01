@@ -138,7 +138,7 @@ def split_target(df):
 def start_btn_func(target_class_num):
     # generate webcam.csv
     mediapipe_webcam.open_cam(SAVE_REC=True, SAVE_EXCEL=False,
-                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=0)
+                              SAVE_CSV=True, PREVIEW_INPUT_VIDEO_WITH_OPENPOSE_DETECT=True, cam_num=1)
 
     # generate webcam_stuff_zero.csv
     FTTAB, frame_cutting = preprocess_userCSV.preprocess(max_column=27301)
@@ -164,7 +164,7 @@ def start_btn_func(target_class_num):
     #!change model
     # model = keras.models.load_model('Convolution_best_model.h5')
 
-    select_model_name = r"D:\openpose1\build\examples\NTOU_CSE_Graduation_Project\auto_leave_person\two_stream_conv\-1\Convolution_best_model.h5"
+    select_model_name = r"C:\Users\yumi\Desktop\openpose\build\examples\NTOU_CSE_Graduation_Project\Convolution_best_model.h5"
 
     model = keras.models.load_model(select_model_name)
     model.summary()
@@ -224,21 +224,21 @@ def confirm_to_quit(page):
 
 def openVideo(num):
     v1 = cv2.VideoCapture(
-        'C:\\Users\\yumi\\Desktop\\good\\smaplevideo\\snack\\bubbletea.avi')
+        r'.\\demo_video\\salty.mp4')
     v2 = cv2.VideoCapture(
-        'C:\\Users\\yumi\\Desktop\\good\\smaplevideo\\snack\\dumpling.avi')
+        r'.\\demo_video\\snack.mp4')
     v3 = cv2.VideoCapture(
-        'C:\\Users\\yumi\\Desktop\\good\\smaplevideo\\snack\\hot.avi')
+        r'.\\demo_video\\bubbletea.mp4')
     v4 = cv2.VideoCapture(
-        r'..\media\salty\220511_222809-6237668.MOV')
+        r'.\\demo_video\\dumpling.mp4')
     v5 = cv2.VideoCapture(
-        'C:\\Users\\yumi\\Desktop\\good\\smaplevideo\\snack\\snack.avi')
+        r'.\\demo_video\\spicy.mp4')
     v6 = cv2.VideoCapture(
-        'C:\\Users\\yumi\\Desktop\\good\\smaplevideo\\snack\\sour.avi')
+        r'.\\demo_video\\sour.mp4')
     v7 = cv2.VideoCapture(
-        'C:\\Users\\yumi\\Desktop\\good\\smaplevideo\\snack\\sweet.avi')
+        r'.\\demo_video\\sweet.mp4')
     v8 = cv2.VideoCapture(
-        'C:\\Users\\yumi\\Desktop\\good\\smaplevideo\\snack\\taste.avi')
+        r'.\\demo_video\\yummy.mp4')
     if num == 0:
         cap = v1
     if num == 1:
